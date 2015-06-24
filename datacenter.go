@@ -18,13 +18,6 @@ func GetDatacenter(dcid string) Instance {
 	return is_get(path)
 }
 
-// UpdateDatacenter updates all Datacenter properties from values in jason
-//returns an Instance struct where id ==dcid
-func UpdateDatacenter(dcid string, jason []byte) Instance {
-	path := dc_path(dcid)
-	return is_put(path, jason)
-}
-
 // PatchDatacenter replaces any Datacenter properties with the values in jason
 //returns an Instance struct where id ==dcid
 func PatchDatacenter(dcid string, jason []byte) Instance {
