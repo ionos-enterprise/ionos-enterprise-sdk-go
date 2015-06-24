@@ -1,4 +1,4 @@
-package goprofitbricks
+package profitbricks
 
 // ListServers returns a server struct collection
 func ListServers(dcid string) Collection {
@@ -16,13 +16,6 @@ func CreateServer(dcid string, jason []byte) Instance {
 func GetServer(dcid, srvid string) Instance {
 	path := server_path(dcid, srvid)
 	return is_get(path)
-}
-
-// UpdateServer is a full update of server properties passed in as jason []byte
-// Returns Instance struct
-func UpdateServer(dcid string, srvid string, jason []byte) Instance {
-	path := server_path(dcid, srvid)
-	return is_put(path, jason)
 }
 
 // PatchServer partial update of server properties passed in as jason []byte

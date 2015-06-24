@@ -1,9 +1,11 @@
 package profitbricks
 
-import "testing"
-import "fmt"
-
-import "strconv"
+import (
+		"testing"
+		"fmt"
+		"os"
+		"strconv"
+)
 
 // bad_type is the return string for bad type errors
 func bad_type(shouldbe, got string) string {
@@ -17,8 +19,8 @@ func bad_status(wanted, got int) string {
 
 // Set Username and Password here for Testing.
 
-var username = "jasmin@stackpointcloud.com"
-var passwd = "L@xu6Ef8zw"
+var username = "jclouds@stackpointcloud.com"
+var passwd = os.Getenv("PB_PASSWORD")
 
 // Set Endpoint for testing
 var endpoint = "https://api.profitbricks.com/rest"
