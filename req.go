@@ -110,11 +110,11 @@ func is_post(path string, jason []byte) Instance {
 	return toInstance(do(req))
 }
 
-// is_command performs an http.NewRequest PUT and returns a Resp struct
+// is_command performs an http.NewRequest POST and returns a Resp struct
 func is_command(path string, jason string) Resp {
 	url := mk_url(path)
 	body := json.RawMessage(jason)
-	req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(body))
+	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	req.Header.Add("Content-Type", CommandHeader)
 	return do(req)
 }
