@@ -18,7 +18,7 @@ func bad_status(wanted, got int) string {
 // Set Username and Password here for Testing.
 
 var username = "jasmin@stackpointcloud.com"
-var passwd = "L@xu6Ef8zw"
+var passwd = "password"
 
 // Set Endpoint for testing
 var endpoint = "https://api.profitbricks.com/rest"
