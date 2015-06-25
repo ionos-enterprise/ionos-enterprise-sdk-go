@@ -36,3 +36,8 @@ func TestSetEndpoint(t *testing.T) {
 	fmt.Println("Endpoint is ", Endpoint)
 
 }
+
+// Setup creds for single running tests
+func SetupCredentials() {
+	SetAuth(username, passwd)
+}

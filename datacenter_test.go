@@ -68,7 +68,7 @@ func TestGetDatacenter(t *testing.T) {
 func TestPatchDatacenter(t *testing.T) {
 	want := 202
 	jason_patch := []byte(`{
-					"name":"Renamed DC",
+					"name":"Renamed DC"
 					}`)
 	resp := PatchDatacenter(dcID, jason_patch)
 	if resp.Resp.StatusCode != want {
