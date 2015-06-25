@@ -43,7 +43,7 @@ func TestPatchImage(t *testing.T) {
 	//t.Parallel()
 	want := 202
 	jason_patch := []byte(`{
-					"name":"Renamed img",
+					"name":"Renamed img"
 					}`)
 	imgid := mkimgid()
 	resp := PatchImage(imgid, jason_patch)
@@ -51,20 +51,7 @@ func TestPatchImage(t *testing.T) {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 }
-func TestUpdateImage(t *testing.T) {
-	//t.Parallel()
-	want := 202
-	jason_update := []byte(`{
-					"size":80,
-					
-					}`)
 
-	imgid := mkimgid()
-	resp := UpdateImage(imgid, jason_update)
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
-	}
-}
 func TestDeleteImage(t *testing.T) {
 	//t.Parallel()
 	want := 202
