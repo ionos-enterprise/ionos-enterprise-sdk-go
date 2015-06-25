@@ -10,13 +10,13 @@ var dcID string
 func mkdcid() string {
 	dc := CreateDatacenter([]byte(`{
     "properties": {
-        "name": "DCtest12",
+        "name": "GoSDK",
         "description": "datacenter-description",
         "location": "us/lasdev"
     }
 	}`))
-	fmt.Println("---------------- DataCenter Creation ----------------------")
-	fmt.Println(string(dc.Resp.Body))
+	fmt.Println("---------------- DataCenter Created ----------------------")
+	//fmt.Println(string(dc.Resp.Body))
 
 	dcid := dc.Id
 	return dcid
