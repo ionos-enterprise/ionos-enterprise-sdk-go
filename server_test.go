@@ -8,15 +8,15 @@ import (
 	"fmt"
 )
 
-
-
 var (
 	once_dc 	sync.Once
 	once_srv 	sync.Once
 	srv_dc_id  	string
 	srv_srvid	string
 	srv_srv01	Instance
+	srv_vol_id   string
 )
+
 
 func setupDataCenter(){
 	setupCredentials()
@@ -38,8 +38,12 @@ func setupServer(){
 func serverCleanup() {
 	// TODO how to do cleanup, should use TestMain
 	fmt.Println("Performing cleanup...")
-	DeleteServer(srv_dc_id, srv_srv01.Id)
-	DeleteDatacenter(srv_dc_id)
+	res := DeleteServer(srv_dc_id, srv_srv01.Id)
+	fmt.Println("DeleteServer: ", res.StatusCode)
+	res = DeleteVolume(srv_dc_id, srv_vol_id)
+	fmt.Println("DeleteVolume: ", res.StatusCode)
+	res = DeleteDatacenter(srv_dc_id)
+	fmt.Println("DeleteDatacenter: ", res.StatusCode)
 }
 
 func setupCreateServer(srv_dc_id string) string {
@@ -75,7 +79,7 @@ func setupCreateServer(srv_dc_id string) string {
 //  ----------------- Tests -------------------
 //
 
-func TestCreateServer(t *testing.T) {
+/*func TestCreateServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 
 	want := 202
@@ -212,7 +216,7 @@ func TestListAttachedCdroms_NoItems(t *testing.T){
 		t.Error(string(resp.Resp.Body))
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
-}
+}*/
 
 
 func TestDeleteServer(t *testing.T) {
@@ -228,10 +232,3 @@ func TestDeleteServer(t *testing.T) {
 	}
 }
 
-// TODO Tests 
-// AttachCdrom
-// GetAttachedCdrom
-// DetachCdrom
-// AttachVolume
-// GetAttachedVolume
-// DetachVolume

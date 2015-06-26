@@ -26,7 +26,7 @@ func TestCreateVolume(t *testing.T) {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 
-	time.Sleep(2000)
+	time.Sleep(10000)
 }
 
 func TestListVolumes(t *testing.T) {
