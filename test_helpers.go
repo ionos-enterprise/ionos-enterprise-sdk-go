@@ -6,7 +6,7 @@ func mkdcid() string {
 	fmt.Println("Setting up dc")
 	dc := CreateDatacenter([]byte(`{
     "properties": {
-        "name": "VOLUME",
+        "name": "GOSDK",
         "description": "datacenter-description",
         "location": "us/lasdev"
     }
@@ -15,3 +15,4 @@ func mkdcid() string {
 	fmt.Println(dc.Id)
 	return dc.Id
 }
+

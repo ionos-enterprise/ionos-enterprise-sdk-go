@@ -7,6 +7,8 @@ import (
 		"strconv"
 )
 
+
+
 // bad_type is the return string for bad type errors
 func bad_type(shouldbe, got string) string {
 	return " Type is " + got + " should be " + shouldbe
@@ -33,10 +35,16 @@ func TestSetAuth(t *testing.T) {
 func TestSetEndpoint(t *testing.T) {
 	SetEndpoint(endpoint)
 	fmt.Println("Endpoint is ", Endpoint)
-
 }
+
+func TestMain(m *testing.M) { 
+	r := m.Run()
+	serverCleanup()
+	os.Exit(r)	
+ }
 
 // Setup creds for single running tests
 func setupCredentials() {
+	SetEndpoint(endpoint)
 	SetAuth(username, passwd)
 }

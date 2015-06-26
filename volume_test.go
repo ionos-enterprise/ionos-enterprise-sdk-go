@@ -56,7 +56,7 @@ func TestGetVolume(t *testing.T) {
 func TestPatchVolume(t *testing.T) {
 	want := 202
 
-	resp := PatchVolume(dcID, volumeId, []byte(`{"name": "volume-name1234"}F`))
+	resp := PatchVolume(dcID, volumeId, []byte(`{"name": "volume-name1234"}`))
 
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))

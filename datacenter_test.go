@@ -7,21 +7,6 @@ import (
 
 var dcID string
 
-func mkdcid() string {
-	dc := CreateDatacenter([]byte(`{
-    "properties": {
-        "name": "GoSDK",
-        "description": "datacenter-description",
-        "location": "us/lasdev"
-    }
-	}`))
-	fmt.Println("---------------- DataCenter Created ----------------------")
-	//fmt.Println(string(dc.Resp.Body))
-
-	dcid := dc.Id
-	return dcid
-}
-
 func TestListDatacenters(t *testing.T) {
 	shouldbe := "collection"
 	want := 200

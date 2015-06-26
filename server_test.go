@@ -13,49 +13,67 @@ import (
 var (
 	once_dc 	sync.Once
 	once_srv 	sync.Once
-	dc_id  		string
-	srv_id		string
+	srv_dc_id  	string
+	srv_srvid	string
+	srv_srv01	Instance
 )
 
 func setupDataCenter(){
 	setupCredentials()
-	dc_id = mkdcid()
-	if len(dc_id) == 0 { 
+	srv_dc_id = mkdcid()
+	if len(srv_dc_id) == 0 { 
 		//panic("DataCenter not created")
 		fmt.Errorf("DataCenter not created")
 	}
 }
 
 func setupServer(){
-	srv_id = SetupCreateServer(dc_id)
-	if len(srv_id) == 0 { 
+	srv_srvid = setupCreateServer(srv_dc_id)
+	if len(srv_srvid) == 0 { 
 		fmt.Errorf("DataCenter not created")
 	}
 }
 
-func setupCreateServer(dc_id string) string {
+// called from TestMain
+func serverCleanup() {
+	// TODO how to do cleanup, should use TestMain
+	fmt.Println("Performing cleanup...")
+	DeleteServer(srv_dc_id, srv_srv01.Id)
+	DeleteDatacenter(srv_dc_id)
+}
+
+func setupCreateServer(srv_dc_id string) string {
 	var jason = []byte(`{"properties":{
 						"name":"GoServer",
 						"cores":4,
 						"ram": 4096}
 					}`)
-	fmt.Println("----------------- Creating server.... ----------")
-	srv := CreateServer(dc_id, jason)
+	fmt.Println("Creating server....")
+	srv := CreateServer(srv_dc_id, jason)
 	// wait for server to be running
 	fmt.Println("Waiting for server to start....")
-	srv_prop := GetServer(dc_id, srv.Id)
+	srv_prop := GetServer(srv_dc_id, srv.Id)
 	num_tries := 120
 	seconds := 0
 	for seconds < num_tries && srv_prop.Resp.StatusCode == 404  {
 		time.Sleep(time.Second)
-		srv_prop = GetServer(dc_id, srv.Id)
+		srv_prop = GetServer(srv_dc_id, srv.Id)
 		seconds++
 	}
-	fmt.Println("------ Server available ----------")
+	if num_tries == 0 {
+		fmt.Errorf("Timeout! Server not running in 120 secs")
+	} else {
+		fmt.Printf("Server %s created in %d seconds\n", string(srv.Properties["name"].(string)), seconds)
+	}
 
 	srvid := srv.Id
 	return srvid
 }
+
+
+//
+//  ----------------- Tests -------------------
+//
 
 func TestCreateServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
@@ -66,35 +84,12 @@ func TestCreateServer(t *testing.T) {
 			"cores":2,
 			"ram": 1024
 			}}`)
-	t.Logf("Creating server in DC: %s", dc_id)
-	srv := CreateServer(dc_id, jason)
-	if srv.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, srv.Resp.StatusCode))
+	t.Logf("Creating server in DC: %s", srv_dc_id)
+	srv_srv01 = CreateServer(srv_dc_id, jason)
+	if srv_srv01.Resp.StatusCode != want {
+		t.Errorf(bad_status(want, srv_srv01.Resp.StatusCode))
 	}
     //t.Logf("Server ...... %s\n", string(srv.Resp.Body))
-
-	
-	// wait for server creation
-	/*srv_prop := GetServer(dc_id, srv.Id)
-	t.Logf("Server ...... %s\n", string(srv_prop.Resp.Body))
-	num_tries := 120
-	seconds := 0
-	for seconds < num_tries && srv_prop.Resp.StatusCode == 404  {
-		time.Sleep(time.Second)
-		srv_prop = GetServer(dc_id, srv.Id)
-		//t.Logf("Server ...... %s\n", string(srv_prop.Resp.Body))
-		t.Logf("StatusCode ...... %d\n", srv_prop.Resp.StatusCode)
-		seconds++
-	}
-	if num_tries == 0 {
-		t.Errorf("Timeout! Server not running in 120 secs")
-	} else {
-		t.Logf("Server %s created in %d seconds\n", string(srv.Properties["name"].(string)), seconds)
-	}*/
-
-	//cleanup
-	t.Log("Performing cleanup...")
-	DeleteServer(dc_id, srv.Id)
 }
 
 func TestGetServer(t *testing.T) {
@@ -103,7 +98,7 @@ func TestGetServer(t *testing.T) {
 	
 	shouldbe := "server"
 	want := 200
-	resp := GetServer(dc_id, srv_id)
+	resp := GetServer(srv_dc_id, srv_srvid)
 	if resp.Type != shouldbe {
 		t.Errorf(bad_type(shouldbe, resp.Type))
 	}
@@ -122,7 +117,7 @@ func TestListServers(t *testing.T) {
 	//
 	// List Servers
 	//
-	resp := ListServers(dc_id)
+	resp := ListServers(srv_dc_id)
 	//t.Logf("ListServers ...... %s\n", string(resp.Resp.Body))
 	if resp.Type != shouldbe {
 		t.Errorf(bad_type(shouldbe, resp.Type))
@@ -142,8 +137,7 @@ func TestPatchServer(t *testing.T) {
 				"name": "NewName",
 				"cores": 1
 			}`)
-	//srvid := CreateServer(dc_id)
-	resp := PatchServer(dc_id, srv_id, jason_patch)
+	resp := PatchServer(srv_dc_id, srv_srvid, jason_patch)
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
@@ -154,7 +148,7 @@ func TestStopServer(t *testing.T){
 	once_srv.Do(setupServer)
 	
 	want := 202
-	resp := StopServer(dc_id, srv_id)
+	resp := StopServer(srv_dc_id, srv_srvid)
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
@@ -166,12 +160,60 @@ func TestStartServer(t *testing.T){
 	once_srv.Do(setupServer)
 	
 	want := 202
-	resp := StartServer(dc_id, srv_id)
+	resp := StartServer(srv_dc_id, srv_srvid)
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 	
 }
+
+func TestRebootServer(t *testing.T){
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
+	
+	want := 202
+	resp := RebootServer(srv_dc_id, srv_srvid)
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+	
+}
+
+func TestListAttachedVolumes_NoItems(t *testing.T){
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
+	
+	want := 200
+	shouldbe := "collection"
+
+	resp := ListAttachedVolumes(srv_dc_id, srv_srvid)
+	if resp.Type != shouldbe {
+		t.Errorf(bad_type(shouldbe, resp.Type))
+	}
+	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
+}
+
+
+func TestListAttachedCdroms_NoItems(t *testing.T){
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
+	
+	want := 200
+	shouldbe := "collection"
+	
+	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
+	if resp.Type != shouldbe {
+		t.Errorf(bad_type(shouldbe, resp.Type))
+	}
+	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
+}
+
 
 func TestDeleteServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
@@ -179,14 +221,17 @@ func TestDeleteServer(t *testing.T) {
 	
 	want := 202
 
-	resp := DeleteServer(dc_id, srv_id)
+	resp := DeleteServer(srv_dc_id, srv_srvid)
 	if resp.StatusCode != want {
 		t.Error(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
-	
-	//cleanup
-	// TODO how to do cleanup, should use TestMain
-	DeleteDatacenter(dc_id)
 }
 
+// TODO Tests 
+// AttachCdrom
+// GetAttachedCdrom
+// DetachCdrom
+// AttachVolume
+// GetAttachedVolume
+// DetachVolume
