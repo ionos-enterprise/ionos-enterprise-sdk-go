@@ -18,7 +18,6 @@ func bad_status(wanted, got int) string {
 }
 
 // Set Username and Password here for Testing.
-
 var username = "jclouds@stackpointcloud.com"
 var passwd = os.Getenv("PB_PASSWORD")
 

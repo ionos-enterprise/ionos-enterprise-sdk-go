@@ -55,8 +55,6 @@ func TestGetDatacenter(t *testing.T) {
 	
 	fmt.Println(dcID)
 	resp := GetDatacenter(dcID)
-	fmt.Println("****TYPE****")
-	fmt.Println(resp.Type)
 	if resp.Type != shouldbe {
 		t.Errorf(bad_type(shouldbe, resp.Type))
 	}
@@ -67,9 +65,7 @@ func TestGetDatacenter(t *testing.T) {
 
 func TestPatchDatacenter(t *testing.T) {
 	want := 202
-	jason_patch := []byte(`{
-					"name":"Renamed DC"
-					}`)
+	jason_patch := []byte(`{"name":"Renamed DC"}`)
 	resp := PatchDatacenter(dcID, jason_patch)
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
