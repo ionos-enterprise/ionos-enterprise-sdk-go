@@ -38,6 +38,6 @@ func TestSetEndpoint(t *testing.T) {
 }
 
 // Setup creds for single running tests
-func SetupCredentials() {
+func setupCredentials() {
 	SetAuth(username, passwd)
 }

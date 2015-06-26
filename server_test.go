@@ -17,8 +17,8 @@ var (
 	srv_id		string
 )
 
-func SetupDataCenter(){
-	SetupCredentials()
+func setupDataCenter(){
+	setupCredentials()
 	dc_id = mkdcid()
 	if len(dc_id) == 0 { 
 		//panic("DataCenter not created")
@@ -26,14 +26,14 @@ func SetupDataCenter(){
 	}
 }
 
-func SetupServer(){
+func setupServer(){
 	srv_id = SetupCreateServer(dc_id)
 	if len(srv_id) == 0 { 
 		fmt.Errorf("DataCenter not created")
 	}
 }
 
-func SetupCreateServer(dc_id string) string {
+func setupCreateServer(dc_id string) string {
 	var jason = []byte(`{"properties":{
 						"name":"GoServer",
 						"cores":4,
@@ -58,10 +58,8 @@ func SetupCreateServer(dc_id string) string {
 }
 
 func TestCreateServer(t *testing.T) {
-	once_dc.Do(SetupDataCenter)
-	//
-	//
-	//
+	once_dc.Do(setupDataCenter)
+
 	want := 202
 	var jason = []byte(`{"properties":{
 			"name":"go01",
@@ -100,8 +98,8 @@ func TestCreateServer(t *testing.T) {
 }
 
 func TestGetServer(t *testing.T) {
-	once_dc.Do(SetupDataCenter)
-	once_srv.Do(SetupServer)
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
 	
 	shouldbe := "server"
 	want := 200
@@ -115,8 +113,8 @@ func TestGetServer(t *testing.T) {
 }
 
 func TestListServers(t *testing.T) {
-	once_dc.Do(SetupDataCenter)
-	once_srv.Do(SetupServer)
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
 	
 	shouldbe := "collection"
 	want := 200
@@ -136,8 +134,8 @@ func TestListServers(t *testing.T) {
 }
 
 func TestPatchServer(t *testing.T) {
-	once_dc.Do(SetupDataCenter)
-	once_srv.Do(SetupServer)
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
 	
 	want := 202
 	jason_patch := []byte(` {
@@ -152,8 +150,8 @@ func TestPatchServer(t *testing.T) {
 }
 
 func TestStopServer(t *testing.T){
-	once_dc.Do(SetupDataCenter)
-	once_srv.Do(SetupServer)
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
 	
 	want := 202
 	resp := StopServer(dc_id, srv_id)
@@ -164,8 +162,8 @@ func TestStopServer(t *testing.T){
 }
 
 func TestStartServer(t *testing.T){
-	once_dc.Do(SetupDataCenter)
-	once_srv.Do(SetupServer)
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
 	
 	want := 202
 	resp := StartServer(dc_id, srv_id)
@@ -176,8 +174,8 @@ func TestStartServer(t *testing.T){
 }
 
 func TestDeleteServer(t *testing.T) {
-	once_dc.Do(SetupDataCenter)
-	once_srv.Do(SetupServer)
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
 	
 	want := 202
 
@@ -188,6 +186,7 @@ func TestDeleteServer(t *testing.T) {
 	}
 	
 	//cleanup
+	// TODO how to do cleanup, should use TestMain
 	DeleteDatacenter(dc_id)
 }
 
