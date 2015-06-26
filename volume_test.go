@@ -26,7 +26,7 @@ func TestCreateVolume(t *testing.T) {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 
-	time.Sleep(2 * time.Second)
+	time.Sleep(30 * time.Second)
 }
 
 func TestListVolumes(t *testing.T) {
@@ -63,7 +63,10 @@ func TestPatchVolume(t *testing.T) {
 	}
 }
 
-func Cleanup(t *testing.T) {
-	DeleteVolume(dcID, volumeId)
-	DeleteDatacenter(dcID)
+func TestCleanup(t *testing.T) {
+	fmt.Println("CLEANING UP AFTER VOLUMES")
+	resp := DeleteVolume(dcID, volumeId)
+	fmt.Println(resp.StatusCode)
+	resp = DeleteDatacenter(dcID)
+	fmt.Println(resp.StatusCode)
 }
