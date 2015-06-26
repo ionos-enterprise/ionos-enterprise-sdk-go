@@ -1,9 +1,6 @@
 package profitbricks
 
-import "fmt"
-
 func mkdcid() string {
-	fmt.Println("Setting up dc")
 	dc := CreateDatacenter([]byte(`{
     "properties": {
         "name": "GOSDK",
@@ -12,7 +9,12 @@ func mkdcid() string {
     }
 	}`))
 
-	fmt.Println(dc.Id)
 	return dc.Id
 }
 
+func mklocid() string {
+	resp := ListLocations()
+
+	locid := resp.Items[0].Id
+	return locid
+}
