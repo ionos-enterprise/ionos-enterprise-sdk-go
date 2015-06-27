@@ -18,3 +18,14 @@ func mklocid() string {
 	locid := resp.Items[0].Id
 	return locid
 }
+
+func mksrvid(srv_dcid string) string {
+	var jason = []byte(`{"properties":{
+						"name":"GoServer",
+						"cores":4,
+						"ram": 4096}
+					}`)
+	srv := CreateServer(srv_dcid, jason)
+
+	return srv.Id
+}
