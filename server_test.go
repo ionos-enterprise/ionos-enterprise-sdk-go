@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 	"fmt"
+	"strings"
 )
 
 var (
@@ -13,8 +14,9 @@ var (
 	once_srv 	sync.Once
 	srv_dc_id  	string
 	srv_srvid	string
-	srv_srv01	Instance
-	srv_vol_id   string
+	srv_srv01	string
+	srv_vol_id  string
+	srv_cdrom	string
 )
 
 
@@ -38,7 +40,7 @@ func setupServer(){
 func serverCleanup() {
 	// TODO how to do cleanup, should use TestMain
 	fmt.Println("Performing cleanup...")
-	res := DeleteServer(srv_dc_id, srv_srv01.Id)
+	res := DeleteServer(srv_dc_id, srv_srv01)
 	fmt.Println("DeleteServer: ", res.StatusCode)
 	res = DeleteVolume(srv_dc_id, srv_vol_id)
 	fmt.Println("DeleteVolume: ", res.StatusCode)
@@ -49,8 +51,8 @@ func serverCleanup() {
 func setupCreateServer(srv_dc_id string) string {
 	var jason = []byte(`{"properties":{
 						"name":"GoServer",
-						"cores":4,
-						"ram": 4096}
+						"cores":1,
+						"ram": 1024}
 					}`)
 	fmt.Println("Creating server....")
 	srv := CreateServer(srv_dc_id, jason)
@@ -79,7 +81,7 @@ func setupCreateServer(srv_dc_id string) string {
 //  ----------------- Tests -------------------
 //
 
-/*func TestCreateServer(t *testing.T) {
+func TestCreateServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 
 	want := 202
@@ -89,9 +91,10 @@ func setupCreateServer(srv_dc_id string) string {
 			"ram": 1024
 			}}`)
 	t.Logf("Creating server in DC: %s", srv_dc_id)
-	srv_srv01 = CreateServer(srv_dc_id, jason)
-	if srv_srv01.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, srv_srv01.Resp.StatusCode))
+	srv := CreateServer(srv_dc_id, jason)
+	srv_srv01 = srv.Id
+	if srv.Resp.StatusCode != want {
+		t.Errorf(bad_status(want, srv.Resp.StatusCode))
 	}
     //t.Logf("Server ...... %s\n", string(srv.Resp.Body))
 }
@@ -216,16 +219,93 @@ func TestListAttachedCdroms_NoItems(t *testing.T){
 		t.Error(string(resp.Resp.Body))
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
-}*/
+}
 
+func TestAttachCdrom(t *testing.T) {
+	want := 202
+	cd_image := ""
 
-func TestDeleteServer(t *testing.T) {
+	resp := ListImages()
+	
+	for i := 0; i < len(resp.Items); i++ {
+		name := resp.Items[i].Properties["name"].(string)
+		region := resp.Items[i].Properties["location"].(string)
+		img_type := resp.Items[i].Properties["imageType"].(string)
+		
+		if ( strings.HasPrefix(name, "ubuntu-") &&
+			region == "us/lasdev" && img_type == "CDROM") {
+				fmt.Println("----- Found volume: ", name)
+				cd_image = resp.Items[i].Id
+				break			
+		}	
+	}
+	
+	
+	//t.Log("dc :", srv_dc_id, "srv :", srv_srvid, "cdrom :", srv_cdrom)
+	resp_cdrom := AttachCdrom(srv_dc_id, srv_srvid, cd_image)
+	
+ 	if resp_cdrom.Resp.StatusCode != want {
+		t.Error(string(resp_cdrom.Resp.Body))
+		t.Errorf(bad_status(want, resp_cdrom.Resp.StatusCode))
+	}
+	
+	srv_cdrom = resp_cdrom.Id
+}
+
+func TestListAttachedCdroms(t *testing.T){
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
 	
+	want := 200
+	shouldbe := "collection"
+	
+	// wait for volume to attach
+	time.Sleep(time.Second * 40)
+	
+	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
+	t.Log(string(resp.Resp.Body))
+	if resp.Type != shouldbe {
+		t.Errorf(bad_type(shouldbe, resp.Type))
+	}
+	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
+}
+
+
+func TestGetAttachedCdrom(t *testing.T) {
+	want := 200
+	shouldbe := "volume"
+	
+	resp := GetAttachedCdrom(srv_dc_id, srv_srvid, srv_cdrom)
+	if resp.Type != shouldbe {
+		t.Errorf(bad_type(shouldbe, resp.Type))
+	}
+	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
+}
+
+func TestDetachCdrom(t *testing.T) {
+	want := 202
+	
+	resp := DetachCdrom(srv_dc_id, srv_srvid, srv_cdrom)
+	
+	if resp.StatusCode != want {
+		t.Error(string(resp.Body))
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}	
+}
+
+func TestDeleteServer(t *testing.T) {
+	once_dc.Do(setupDataCenter)
+	once_dc.Do(setupServer)
+	
 	want := 202
 
-	resp := DeleteServer(srv_dc_id, srv_srvid)
+	resp := DeleteServer(srv_dc_id, srv_srv01)
 	if resp.StatusCode != want {
 		t.Error(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))

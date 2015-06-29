@@ -1,15 +1,12 @@
 // server_test.go
 package profitbricks
 
-import (
+/*import (
 	"testing"
 	//"sync"
 	"time"
 	"fmt"
 )
-
-
-
 
 
 // TODO Tests 
@@ -27,7 +24,7 @@ func TestAttachVolume(t *testing.T) {
 
 	var jason = []byte(`{
 	    "properties": {
-	        "size": "2",
+	        "size": "10",
 	        "name": "volume-name",
 			"licenceType" : "LINUX"
 	    }
@@ -47,21 +44,27 @@ func TestAttachVolume(t *testing.T) {
 	if num_tries == 0 {
 		fmt.Errorf("Timeout! Server not running in 120 secs")
 	} else {
-		fmt.Printf("Server %s created in %d seconds\n", string(vol.Properties["name"].(string)), seconds)
+		fmt.Printf("Volume %s created in %d seconds\n", string(vol.Properties["name"].(string)), seconds)
 	}
 	srv_vol_id = vol.Id
 	t.Log("VolumeId: ", vol.Id, " , Server Id: ", srv_srvid, " ,DC id: ", srv_dc_id)
 	time.Sleep(time.Second*20)
 	vol_prop = GetVolume(srv_dc_id, vol.Id)
-	t.Log(string(vol_prop.Resp.Body))
+	//t.Log(string(vol_prop.Resp.Body))
+	
+	server := GetServer(srv_dc_id, srv_srvid)
+	t.Log("------------------- Get Server -------------------")
+	t.Log(string(server.Resp.Body))
 	
 	resp := AttachVolume(srv_dc_id, srv_srvid, srv_vol_id)
 	if resp.Resp.StatusCode != want {
 		t.Error(string(resp.Resp.Body))
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
-	}	
+	}
+	t.Log(string(resp.Resp.Body))
+	t.Log(bad_status(want, resp.Resp.StatusCode))	
 
-}
+}*/
 
 // GetAttachedVolume
 // DetachVolume

@@ -6,7 +6,13 @@ import (
 	"time"
 )
 
-var volumeId string
+const vol_sleep = 20
+
+var (
+	volumeId string
+	vol_srv_id string
+)
+
 
 func TestCreateVolume(t *testing.T) {
 	want := 202
@@ -17,7 +23,7 @@ func TestCreateVolume(t *testing.T) {
 		"licenceType" : "LINUX"
     }
 	}`)
-	dcID = mkdcid()
+	dcID = srv_dc_id
 	resp := CreateVolume(dcID, jason)
 
 	volumeId = resp.Id
@@ -26,7 +32,7 @@ func TestCreateVolume(t *testing.T) {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 
-	time.Sleep(10000)
+	time.Sleep(time.Second * vol_sleep)
 }
 
 func TestListVolumes(t *testing.T) {
@@ -55,15 +61,56 @@ func TestGetVolume(t *testing.T) {
 
 func TestPatchVolume(t *testing.T) {
 	want := 202
-
+	
 	resp := PatchVolume(dcID, volumeId, []byte(`{"name": "volume-name1234"}`))
-
 	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 }
 
+func TestAttachVolume(t *testing.T) {
+	want := 202
+	
+	vol_srv_id = setupCreateServer(dcID)
+	
+	resp := AttachVolume(dcID, vol_srv_id, volumeId)
+	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
+}
+
+func TestGetAttachedVolume(t *testing.T) {
+	want := 200
+	shouldbe := "volume"
+	
+	// wait for volume to attach
+	time.Sleep(time.Second * vol_sleep)
+	
+	resp := GetAttachedVolume(dcID, vol_srv_id, volumeId)
+	if resp.Type != shouldbe {
+		t.Errorf(bad_type(shouldbe, resp.Type))
+	}
+	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
+}
+
+func TestDetachVolume(t *testing.T) {
+	want := 202
+	
+	resp := DetachVolume(dcID, vol_srv_id, volumeId)
+	
+	if resp.StatusCode != want {
+		t.Error(string(resp.Body))
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}	
+}
+
 func Cleanup(t *testing.T) {
-	/*DeleteVolume(dcID, volumeId)
-	DeleteDatacenter(dcID)*/
+	DeleteVolume(dcID, volumeId)
+	DeleteServer(dcID, vol_srv_id)
+	//DeleteDatacenter(dcID)
 }
