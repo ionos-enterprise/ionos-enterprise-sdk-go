@@ -1,5 +1,7 @@
 package profitbricks
 
+import "fmt"
+
 func mkdcid() string {
 	dc := CreateDatacenter([]byte(`{
     "properties": {
@@ -28,4 +30,12 @@ func mksrvid(srv_dcid string) string {
 	srv := CreateServer(srv_dcid, jason)
 
 	return srv.Id
+}
+
+func mknic(lbal_dcid, serverid string) string {
+	resp := CreateNic(lbal_dcid, serverid, []byte(`{"properties": {"name":"Original Nic","lan":1}}`))
+	fmt.Println("===========================")
+	fmt.Println("created a nic with id " + resp.Id)
+	fmt.Println("===========================")
+	return resp.Id
 }
