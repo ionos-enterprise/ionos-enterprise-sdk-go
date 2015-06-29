@@ -6,17 +6,18 @@ import (
 	"sync"
 	"time"
 	"fmt"
+	"strings"
 )
-
-
 
 var (
 	once_dc 	sync.Once
 	once_srv 	sync.Once
 	srv_dc_id  	string
 	srv_srvid	string
-	srv_srv01	Instance
+	srv_srv01	string
+	srv_cdrom	string
 )
+
 
 func setupDataCenter(){
 	setupCredentials()
@@ -29,8 +30,9 @@ func setupDataCenter(){
 
 func setupServer(){
 	srv_srvid = setupCreateServer(srv_dc_id)
+	fmt.Println("Server id: ", srv_srvid)
 	if len(srv_srvid) == 0 { 
-		fmt.Errorf("DataCenter not created")
+		fmt.Errorf("Server not created")
 	}
 }
 
@@ -38,15 +40,17 @@ func setupServer(){
 func serverCleanup() {
 	// TODO how to do cleanup, should use TestMain
 	fmt.Println("Performing cleanup...")
-	DeleteServer(srv_dc_id, srv_srv01.Id)
-	DeleteDatacenter(srv_dc_id)
+	res := DeleteServer(srv_dc_id, srv_srvid)
+	fmt.Println("DeleteVolume: ", res.StatusCode)
+	res = DeleteDatacenter(srv_dc_id)
+	fmt.Println("DeleteDatacenter: ", res.StatusCode)
 }
 
 func setupCreateServer(srv_dc_id string) string {
 	var jason = []byte(`{"properties":{
 						"name":"GoServer",
-						"cores":4,
-						"ram": 4096}
+						"cores":1,
+						"ram": 1024}
 					}`)
 	fmt.Println("Creating server....")
 	srv := CreateServer(srv_dc_id, jason)
@@ -85,9 +89,10 @@ func TestCreateServer(t *testing.T) {
 			"ram": 1024
 			}}`)
 	t.Logf("Creating server in DC: %s", srv_dc_id)
-	srv_srv01 = CreateServer(srv_dc_id, jason)
-	if srv_srv01.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, srv_srv01.Resp.StatusCode))
+	srv := CreateServer(srv_dc_id, jason)
+	srv_srv01 = srv.Id
+	if srv.Resp.StatusCode != want {
+		t.Errorf(bad_status(want, srv.Resp.StatusCode))
 	}
     //t.Logf("Server ...... %s\n", string(srv.Resp.Body))
 }
@@ -214,24 +219,93 @@ func TestListAttachedCdroms_NoItems(t *testing.T){
 	}
 }
 
-
-func TestDeleteServer(t *testing.T) {
+func TestAttachCdrom(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
 	
 	want := 202
 
-	resp := DeleteServer(srv_dc_id, srv_srvid)
+
+	// Setup -- Find appropriate image
+	resp := ListImages()	
+	for i := 0; i < len(resp.Items); i++ {
+		name := resp.Items[i].Properties["name"].(string)
+		region := resp.Items[i].Properties["location"].(string)
+		img_type := resp.Items[i].Properties["imageType"].(string)
+		
+		if ( strings.HasPrefix(name, "ubuntu-") &&
+			region == "us/lasdev" && img_type == "CDROM") {
+				fmt.Println("Found volume: ", name)
+				srv_cdrom = resp.Items[i].Id
+				break
+		}	
+	}
+	
+	//
+	// Test
+	//
+	resp_cdrom := AttachCdrom(srv_dc_id, srv_srvid, srv_cdrom)
+ 	if resp_cdrom.Resp.StatusCode != want {
+		t.Error(string(resp_cdrom.Resp.Body))
+		t.Errorf(bad_status(want, resp_cdrom.Resp.StatusCode))
+	}
+}
+
+func TestListAttachedCdroms(t *testing.T){
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
+	
+	want := 200
+	shouldbe := "collection"
+	
+	// wait for volume to attach
+	time.Sleep(time.Second * 120)
+	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
+	if resp.Type != shouldbe {
+		t.Errorf(bad_type(shouldbe, resp.Type))
+	}
+	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
+}
+
+
+func TestGetAttachedCdrom(t *testing.T) {
+	want := 200
+	shouldbe := "volume"
+	
+	resp := GetAttachedCdrom(srv_dc_id, srv_srvid, srv_cdrom)
+	if resp.Type != shouldbe {
+		t.Errorf(bad_type(shouldbe, resp.Type))
+	}
+	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
+}
+
+func TestDetachCdrom(t *testing.T) {
+	want := 202
+	
+	resp := DetachCdrom(srv_dc_id, srv_srvid, srv_cdrom)
+	if resp.StatusCode != want {
+		t.Error(string(resp.Body))
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}	
+}
+
+func TestDeleteServer(t *testing.T) {
+	once_dc.Do(setupDataCenter)
+	once_dc.Do(setupServer)
+	
+	want := 202
+
+	resp := DeleteServer(srv_dc_id, srv_srv01)
+	srv_srv01 = ""
 	if resp.StatusCode != want {
 		t.Error(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
-// TODO Tests 
-// AttachCdrom
-// GetAttachedCdrom
-// DetachCdrom
-// AttachVolume
-// GetAttachedVolume
-// DetachVolume
