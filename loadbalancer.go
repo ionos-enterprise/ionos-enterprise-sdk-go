@@ -37,9 +37,9 @@ func ListBalancedNics(dcid, lbalid string) Collection {
 }
 
 func AssociateNic(dcid string, lbalid string, nicid string) Instance {
-
-	var sm StringMap
-	sm["id"] = nicid
+	/*var sm StringMap
+	sm["id"] = nicid*/
+	sm := map[string]string{"id": nicid}
 	jason := []byte(MkJson(sm))
 	path := balnic_col_path(dcid, lbalid)
 	return is_post(path, jason)
