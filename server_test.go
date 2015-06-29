@@ -31,8 +31,9 @@ func setupDataCenter(){
 
 func setupServer(){
 	srv_srvid = setupCreateServer(srv_dc_id)
+	fmt.Println("Server id: ", srv_srvid)
 	if len(srv_srvid) == 0 { 
-		fmt.Errorf("DataCenter not created")
+		fmt.Errorf("Server not created")
 	}
 }
 
@@ -40,7 +41,7 @@ func setupServer(){
 func serverCleanup() {
 	// TODO how to do cleanup, should use TestMain
 	fmt.Println("Performing cleanup...")
-	res := DeleteServer(srv_dc_id, srv_srv01)
+	res := DeleteServer(srv_dc_id, srv_srvid)
 	fmt.Println("DeleteServer: ", res.StatusCode)
 	res = DeleteVolume(srv_dc_id, srv_vol_id)
 	fmt.Println("DeleteVolume: ", res.StatusCode)
@@ -222,11 +223,14 @@ func TestListAttachedCdroms_NoItems(t *testing.T){
 }
 
 func TestAttachCdrom(t *testing.T) {
-	want := 202
-	cd_image := ""
-
-	resp := ListImages()
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
 	
+	want := 202
+
+
+	// Setup -- Find appropriate image
+	resp := ListImages()	
 	for i := 0; i < len(resp.Items); i++ {
 		name := resp.Items[i].Properties["name"].(string)
 		region := resp.Items[i].Properties["location"].(string)
@@ -234,22 +238,20 @@ func TestAttachCdrom(t *testing.T) {
 		
 		if ( strings.HasPrefix(name, "ubuntu-") &&
 			region == "us/lasdev" && img_type == "CDROM") {
-				fmt.Println("----- Found volume: ", name)
-				cd_image = resp.Items[i].Id
-				break			
+				fmt.Println("Found volume: ", name)
+				srv_cdrom = resp.Items[i].Id
+				break
 		}	
 	}
 	
-	
-	//t.Log("dc :", srv_dc_id, "srv :", srv_srvid, "cdrom :", srv_cdrom)
-	resp_cdrom := AttachCdrom(srv_dc_id, srv_srvid, cd_image)
-	
+	//
+	// Test
+	//
+	resp_cdrom := AttachCdrom(srv_dc_id, srv_srvid, srv_cdrom)
  	if resp_cdrom.Resp.StatusCode != want {
 		t.Error(string(resp_cdrom.Resp.Body))
 		t.Errorf(bad_status(want, resp_cdrom.Resp.StatusCode))
 	}
-	
-	srv_cdrom = resp_cdrom.Id
 }
 
 func TestListAttachedCdroms(t *testing.T){
@@ -260,10 +262,8 @@ func TestListAttachedCdroms(t *testing.T){
 	shouldbe := "collection"
 	
 	// wait for volume to attach
-	time.Sleep(time.Second * 40)
-	
+	time.Sleep(time.Second * 120)
 	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
-	t.Log(string(resp.Resp.Body))
 	if resp.Type != shouldbe {
 		t.Errorf(bad_type(shouldbe, resp.Type))
 	}
@@ -292,7 +292,6 @@ func TestDetachCdrom(t *testing.T) {
 	want := 202
 	
 	resp := DetachCdrom(srv_dc_id, srv_srvid, srv_cdrom)
-	
 	if resp.StatusCode != want {
 		t.Error(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))

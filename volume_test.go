@@ -59,16 +59,6 @@ func TestGetVolume(t *testing.T) {
 	}
 }
 
-func TestPatchVolume(t *testing.T) {
-	want := 202
-	
-	resp := PatchVolume(dcID, volumeId, []byte(`{"name": "volume-name1234"}`))
-	if resp.Resp.StatusCode != want {
-		t.Error(string(resp.Resp.Body))
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
-	}
-}
-
 func TestAttachVolume(t *testing.T) {
 	want := 202
 	
@@ -107,6 +97,16 @@ func TestDetachVolume(t *testing.T) {
 		t.Error(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}	
+}
+
+func TestPatchVolume(t *testing.T) {
+	want := 202
+	
+	resp := PatchVolume(dcID, volumeId, []byte(`{"name": "volume-name1234"}`))
+	if resp.Resp.StatusCode != want {
+		t.Error(string(resp.Resp.Body))
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
 }
 
 func Cleanup(t *testing.T) {
