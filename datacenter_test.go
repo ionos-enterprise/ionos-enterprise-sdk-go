@@ -21,14 +21,14 @@ func TestListDatacenters(t *testing.T) {
 }
 func TestCreateDatacenter(t *testing.T) {
 	want := 202
-	var jason = []byte(`{
-    "properties": {
-        "name": "datacenter-name",
-        "description": "datacenter-description",
-        "location": "us/lasdev"
-    }
-	}`)
-	resp := CreateDatacenter(jason)
+	var obj = CreateDatacenterRequest{
+		DCProperties: DCProperties{
+			Name:        "test",
+			Description: "description",
+			Location:    "us/lasdev",
+		},
+	}
+	resp := CreateDatacenter(obj)
 	dcID = resp.Id
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
@@ -37,7 +37,7 @@ func TestCreateDatacenter(t *testing.T) {
 func TestGetDatacenter(t *testing.T) {
 	shouldbe := "datacenter"
 	want := 200
-	
+
 	fmt.Println(dcID)
 	resp := GetDatacenter(dcID)
 	if resp.Type != shouldbe {
@@ -50,8 +50,9 @@ func TestGetDatacenter(t *testing.T) {
 
 func TestPatchDatacenter(t *testing.T) {
 	want := 202
-	jason_patch := []byte(`{"name":"Renamed DC"}`)
-	resp := PatchDatacenter(dcID, jason_patch)
+	obj := map[string]string{"name": "Renamed DC"}
+
+	resp := PatchDatacenter(dcID, obj)
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
