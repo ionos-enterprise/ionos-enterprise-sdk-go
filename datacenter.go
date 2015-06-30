@@ -1,5 +1,7 @@
 package profitbricks
 
+import "encoding/json"
+
 // ListDatacenters returns a Collection struct
 func ListDatacenters() Collection {
 	path := dc_col_path()
@@ -7,9 +9,10 @@ func ListDatacenters() Collection {
 }
 
 // CreateDatacenter creates a datacenter and returns a Instance struct
-func CreateDatacenter(jason []byte) Instance {
+func CreateDatacenter(dc CreateDatacenterRequest) Instance {
+	obj, _ := json.Marshal(dc)
 	path := dc_col_path()
-	return is_post(path, jason)
+	return is_post(path, obj)
 }
 
 // GetDatacenter returns a Instance struct where id == dcid
@@ -20,13 +23,24 @@ func GetDatacenter(dcid string) Instance {
 
 // PatchDatacenter replaces any Datacenter properties with the values in jason
 //returns an Instance struct where id ==dcid
-func PatchDatacenter(dcid string, jason []byte) Instance {
+func PatchDatacenter(dcid string, obj map[string]string) Instance {
+	jason_patch := []byte(MkJson(obj))
 	path := dc_path(dcid)
-	return is_patch(path, jason)
+	return is_patch(path, jason_patch)
 }
 
 // Deletes a Datacenter where id==dcid
 func DeleteDatacenter(dcid string) Resp {
 	path := dc_path(dcid)
 	return is_delete(path)
+}
+
+type CreateDatacenterRequest struct {
+	DCProperties `json:"properties"`
+}
+
+type DCProperties struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+	Location    string `json:"location"`
 }

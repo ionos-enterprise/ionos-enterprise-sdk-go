@@ -11,7 +11,7 @@ var lan_dcid string
 var lanid string
 
 func TestCreateLan(t *testing.T) {
-	lan_dcid = mkdcid()
+	lan_dcid = mkdcid("LAN DC")
 	want := 202
 	var jason = []byte(`{
 					  "properties": {

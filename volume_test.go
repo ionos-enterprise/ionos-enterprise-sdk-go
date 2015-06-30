@@ -17,7 +17,7 @@ func TestCreateVolume(t *testing.T) {
 		"licenceType" : "LINUX"
     }
 	}`)
-	dcID = mkdcid()
+	dcID = mkdcid("VOLUME DC")
 	resp := CreateVolume(dcID, jason)
 
 	volumeId = resp.Id

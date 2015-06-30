@@ -13,7 +13,7 @@ var lbal_srvid string
 
 func TestCreateLoadbalancer(t *testing.T) {
 	want := 202
-	lbal_dcid = mkdcid()
+	lbal_dcid = mkdcid("LB DC")
 	lbal_srvid = mksrvid(lbal_dcid)
 	var jason = []byte(`{"properties": {"name":"Goat"}}`)
 	resp := CreateLoadbalancer(lbal_dcid, jason)

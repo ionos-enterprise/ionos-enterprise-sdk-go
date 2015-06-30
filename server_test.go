@@ -20,7 +20,7 @@ var (
 
 func setupDataCenter(){
 	setupCredentials()
-	srv_dc_id = mkdcid()
+	srv_dc_id = mkdcid("SERVER DC")
 	if len(srv_dc_id) == 0 { 
 		//panic("DataCenter not created")
 		fmt.Errorf("DataCenter not created")

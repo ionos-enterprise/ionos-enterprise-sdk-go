@@ -2,14 +2,15 @@ package profitbricks
 
 import "fmt"
 
-func mkdcid() string {
-	dc := CreateDatacenter([]byte(`{
-    "properties": {
-        "name": "GOSDK",
-        "description": "datacenter-description",
-        "location": "us/lasdev"
-    }
-	}`))
+func mkdcid(name string) string {
+	request := CreateDatacenterRequest{
+		DCProperties: DCProperties{
+			Name:        name,
+			Description: "description",
+			Location:    "location",
+		},
+	}
+	dc := CreateDatacenter(request)
 
 	return dc.Id
 }
