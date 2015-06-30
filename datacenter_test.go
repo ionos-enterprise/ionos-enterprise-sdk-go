@@ -7,9 +7,21 @@ import (
 
 var dcID string
 
+func TestListDatacenters(t *testing.T) {
+	shouldbe := "collection"
+	want := 200
+	resp := ListDatacenters()
+
+	if resp.Type != shouldbe {
+		t.Errorf(bad_type(shouldbe, resp.Type))
+	}
+	if resp.Resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	}
+}
 func TestCreateDatacenter(t *testing.T) {
 	want := 202
-	obj := CreateDatacenterRequest{
+	var obj = CreateDatacenterRequest{
 		DCProperties: DCProperties{
 			Name:        "test",
 			Description: "description",
@@ -28,21 +40,6 @@ func TestGetDatacenter(t *testing.T) {
 
 	fmt.Println(dcID)
 	resp := GetDatacenter(dcID)
-
-resp.ShowProps()
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
-	}
-}
-
-func TestListDatacenters(t *testing.T) {
-	shouldbe := "collection"
-	want := 200
-	resp := ListDatacenters()
-
 	if resp.Type != shouldbe {
 		t.Errorf(bad_type(shouldbe, resp.Type))
 	}
