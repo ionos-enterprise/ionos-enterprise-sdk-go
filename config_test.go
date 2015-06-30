@@ -37,7 +37,7 @@ func TestSetEndpoint(t *testing.T) {
 	fmt.Println("Endpoint is ", Endpoint)
 }
 
-func TestMain(m *testing.M) { 
+func TestMain(m *testing.M) {
 	r := m.Run()
 	serverCleanup()
 	os.Exit(r)	
