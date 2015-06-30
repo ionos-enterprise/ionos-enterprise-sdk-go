@@ -110,9 +110,7 @@ func TestCreateServer(t *testing.T) {
 	}
 	t.Logf("Creating server in DC: %s", srv_dc_id)
 	srv := CreateServer(srv_dc_id, req)
-	t.Log(string(srv.Resp.Body))
-	t.Log(string(srv.Href))
-	t.Log(string(srv.Resp.Req.URL.Path))
+
 	srv_srv01 = srv.Id
 	if srv.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, srv.Resp.StatusCode))
