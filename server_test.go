@@ -21,7 +21,8 @@ var (
 
 func setupDataCenter(){
 	setupCredentials()
-	srv_dc_id = mkdcid("SERVER DC")
+	srv_dc_id = mkdcid("GoTestSrv")
+	fmt.Println("Datacenter id: ", srv_dc_id)
 	if len(srv_dc_id) == 0 { 
 		//panic("DataCenter not created")
 		fmt.Errorf("DataCenter not created")
@@ -47,13 +48,16 @@ func serverCleanup() {
 }
 
 func setupCreateServer(srv_dc_id string) string {
-	var jason = []byte(`{"properties":{
-						"name":"GoServer",
-						"cores":1,
-						"ram": 1024}
-					}`)
+
+	var req = CreateServerRequest{
+		ServerProperties: ServerProperties{
+			Name:        "test",
+			Ram: 1024,
+			Cores:    2,
+		},
+	}
 	fmt.Println("Creating server....")
-	srv := CreateServer(srv_dc_id, jason)
+	srv := CreateServer(srv_dc_id, req)
 	// wait for server to be running
 	fmt.Println("Waiting for server to start....")
 	srv_prop := GetServer(srv_dc_id, srv.Id)
@@ -67,7 +71,7 @@ func setupCreateServer(srv_dc_id string) string {
 	if num_tries == 0 {
 		fmt.Errorf("Timeout! Server not running in 120 secs")
 	} else {
-		fmt.Printf("Server %s created in %d seconds\n", string(srv.Properties["name"].(string)), seconds)
+		//fmt.Printf("Server %s created in %d seconds\n", string(srv.Properties["name"].(string)), seconds)
 	}
 
 	srvid := srv.Id
@@ -83,13 +87,32 @@ func TestCreateServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 
 	want := 202
-	var jason = []byte(`{"properties":{
-			"name":"go01",
-			"cores":2,
-			"ram": 1024
-			}}`)
+	/*entities := &ServerEntities {
+		Volumes: ServerVolumes {
+			Items: []Properties {
+				{
+					Properties: VolumeProperties {
+						Size: 10,
+						Name: "server_volume",
+						Image:"36a7d599-6809-11e3-8f2b-52540066fee9",
+					},
+				},
+			},
+		},
+	}	*/
+	var req = CreateServerRequest{
+		ServerProperties: ServerProperties{
+			Name:        "go01",
+			Ram: 1024,
+			Cores:    2,
+		},
+		//ServerEntities: entities,
+	}
 	t.Logf("Creating server in DC: %s", srv_dc_id)
-	srv := CreateServer(srv_dc_id, jason)
+	srv := CreateServer(srv_dc_id, req)
+	t.Log(string(srv.Resp.Body))
+	t.Log(string(srv.Href))
+	t.Log(string(srv.Resp.Req.URL.Path))
 	srv_srv01 = srv.Id
 	if srv.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, srv.Resp.StatusCode))

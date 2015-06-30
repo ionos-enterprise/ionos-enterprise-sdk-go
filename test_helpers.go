@@ -1,17 +1,18 @@
 package profitbricks
 
 import "fmt"
+import "encoding/json"
+
 
 func mkdcid(name string) string {
 	request := CreateDatacenterRequest{
 		DCProperties: DCProperties{
 			Name:        name,
 			Description: "description",
-			Location:    "location",
+			Location:    "us/las",
 		},
 	}
 	dc := CreateDatacenter(request)
-
 	return dc.Id
 }
 
@@ -23,12 +24,15 @@ func mklocid() string {
 }
 
 func mksrvid(srv_dcid string) string {
-	var jason = []byte(`{"properties":{
-						"name":"GoServer",
-						"cores":4,
-						"ram": 4096}
-					}`)
-	srv := CreateServer(srv_dcid, jason)
+	
+	var req = CreateServerRequest{
+		ServerProperties: ServerProperties{
+			Name:        "test",
+			Ram: 1024,
+			Cores:    2,
+		},
+	}
+	srv := CreateServer(srv_dcid, req)
 
 	return srv.Id
 }

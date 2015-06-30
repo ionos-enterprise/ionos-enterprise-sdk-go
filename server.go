@@ -1,5 +1,38 @@
 package profitbricks
 
+import "encoding/json"
+
+
+type CreateServerRequest struct {
+	ServerProperties `json:"properties"`
+	*ServerEntities	 `json:"entities,omitempty"`
+}
+
+type ServerProperties struct {
+	Name        string	`json:"name"`
+	Ram 		int		`json:"ram"`
+	Cores    	int		`json:"cores"`
+}
+
+type ServerEntities struct {
+	Volumes ServerVolumes 	 `json:"volumes"`
+}
+
+type ServerVolumes struct {
+	Items []Properties `json:"items"` 
+}
+
+type Properties struct {
+	Properties VolumeProperties  `json:"properties"` 
+}
+
+type VolumeProperties struct {
+	Size	int			`json:"size,omitempty"`
+	Name	string		`json:"name,omitempty"`
+	Image	string		`json:"image,omitempty"`
+	Bus		string		`json:"bus,omitempty"`
+}
+
 // ListServers returns a server struct collection
 func ListServers(dcid string) Collection {
 	path := server_col_path(dcid)
@@ -7,7 +40,8 @@ func ListServers(dcid string) Collection {
 }
 
 // CreateServer creates a server from a jason []byte and returns a Instance struct
-func CreateServer(dcid string, jason []byte) Instance {
+func CreateServer(dcid string, req CreateServerRequest) Instance {
+	jason, _ := json.Marshal(req)
 	path := server_col_path(dcid)
 	return is_post(path, jason)
 }
