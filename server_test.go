@@ -87,26 +87,26 @@ func TestCreateServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 
 	want := 202
-	/*entities := &ServerEntities {
+	entities := &ServerEntities {
 		Volumes: ServerVolumes {
 			Items: []Properties {
 				{
 					Properties: VolumeProperties {
 						Size: 10,
 						Name: "server_volume",
-						Image:"36a7d599-6809-11e3-8f2b-52540066fee9",
+						LicenceType: "LINUX",
 					},
 				},
 			},
 		},
-	}	*/
+	}
 	var req = CreateServerRequest{
 		ServerProperties: ServerProperties{
 			Name:        "go01",
 			Ram: 1024,
 			Cores:    2,
 		},
-		//ServerEntities: entities,
+		ServerEntities: entities,
 	}
 	t.Logf("Creating server in DC: %s", srv_dc_id)
 	srv := CreateServer(srv_dc_id, req)

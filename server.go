@@ -27,10 +27,12 @@ type Properties struct {
 }
 
 type VolumeProperties struct {
-	Size	int			`json:"size,omitempty"`
-	Name	string		`json:"name,omitempty"`
-	Image	string		`json:"image,omitempty"`
-	Bus		string		`json:"bus,omitempty"`
+	Size		int		`json:"size,omitempty"`
+	Name		string	`json:"name,omitempty"`
+	Image		string	`json:"image,omitempty"`
+	Bus			string	`json:"bus,omitempty"`
+	LicenceType string 	`json:"licenceType,omitempty"`
+	Id 			string	`json:"id,omitempty"`
 }
 
 // ListServers returns a server struct collection
