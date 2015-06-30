@@ -1,7 +1,6 @@
 package profitbricks
 
 import "fmt"
-import "encoding/json"
 
 
 func mkdcid(name string) string {
