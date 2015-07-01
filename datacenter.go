@@ -2,6 +2,16 @@ package profitbricks
 
 import "encoding/json"
 
+type CreateDatacenterRequest struct {
+	DCProperties `json:"properties"`
+}
+
+type DCProperties struct {
+	Name        string `json:"name,omitempty"`
+	Description string `json:"description,omitempty"`
+	Location    string `json:"location,omitempty"`
+}
+
 // ListDatacenters returns a Collection struct
 func ListDatacenters() Collection {
 	path := dc_col_path()
@@ -33,14 +43,4 @@ func PatchDatacenter(dcid string, obj map[string]string) Instance {
 func DeleteDatacenter(dcid string) Resp {
 	path := dc_path(dcid)
 	return is_delete(path)
-}
-
-type CreateDatacenterRequest struct {
-	DCProperties `json:"properties"`
-}
-
-type DCProperties struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Location    string `json:"location"`
 }

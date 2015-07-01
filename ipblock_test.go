@@ -22,8 +22,14 @@ func TestListIpBlocks(t *testing.T) {
 func TestReserveIpBlock(t *testing.T) {
 	//t.Parallel()
 	want := 202
-	var jason = []byte(`{ "properties" :{"size":"5","location":"us/lasdev"}}`)
-	resp := ReserveIpBlock(jason)
+	var obj = IPBlockReserveRequest{
+		IPBlockProperties: IPBlockProperties{
+			Size:     5,
+			Location: "us/lasdev",
+		},
+	}
+
+	resp := ReserveIpBlock(obj)
 	ipblkid = resp.Id
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))

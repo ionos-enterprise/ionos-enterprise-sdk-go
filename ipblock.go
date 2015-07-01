@@ -1,14 +1,26 @@
 package profitbricks
 
+import "encoding/json"
+
+type IPBlockReserveRequest struct {
+	IPBlockProperties `json:"properties"`
+}
+
+type IPBlockProperties struct {
+	Size     int    `json:"size,omitempty"`
+	Location string `json:"location,omitempty"`
+}
+
 // ListIpBlocks
 func ListIpBlocks() Collection {
 	path := ipblock_col_path()
 	return is_list(path)
 }
 
-func ReserveIpBlock(jason []byte) Instance {
+func ReserveIpBlock(request IPBlockReserveRequest) Instance {
+	obj, _ := json.Marshal(request)
 	path := ipblock_col_path()
-	return is_post(path, jason)
+	return is_post(path, obj)
 
 }
 func GetIpBlock(ipblockid string) Instance {

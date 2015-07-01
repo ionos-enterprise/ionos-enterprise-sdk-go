@@ -3,6 +3,20 @@ package profitbricks
 import "encoding/json"
 import "fmt"
 
+type CreateVolumeRequest struct {
+	VolumeProperties `json:"properties"`
+}
+
+type VolumeProperties struct {
+	Name          string `json:"name,omitempty"`
+	Size          int    `json:"size,omitempty"`
+	Bus           string `json:",bus,omitempty"`
+	Image         string `json:"image,omitempty"`
+	Type          string `json:"type,omitempty"`
+	LicenceType   string `json:"licenceType,omitempty"`
+	ImagePassword string `json:"imagePassword,omitempty"`
+}
+
 // ListVolumes returns a Collection struct for volumes in the Datacenter
 func ListVolumes(dcid string) Collection {
 	path := volume_col_path(dcid)
@@ -14,14 +28,16 @@ func GetVolume(dcid string, volumeId string) Instance {
 	return is_get(path)
 }
 
-func PatchVolume(dcid string, volid string, jason []byte) Instance {
+func PatchVolume(dcid string, volid string, request VolumeProperties) Instance {
+	obj,_ := json.Marshal(request)
 	path := volume_path(dcid, volid)
-	return is_patch(path, jason)
+	return is_patch(path, obj)
 }
 
-func CreateVolume(dcid string, json []byte) Instance {
+func CreateVolume(dcid string, request CreateVolumeRequest) Instance {
+	obj, _ := json.Marshal(request)
 	path := volume_col_path(dcid)
-	return is_post(path, json)
+	return is_post(path, obj)
 }
 
 func DeleteVolume(dcid, volid string) Resp {
@@ -43,7 +59,6 @@ func CreateSnapshot(dcid string, volid string, jason []byte) Resp {
 	}
 	return is_command(path, empty)
 }
-
 
 /**
 

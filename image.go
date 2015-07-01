@@ -14,7 +14,8 @@ func GetImage(imageid string) Instance {
 
 // PatchImage replaces any image properties from values in jason
 //returns an Instance struct where id ==imageid
-func PatchImage(imageid string, jason []byte) Instance {
+func PatchImage(imageid string, obj map[string]string) Instance {
+	jason := []byte(MkJson(obj))
 	path := image_path(imageid)
 	return is_patch(path, jason)
 }

@@ -282,7 +282,7 @@ func TestListAttachedCdroms(t *testing.T){
 
 func TestGetAttachedCdrom(t *testing.T) {
 	want := 200
-	shouldbe := "volume"
+	shouldbe := "image"
 	
 	resp := GetAttachedCdrom(srv_dc_id, srv_srvid, srv_cdrom)
 	if resp.Type != shouldbe {

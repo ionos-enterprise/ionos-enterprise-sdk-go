@@ -1,5 +1,18 @@
 package profitbricks
 
+import "encoding/json"
+
+type NicCreateRequest struct {
+	NicProperties `json:"properties"`
+}
+
+type NicProperties struct {
+	Name string   `json:"name,omitempty"`
+	Ips  []string `json:"ips,omitempty"`
+	Dhcp bool     `json:"dhcp,omitempty"`
+	Lan  int      `json:"lan,omitempty"`
+}
+
 // ListNics returns a Nics struct collection
 func ListNics(dcid, srvid string) Collection {
 	path := nic_col_path(dcid, srvid)
@@ -8,9 +21,10 @@ func ListNics(dcid, srvid string) Collection {
 
 // CreateNic creates a nic on a server
 // from a jason []byte and returns a Instance struct
-func CreateNic(dcid string, srvid string, jason []byte) Instance {
+func CreateNic(dcid string, srvid string, request NicCreateRequest) Instance {
+	obj, _ := json.Marshal(request)
 	path := nic_col_path(dcid, srvid)
-	return is_post(path, jason)
+	return is_post(path, obj)
 }
 
 // GetNic pulls data for the nic where id = srvid returns a Instance struct
@@ -21,7 +35,8 @@ func GetNic(dcid, srvid, nicid string) Instance {
 
 // PatchNic partial update of nic properties passed in as jason []byte
 // Returns Instance struct
-func PatchNic(dcid string, srvid string, nicid string, jason []byte) Instance {
+func PatchNic(dcid string, srvid string, nicid string, obj map[string]string) Instance {
+	jason := []byte(MkJson(obj))
 	path := nic_path(dcid, srvid, nicid)
 	return is_patch(path, jason)
 }

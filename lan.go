@@ -1,5 +1,17 @@
 package profitbricks
 
+import "encoding/json"
+
+type CreateLanRequest struct {
+	LanProperties `json:"properties"`
+}
+
+type LanProperties struct {
+	Name   string   `json:"name,omitempty"`
+	Public bool     `json:"public,omitempty"`
+	Nics   []string `json:"nics,omitempty"`
+}
+
 // ListLan returns a Collection for lans in the Datacenter
 func ListLans(dcid string) Collection {
 	path := lan_col_path(dcid)
@@ -8,9 +20,10 @@ func ListLans(dcid string) Collection {
 
 // CreateLan creates a lan in the datacenter
 // from a jason []byte and returns a Instance struct
-func CreateLan(dcid string, jason []byte) Instance {
+func CreateLan(dcid string, request CreateLanRequest) Instance {
+	obj, _ := json.Marshal(request)
 	path := lan_col_path(dcid)
-	return is_post(path, jason)
+	return is_post(path, obj)
 }
 
 // GetLan pulls data for the lan where id = lanid returns an Instance struct
@@ -21,7 +34,8 @@ func GetLan(dcid, lanid string) Instance {
 
 // PatchLan does a partial update to a lan using json from []byte jason
 // returns a Instance struct
-func PatchLan(dcid string, lanid string, jason []byte) Instance {
+func PatchLan(dcid string, lanid string, obj map[string]string) Instance {
+	jason := []byte(MkJson(obj))
 	path := lan_path(dcid, lanid)
 	return is_patch(path, jason)
 }

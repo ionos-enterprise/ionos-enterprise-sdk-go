@@ -1,5 +1,17 @@
 package profitbricks
 
+import "encoding/json"
+
+type LoablanacerCreateRequest struct {
+	LoablanacerProperties `json:"properties"`
+}
+
+type LoablanacerProperties struct {
+	Name string `json:"name,omitempty"`
+	Ip   string `json:"ip,omitempty"`
+	Dhcp bool   `json:"dhcp,omitempty"`
+}
+
 // Listloadbalancers returns a Collection struct
 // for loadbalancers in the Datacenter
 func ListLoadbalancers(dcid string) Collection {
@@ -9,9 +21,10 @@ func ListLoadbalancers(dcid string) Collection {
 
 // Createloadbalancer creates a loadbalancer in the datacenter
 //from a jason []byte and returns a Instance struct
-func CreateLoadbalancer(dcid string, jason []byte) Instance {
+func CreateLoadbalancer(dcid string, request LoablanacerCreateRequest) Instance {
+	obj, _ := json.Marshal(request)
 	path := lbal_col_path(dcid)
-	return is_post(path, jason)
+	return is_post(path, obj)
 }
 
 // GetLoadbalancer pulls data for the Loadbalancer
@@ -21,7 +34,8 @@ func GetLoadbalancer(dcid, lbalid string) Instance {
 	return is_get(path)
 }
 
-func PatchLoadbalancer(dcid string, lbalid string, jason []byte) Instance {
+func PatchLoadbalancer(dcid string, lbalid string, obj map[string]string) Instance {
+	jason := []byte(MkJson(obj))
 	path := lbal_path(dcid, lbalid)
 	return is_patch(path, jason)
 }

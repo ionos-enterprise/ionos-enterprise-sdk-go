@@ -10,19 +10,22 @@ var volumeId string
 
 func TestCreateVolume(t *testing.T) {
 	want := 202
-	var jason = []byte(`{
-    "properties": {
-         "size": "2",
-        "name": "volume-name",
-		"licenceType" : "LINUX"
-    }
-	}`)
+
+	var request = CreateVolumeRequest{
+		VolumeProperties: VolumeProperties{
+			Size:        1,
+			Name:        "Volume Test",
+			LicenceType: "LINUX",
+		},
+	}
+
 	dcID = mkdcid("VOLUME DC")
-	resp := CreateVolume(dcID, jason)
+	resp := CreateVolume(dcID, request)
 
 	volumeId = resp.Id
 
 	if resp.Resp.StatusCode != want {
+		fmt.Println(string(resp.Resp.Body))
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 
@@ -55,10 +58,15 @@ func TestGetVolume(t *testing.T) {
 
 func TestPatchVolume(t *testing.T) {
 	want := 202
+	obj := VolumeProperties{
+		Name: "Renamed Volume",
+		Size: 2,
+	}
 
-	resp := PatchVolume(dcID, volumeId, []byte(`{"name": "volume-name1234"}`))
+	resp := PatchVolume(dcID, volumeId, obj)
 
 	if resp.Resp.StatusCode != want {
+		fmt.Println(string(resp.Resp.Body))
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 }

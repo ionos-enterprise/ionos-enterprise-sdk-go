@@ -14,9 +14,13 @@ func TestCreateNic(t *testing.T) {
 	nic_srvid = mksrvid(nic_dcid)
 	time.Sleep(15 * time.Second)
 	want := 202
-	var jason = []byte(`{"properties": {"name":"Original Nic","lan":1}}`)
-
-	resp := CreateNic(nic_dcid, nic_srvid, jason)
+	var request = NicCreateRequest{
+		NicProperties{
+			Lan:  1,
+			Name: "Test NIC",
+		},
+	}
+	resp := CreateNic(nic_dcid, nic_srvid, request)
 	nicid = resp.Id
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
@@ -52,12 +56,9 @@ func TestGetNic(t *testing.T) {
 func TestPatchNic(t *testing.T) {
 	//t.Parallel()
 	want := 202
-	jason_patch := []byte(`{
-					"name":"Patched Nic",
-					"lan":1
-					}`)
+	obj := map[string]string{"name": "Renamed Nic", "lan": "1"}
 
-	resp := PatchNic(nic_dcid, nic_srvid, nicid, jason_patch)
+	resp := PatchNic(nic_dcid, nic_srvid, nicid, obj)
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}

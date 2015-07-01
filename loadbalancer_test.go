@@ -15,8 +15,14 @@ func TestCreateLoadbalancer(t *testing.T) {
 	want := 202
 	lbal_dcid = mkdcid("LB DC")
 	lbal_srvid = mksrvid(lbal_dcid)
-	var jason = []byte(`{"properties": {"name":"Goat"}}`)
-	resp := CreateLoadbalancer(lbal_dcid, jason)
+	var request = LoablanacerCreateRequest{
+		LoablanacerProperties: LoablanacerProperties{
+			Name: "test",
+			Ip:   "127.0.0.0",
+			Dhcp: true,
+		},
+	}
+	resp := CreateLoadbalancer(lbal_dcid, request)
 	lbalid = resp.Id
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
@@ -54,10 +60,10 @@ func TestGetLoadbalancer(t *testing.T) {
 
 func TestPatchLoadbalancer(t *testing.T) {
 	want := 202
-	jason_patch := []byte(`{
-					"name":"Renamed Loadbalancer"
-					}`)
-	resp := PatchLoadbalancer(lbal_dcid, lbalid, jason_patch)
+
+	obj := map[string]string{"name": "Renamed Loadbalancer"}
+
+	resp := PatchLoadbalancer(lbal_dcid, lbalid, obj)
 	if resp.Resp.StatusCode != want {
 		fmt.Println(resp.Resp.Body)
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
@@ -67,12 +73,12 @@ func TestPatchLoadbalancer(t *testing.T) {
 func TestAssociateNic(t *testing.T) {
 	want := 202
 
-	nicid = mknic(lbal_dcid, nic_srvid)
+	nicid = mknic(lbal_dcid, lbal_srvid)
 
 	time.Sleep(40 * time.Second)
 
-	resp := AssociateNic(lbal_dcid, nic_srvid, nicid)
-
+	resp := AssociateNic(lbal_dcid, lbal_srvid, nicid)
+	nicid = resp.Id
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}

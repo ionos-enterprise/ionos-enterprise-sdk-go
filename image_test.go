@@ -7,18 +7,13 @@ import (
 	"testing"
 )
 
-func mkimgid() string {
-	imgs := ListImages()
-
-	imgid := imgs.Items[0].Id
-	return imgid
-}
+var imgid string
 
 func TestListImages(t *testing.T) {
 	shouldbe := "collection"
 	want := 200
 	resp := ListImages()
-
+	imgid = resp.Items[0].Id
 	if resp.Type != shouldbe {
 		t.Errorf(bad_type(shouldbe, resp.Type))
 	}
@@ -29,7 +24,6 @@ func TestListImages(t *testing.T) {
 
 func TestGetImage(t *testing.T) {
 	want := 200
-	imgid := mkimgid()
 	resp := GetImage(imgid)
 
 	if resp.Resp.StatusCode != want {
@@ -42,11 +36,8 @@ func TestGetImage(t *testing.T) {
 
 func TestPatchImage(t *testing.T) {
 	want := 403
-	jason_patch := []byte(`{
-					"name":"Renamed img"
-					}`)
-	imgid := mkimgid()
-	resp := PatchImage(imgid, jason_patch)
+	obj := map[string]string{"name": "Renamed img"}
+	resp := PatchImage(imgid, obj)
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
@@ -54,7 +45,6 @@ func TestPatchImage(t *testing.T) {
 
 func TestDeleteImage(t *testing.T) {
 	want := 403
-	imgid := mkimgid()
 	resp := DeleteImage(imgid)
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))

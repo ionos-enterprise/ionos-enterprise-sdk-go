@@ -8,10 +8,15 @@ func mkdcid(name string) string {
 		DCProperties: DCProperties{
 			Name:        name,
 			Description: "description",
-			Location:    "us/las",
+			Location:    "us/lasdev",
 		},
 	}
 	dc := CreateDatacenter(request)
+	fmt.Println("===========================")
+	fmt.Println("Created a DC " + name)
+	fmt.Println("Created a DC id " + dc.Id)
+	fmt.Println(dc.Resp.StatusCode)
+	fmt.Println("===========================")
 	return dc.Id
 }
 
@@ -33,13 +38,27 @@ func mksrvid(srv_dcid string) string {
 	}
 	srv := CreateServer(srv_dcid, req)
 
+	fmt.Println("===========================")
+	fmt.Println("Created a server " + srv.Id)
+	fmt.Println(srv.Resp.StatusCode)
+	fmt.Println("===========================")
 	return srv.Id
 }
 
 func mknic(lbal_dcid, serverid string) string {
-	resp := CreateNic(lbal_dcid, serverid, []byte(`{"properties": {"name":"Original Nic","lan":1}}`))
+	var request = NicCreateRequest{
+		NicProperties{
+			Name: "Original Nic",
+			Lan:  1,
+		},
+	}
+
+	resp := CreateNic(lbal_dcid, serverid, request)
 	fmt.Println("===========================")
+	fmt.Println("created a nic at server " + serverid)
+
 	fmt.Println("created a nic with id " + resp.Id)
+	fmt.Println(resp.Resp.StatusCode)
 	fmt.Println("===========================")
 	return resp.Id
 }
