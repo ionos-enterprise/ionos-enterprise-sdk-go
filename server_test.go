@@ -21,7 +21,7 @@ var (
 
 func setupDataCenter(){
 	setupCredentials()
-	srv_dc_id = mkdcid("GoTestSrv")
+	srv_dc_id = mkdcid("SERVER DC 02")
 	fmt.Println("Datacenter id: ", srv_dc_id)
 	if len(srv_dc_id) == 0 { 
 		//panic("DataCenter not created")
@@ -87,26 +87,13 @@ func TestCreateServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 
 	want := 202
-	entities := &ServerEntities {
-		Volumes: ServerVolumes {
-			Items: []Properties {
-				{
-					Properties: VolumeProperties {
-						Size: 10,
-						Name: "server_volume",
-						LicenceType: "LINUX",
-					},
-				},
-			},
-		},
-	}
+	
 	var req = CreateServerRequest{
 		ServerProperties: ServerProperties{
 			Name:        "go01",
 			Ram: 1024,
 			Cores:    2,
 		},
-		ServerEntities: entities,
 	}
 	t.Logf("Creating server in DC: %s", srv_dc_id)
 	srv := CreateServer(srv_dc_id, req)
@@ -159,12 +146,13 @@ func TestPatchServer(t *testing.T) {
 	once_srv.Do(setupServer)
 	
 	want := 202
-	jason_patch := []byte(` {
-				"name": "NewName",
-				"cores": 1
-			}`)
-	resp := PatchServer(srv_dc_id, srv_srvid, jason_patch)
+	req  := ServerProperties {
+			Name:     "go01renamed",
+			Cores:    1,
+	}
+	resp := PatchServer(srv_dc_id, srv_srvid, req)
 	if resp.Resp.StatusCode != want {
+		t.Error("resp: ", resp.Resp.Body)
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 }
@@ -279,7 +267,7 @@ func TestListAttachedCdroms(t *testing.T){
 	want := 200
 	shouldbe := "collection"
 	
-	// wait for volume to attach
+	t.Log("Waiting for volume to attach...")
 	time.Sleep(time.Second * 120)
 	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
 	if resp.Type != shouldbe {

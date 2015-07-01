@@ -5,35 +5,18 @@ import "encoding/json"
 
 type CreateServerRequest struct {
 	ServerProperties `json:"properties"`
-	*ServerEntities	 `json:"entities,omitempty"`
 }
 
 type ServerProperties struct {
-	Name        string	`json:"name"`
-	Ram 		int		`json:"ram"`
-	Cores    	int		`json:"cores"`
+	Name        		string	`json:"name,omitempty"`
+	Ram 				int		`json:"ram,omitempty"`
+	Cores    			int		`json:"cores,omitempty"`
+	Availabilityzone 	string 	`json:"availabilityzone,omitempty"`
+	Licencetype 		string	`json:"licencetype,omitempty"`
+	bootVolume 			string	`json:"bootVolume,omitempty"`
+	bootCdrom 			string	`json:"bootCdrom,omitempty"`
 }
 
-type ServerEntities struct {
-	Volumes ServerVolumes 	 `json:"volumes"`
-}
-
-type ServerVolumes struct {
-	Items []Properties `json:"items"` 
-}
-
-type Properties struct {
-	Properties VolumeProperties  `json:"properties"` 
-}
-
-type VolumeProperties struct {
-	Size		int		`json:"size,omitempty"`
-	Name		string	`json:"name,omitempty"`
-	Image		string	`json:"image,omitempty"`
-	Bus			string	`json:"bus,omitempty"`
-	LicenceType string 	`json:"licenceType,omitempty"`
-	Id 			string	`json:"id,omitempty"`
-}
 
 // ListServers returns a server struct collection
 func ListServers(dcid string) Collection {
@@ -56,7 +39,8 @@ func GetServer(dcid, srvid string) Instance {
 
 // PatchServer partial update of server properties passed in as jason []byte
 // Returns Instance struct
-func PatchServer(dcid string, srvid string, jason []byte) Instance {
+func PatchServer(dcid string, srvid string, req ServerProperties) Instance {
+	jason, _ := json.Marshal(req)
 	path := server_path(dcid, srvid)
 	return is_patch(path, jason)
 }
