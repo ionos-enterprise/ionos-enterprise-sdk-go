@@ -1,9 +1,29 @@
-# goprofitbricks
+## GO SDK
 
-#### ```Install go```
-      https://golang.org/doc/install
+The ProfitBricks Client Library for [GO](https://www.golang.org/) provides you with access to the ProfitBricks REST API. It is designed for developers who are building applications in GO.
 
-#### ```Set your Environment```
+This guide will walk you through getting setup with the library and performing various actions against the API.
+
+## Concepts
+
+The GO SDK wraps the latest version of the ProfitBricks REST API. All API operations are performed over SSL and authenticated using your ProfitBricks portal credentials. The API can be accessed within an instance running in ProfitBricks or directly over the Internet from any application that can send an HTTPS request and receive an HTTPS response.
+
+## Getting Started
+
+Before you begin you will need to have [signed-up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you setup during sign-up will be used to authenticate against the API. 
+
+## Pre-Requisites
+
+GO SDK has some pre-requisities before you're able to use it. You will need to:
+ 
+- Install GO language environment from
+
+```	
+	https://golang.org/doc/install 
+```
+#### Set your Environment
+The GOPATH environment variable specifies the location of your workspace. It is likely the only environment variable you'll need to set when developing Go code.
+
 ```
 mkdir -p ~/go/bin
 export GOPATH=~/go
@@ -11,118 +31,217 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
 ```
 
-#### ``` Fetch goprofitbricks```
-```go
-go get "github.com/StackPointCloud/profitbricks-sdk-go"
-```
-####  ```Test stuff```
-```go
-cd $GOPATH/src/github.com/StackPointCloud/profitbricks-sdk-go
-```
-```go
-vi config_test.go
-```
-* Set Username, Password, and Endpoint for testing
+#### Fetch profitbricks-sdk-go
+
+This will download profitbricks-sdk-go to the [GOPATH](#setenvironment)
 
 ```go
-go test -v 
+go get "github.com/profitbricks/profitbricks-sdk-go" 
 ```
-* runs all the tests and reports pass/fail 
 
-#### ```Use```
-```
-cd ~/
-vi testrest.go
-```
-```go
-package  main
-import 	"github.com/StackPointCloud/profitbricks-sdk-go"
+The source code of the package will be located at 
 
-import "fmt"	
+	$GOBIN\src\profitbricks-sdk-go
 
-func main() {
+Create main package file *example.go*:
 
-	goprofitbricks.SetAuth("your_username","your_password")
-	/**
-	 List Datacenter returns a collection of (Datacenter) Instances
-	See file resp.go for Instance struct
-	**/
+	package main
 	
-	resp:=goprofitbricks.ListDatacenters()
+	import (
+		"fmt"
+	)
+	
+	func main() {
+	}
 
-	//get the Id of the first Item in the collection
-	dc := goprofitbricks.GetDatacenter(resp.Items[0].Id)
+Import GO SDK
 
-	obj := profitbricks.CreateDatacenterRequest{
-		Properties: profitbricks.Properties{
+	import(
+		"profitbricks-sdk-go"
+	)
+
+	
+Set Username, Password, and Endpoint for testing
+
+	profitbricks.SetAuth("username", "password")
+
+Set depth:
+
+	profitbricks.SetDepth("5")
+
+
+Depth controls the amount of data returned from the rest server ( range 1-5 ). Higher the number more information is returned from the server. This is especially useful if you are looking for the information in the nested objects. 
+
+
+**Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
+
+
+### HOW TO'S
+
+###HOW TO: CREATE A DATA CENTER
+
+ProfitBricks introduces the concept of Data Centers. These are logically separated from one another and allow you to have a self-contained environment for all servers, volumes, networking, snapshots, and so forth. The goal is to give you the same experience as you would have if you were running your own physical data center.
+
+The following code example shows you how to programmatically create a data center:
+
+		request := profitbricks.CreateDatacenterRequest{
+		DCProperties: profitbricks.DCProperties{
 			Name:        "test",
 			Description: "description",
 			Location:    "us/lasdev",
 		},
 	}
-	
-	dc := profitbricks.CreateDatacenter(obj)
-	
-	sm := map[string]string{"name": "Renamed DC"}
-	jason_patch := []byte(profitbricks.MkJson(sm))
 
-	resp := profitbricks.PatchDatacenter(dc.Id,jason_patch)
+	response := profitbricks.CreateDatacenter(request)
 
+###HOW TO: Delete a Data Center
+
+You will want to exercise a bit of caution here. Removing a data center will destroy all objects contained within that data center -- servers, volumes, snapshots, and so on.
+
+The code to remove a data center is as follows. This example assumes you want to remove previously data center:
+
+	profitbricks.DeleteDatacenter(response.Id)
+
+###HOW TO: CREATE A SERVER
+
+The server create method has a list of required parameters followed by a hash of optional parameters. The optional parameters are specified within the "options" hash and the variable names match the [REST API](https://devops.profitbricks.com/api/rest/) parameters.
+
+The following example shows you how to create a new server in the data center created above:
+
+	request = CreateServerRequest{
+		ServerProperties: ServerProperties{
+			Name:  "go01",
+			Ram:   1024,
+			Cores: 2,
+		},
 	}
+	server := CreateServer(datacenter.Id, req)
+
+### HOW TO: LIST AVAILABLE DISK AND ISO IMAGES
+
+A list of disk and ISO images are available from ProfitBricks for immediate use. These can be easily viewed and selected. The following shows you how to get a list of images. This list represents both CDROM images and HDD images.
+
+	images := profitbricks.ListImages()
+
+This will return [collection](#Collection) object
+
+### HOW TO: CREATE A STORAGE VOLUME
+ProfitBricks allows for the creation of multiple storage volumes that can be attached and detached as needed. It is useful to attach an image when creating a storage volume. The storage size is in gigabytes.
+
+	volumerequest := CreateVolumeRequest{
+		VolumeProperties: VolumeProperties{
+			Size:        1,
+			Name:        "Volume Test",
+			LicenceType: "LINUX",
+		},
+	}
+
+	storage := CreateVolume(datacenter.Id, volumerequest)
+
+ 
+###HOW TO: UPDATE SERVER CORES, AND MEMORY
+ProfitBricks allows users to dynamically update cores, memory, and disk independently of each other. This removes the restriction of needing to upgrade to the next size available size to receive an increase in memory. You can now simply increase the instances memory keeping your costs in-line with your resource needs.
+
+Note: The memory parameter value must be a multiple of 256, e.g. 256, 512, 768, 1024, and so forth.
+
+The following code illustrates how you can update cores and memory:
+
+	serverupdaterequest := profitbricks.ServerProperties{
+		Cores: 1,
+		Ram:   256,
+	}
+	resp := PatchServer(datacenter.Id, server.Id, serverupdaterequest)
+
+###HOW TO: ATTACH AND DETACH A STORAGE VOLUME
+ProfitBricks allows for the creation of multiple storage volumes. You can detach and reattach these on the fly. This allows for various scenarios such as re-attaching a failed OS disk to another server for possible recovery or moving a volume to another location and spinning it up.
+
+The following illustrates how you would attach and detach a volume and CDROM to/from a server:
+
+	profitbricks.AttachVolume(datacenter.Id, server.Id, volume.Id)
+	profitbricks.AttachCdrom(datacenter.Id, server.Id, images.Items[0].Id)
+
+	profitbricks.DetachVolume(datacenter.Id, server.Id, volume.Id)
+	profitbricks.DetachCdrom(datacenter.Id, server.Id, images.Items[0].Id)
+
+###HOW TO: LIST SERVERS, VOLUMES, AND DATA CENTERS
+
+GO SDK provides standard functions for retrieving a list of volumes, servers, and datacenters.
+
+The following code illustrates how to pull these three list types:
+
+	volumes := profitbricks.ListVolumes(datacenter.Id)
+	servers := profitbricks.ListServers(datacenter.Id)
+	datacenters := profitbricks.ListDatacenters()
+
+
+###Example 
+
+
+	package main
 	
-```
+	import (
+		"fmt"
+		"profitbricks-sdk-go"
+	)
+	
+	func main() {
 
-###### ```Run```
-```go 
-	go run  /root/testrest.go
-```
+		//Sets username and password 
+		profitbricks.SetAuth("username", "password")
+		//Sets depth.
+		profitbricks.SetDepth(5)
 
+		dcrequest := profitbricks.CreateDatacenterRequest{
+			DCProperties: profitbricks.DCProperties{
+				Name:        "test",
+				Description: "description",
+				Location:    "us/lasdev",
+			},
+		}
+	
+		datacenter := profitbricks.CreateDatacenter(dcrequest)
+	
+		serverrequest := profitbricks.CreateServerRequest{
+			ServerProperties: profitbricks.ServerProperties{
+				Name:  "go01",
+				Ram:   1024,
+				Cores: 2,
+			},
+		}
+		server := profitbricks.CreateServer(datacenter.Id, serverrequest)
+	
+		images := profitbricks.ListImages()
+	
+		fmt.Println(images.Items)
+	
+		volumerequest := profitbricks.CreateVolumeRequest{
+			VolumeProperties: profitbricks.VolumeProperties{
+				Size:        1,
+				Name:        "Volume Test",
+				LicenceType: "LINUX",
+			},
+		}
+	
+		storage := profitbricks.CreateVolume(datacenter.Id, volumerequest)
+	
+		serverupdaterequest := profitbricks.ServerProperties{
+			Name:  "go01renamed",
+			Cores: 1,
+			Ram:   256,
+		}
+		resp := profitbricks.PatchServer(datacenter.Id, server.Id, serverupdaterequest)
+	
+		volumes := profitbricks.ListVolumes(datacenter.Id)
+		servers := profitbricks.ListServers(datacenter.Id)
+		datacenters := profitbricks.ListDatacenters()
+		
+		profitbricks.DeleteServer(datacenter.Id, server.Id)
+		profitbricks.DeleteDatacenter(datacenter.Id)
+	}
 
+## Return Types  ##
 
-## PACKAGE DOCUMENTATION
-
-```go
-package goprofitbricks
-    import "github.com/StackPointCloud/profitbricks-sdk-go"
-```
-
-#### ```Variables```
-```go
-var Depth string
-```
-Depth controls the amount of data returned from the rest server ( range 1-5 )
-```go
-var Endpoint string
-```
-* Endpoint is the base url for REST requests .
-```go 
-var Passwd string
-```
-* Password for authentication .
-```go
-var Username string
-```
-* Username for authentication .
-
-#### ```Functions```
-```go
-func MkJson(i interface{}) string
-```
-*  Turn just about anything into Json
-
-```go
-func SetAuth(u, p string)
-```
-```go
-func SetDepth(newdepth string) string
-```
-
-```go
-func SetEndpoint(newendpoint string) string
-```
-*  SetEndpoint is used to set the REST Endpoint. 
-
-### ```Resp struct```
+## Resp struct
 * 	Resp is the struct returned by all Rest request functions
 
 ```go
@@ -133,24 +252,8 @@ Headers    http.Header
 Body       []byte
 }
 ```
-###### Resp methods
-```go
-	func (r *Resp) PrintHeaders()
-```
-* 	PrintHeaders prints the http headers as k,v pairs
 
-### ```Id_Type_Href struct```
-
-* 	The Id_Type_Href struct is embedded in Instance structs and Collection structs
-```go 
-type Id_Type_Href struct {
-Id   string `json:"id"`
-Type string `json:"type"`
-Href string `json:"href"`
-}
-```
-
-### ```Instance struct```
+## ```Instance struct```
 * 	"Get", "Create", and "Patch" functions all return an Instance struct.
 *	A Resp struct is embedded in the Instance struct,
 *	the raw server response is available as Instance.Resp.Body
@@ -165,8 +268,7 @@ Resp       Resp                `json:"-"`
 }
 ```
 
-
-### ```Collection struct``` 
+## Collection struct 
 * 	Collection Structs contain Instance arrays. 
 * 	List functions return Collections
 
@@ -177,192 +279,3 @@ Items []Instance `json:"items,omitempty"`
 Resp  Resp       `json:"-"`
 }
 ```
-
-
-## ```Functions by target```
-
-### ```Datacenter```
-```go
- func ListDatacenters() Collection  
-```
-```go
- func CreateDatacenter(jason []byte) Instance  
-```
-```go
- func GetDatacenter(dcid string) Instance  
-```
-```go
- func PatchDatacenter(dcid string, jason []byte) Instance  
-```
-```go
- func DeleteDatacenter(dcid string) Resp  
-```
-
-###  ```Server```
-```go
- func ListServers(dcid string) Collection  
-```
-```go
- func CreateServer(dcid string, jason []byte) Instance  
-```
-```go
- func GetServer(dcid, srvid string) Instance  
-```
-```go
- func PatchServer(dcid string, srvid string, jason []byte) Instance  
-```
-```go
- func DeleteServer(dcid, srvid string) Resp  
-```
-##### ``` Server Attached Cdroms```
-```go
- func ListAttachedCdroms(dcid, srvid string) Collection  
-```
-```go
- func AttachCdrom(dcid string, srvid string, cdid string) Instance  
-```
-```go
- func GetAttachedCdrom(dcid, srvid, cdid string) Instance  
-```
-```go
- func DetachCdrom(dcid, srvid, cdid string) Resp  
-```
-##### ```Server Attached Volumes```
-```go
- func ListAttachedVolumes(dcid, srvid string) Collection  
-```
-```go
- func AttachVolume(dcid string, srvid string, volid string) Instance  
-```
-```go
- func GetAttachedVolume(dcid, srvid, volid string) Instance  
-```
-```go
- func DetachVolume(dcid, srvid, volid string) Resp  
-```
-```go
- func StartServer(dcid, srvid string) Resp  
-```
-```go
- func StopServer(dcid, srvid string) Resp  
-```
-```go
- func RebootServer(dcid, srvid string) Resp  
-```
-### ```Nics```
-
-```go
- func ListNics(dcid, srvid string) Collection  
-```
-```go
- func CreateNic(dcid string, srvid string, jason []byte) Instance  
-```
-```go
- func GetNic(dcid, srvid, nicid string) Instance  
-```
-```go
- func PatchNic(dcid string, srvid string, nicid string, jason []byte) Instance  
-```
-```go
- func DeleteNic(dcid, srvid, nicid string) Resp  
-```
-
-### ```Firewall Rules```
-```go
- func ListFwRules(dcid, srvid, nicid string) Collection  
-```
-```go
- func CreateFwRule(dcid string, srvid string, nicid string, jason []byte) Instance  
-```
-```go
- func GetFwRule(dcid, srvid, nicid, fwruleid string) Instance  
-```
-```go
- func PatchFWRule(dcid string, srvid string, nicid string, fwruleid string, jason []byte) Instance  
-```
-```go
- func DeleteFWRule(dcid, srvid, nicid, fwruleid string) Resp  
-```
-
-### ```Images```
-
-```go
- func ListImages() Collection  
-```
-```go
- func GetImage(imageid string) Instance  
-```
-```go
- func PatchImage(imageid string, jason []byte) Instance  
-```
-```go
- func DeleteImage(imageid string) Resp  
-```
-
-### ```Volumes```
-
-```go
- func ListVolumes(dcid string) Collection   
-```
-```go
-func GetVolume(dcid string, volumeId string) Instance 
-```
-```go
-func PatchVolume(dcid string, volid string, request VolumeProperties) Instance 
-```
-```go
-func CreateVolume(dcid string, request CreateVolumeRequest) Instance 
-```
-```go
-func DeleteVolume(dcid, volid string) Resp 
-```
-```go
-func CreateSnapshot(dcid string, volid string, jason []byte) Resp
-```
-### ```Load Balancers```
-
-```go
- func ListLoadbalancers(dcid string) Collection    
-```
-```go
- func GetLoadbalancer(dcid, lbalid string) Instance     
-```
-```go
-func CreateLoadbalancer(dcid string, request LoablanacerCreateRequest) Instance
-```
-```go
-func PatchLoadbalancer(dcid string, lbalid string, obj map[string]string) Instance 
-```
-```go
-func DeleteLoadbalancer(dcid, lbalid string) Resp 
-```
-```go
-func ListBalancedNics(dcid, lbalid string) Collection  
-```
-```go
-func GetBalancedNic(dcid, lbalid, balnicid string) Instance 
-```
-```go
-func AssociateNic(dcid string, lbalid string, nicid string) Instance
-```
-```go
-func DeleteBalancedNic(dcid, lbalid, balnicid string) Resp 
-```
-### ```IP Blocks```
-
-```go
-func ListIpBlocks() Collection 
-```
-```go
-func GetIpBlock(ipblockid string) Instance 
-```
-```go
-func ReserveIpBlock(request IPBlockReserveRequest) Instance
-```
-```go
-func ReleaseIpBlock(ipblockid string) Resp
-```
-
-### ```Note```
-
-Details about object propreties are located [here](https://devops.profitbricks.com/api/rest/)
