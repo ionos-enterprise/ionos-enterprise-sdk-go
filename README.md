@@ -1,46 +1,35 @@
-## GO SDK
+## Go SDK
 
-The ProfitBricks Client Library for [GO](https://www.golang.org/) provides you with access to the ProfitBricks REST API. It is designed for developers who are building applications in GO.
+The ProfitBricks Client Library for [Go](https://www.golang.org/) provides you with access to the ProfitBricks REST API. It is designed for developers who are building applications in Go.
 
 This guide will walk you through getting setup with the library and performing various actions against the API.
 
 ## Table of Contents
 * [Concepts](#concepts)
 * [Getting Started](#getting-started)
-* [Pre-Requisites](pre-requisites)
-* [How to: Create Data Center](how-to-create-data-center)
-* [How to: Delete Data Center](how-to-delete-data-center)
-* [How to: Create Server](how-to-create-server)
-* [How to: List Available Disk and ISO Images](how-to-list-available-disk-and-iso-images)
-* [How to: Create Storage Volume](how-to-create-a-storage-volume)
-* [How to: Update Server Cores and Memory](how-to-update-server-cores-and-memory)
-* [How to: Attach and Detach Storage Volume](how-to-attach-and-detach-storage-volume)
-* [How to: List Servers, Volumes, and Data Centers](how-to-list-servers-volumes-and-data-centers)
-* [Example](example)
-* [Return Types](return-types)
+* [How to: Create Data Center](#how-to-create-data-center)
+* [How to: Delete Data Center](#how-to-delete-data-center)
+* [How to: Create Server](#how-to-create-server)
+* [How to: List Available Images](#how-to-list-available-images)
+* [How to: Create Storage Volume](#how-to-create-a-storage-volume)
+* [How to: Update Cores and Memory](#how-to-update-cores-and-memory)
+* [How to: Attach and Detach Storage Volume](#how-to-attach-and-detach-storage-volume)
+* [How to: List Servers, Volumes, and Data Centers](#how-to-list-servers-volumes-and-data-centers)
+* [Example](#example)
+* [Return Types](#return-types)
 
 
 ## Concepts
 
-The GO SDK wraps the latest version of the ProfitBricks REST API. All API operations are performed over SSL and authenticated using your ProfitBricks portal credentials. The API can be accessed within an instance running in ProfitBricks or directly over the Internet from any application that can send an HTTPS request and receive an HTTPS response.
+The Go SDK wraps the latest version of the ProfitBricks REST API. All API operations are performed over SSL and authenticated using your ProfitBricks portal credentials. The API can be accessed within an instance running in ProfitBricks or directly over the Internet from any application that can send an HTTPS request and receive an HTTPS response.
 
 ## Getting Started
 
 Before you begin you will need to have [signed-up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you setup during sign-up will be used to authenticate against the API.
 
-## Pre-Requisites
+Install the Go language from: [Go Installation](https://golang.org/doc/install)
 
-GO SDK has some pre-requisities before you're able to use it. You will need to:
-
-- Install GO language environment from:
-
-```
-	https://golang.org/doc/install
-```
-
-#### Set Environment
-
-The GOPATH environment variable specifies the location of your workspace. It is likely the only environment variable you'll need to set when developing Go code.
+The GOPATH environment variable specifies the location of your workspace. It is likely the only environment variable you'll need to set when developing Go code. This is an example of pointing to a workspace configured under your home directory:
 
 ```
 mkdir -p ~/go/bin
@@ -49,9 +38,9 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
 ```
 
-#### Fetch profitbricks-sdk-go
+## Installation
 
-This will download profitbricks-sdk-go to the [GOPATH](#setenvironment)
+The following go command will download `profitbricks-sdk-go` to your configured `GOPATH`:
 
 ```go
 go get "github.com/profitbricks/profitbricks-sdk-go"
@@ -88,13 +77,11 @@ Set depth:
 
 Depth controls the amount of data returned from the rest server ( range 1-5 ). The larger the number the more information is returned from the server. This is especially useful if you are looking for the information in the nested objects.
 
-
 **Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
 
+## How To's
 
-### HOW TO'S
-
-###HOW TO: CREATE A DATA CENTER
+### How To: Create Data Center
 
 ProfitBricks introduces the concept of Data Centers. These are logically separated from one another and allow you to have a self-contained environment for all servers, volumes, networking, snapshots, and so forth. The goal is to give you the same experience as you would have if you were running your own physical data center.
 
@@ -110,7 +97,7 @@ The following code example shows you how to programmatically create a data cente
 
 	response := profitbricks.CreateDatacenter(request)
 
-###HOW TO: Delete a Data Center
+### How To: Delete Data Center
 
 You will want to exercise a bit of caution here. Removing a data center will destroy all objects contained within that data center -- servers, volumes, snapshots, and so on.
 
@@ -118,7 +105,7 @@ The code to remove a data center is as follows. This example assumes you want to
 
 	profitbricks.DeleteDatacenter(response.Id)
 
-###HOW TO: CREATE A SERVER
+### How To: Create Server
 
 The server create method has a list of required parameters followed by a hash of optional parameters. The optional parameters are specified within the "options" hash and the variable names match the [REST API](https://devops.profitbricks.com/api/rest/) parameters.
 
@@ -133,15 +120,16 @@ The following example shows you how to create a new server in the data center cr
 	}
 	server := CreateServer(datacenter.Id, req)
 
-### HOW TO: LIST AVAILABLE DISK AND ISO IMAGES
+### How To: List Available Images
 
 A list of disk and ISO images are available from ProfitBricks for immediate use. These can be easily viewed and selected. The following shows you how to get a list of images. This list represents both CDROM images and HDD images.
 
 	images := profitbricks.ListImages()
 
-This will return [collection](#Collection) object
+This will return a [collection](#Collection) object
 
-### HOW TO: CREATE A STORAGE VOLUME
+### How To: Create Storage Volume
+
 ProfitBricks allows for the creation of multiple storage volumes that can be attached and detached as needed. It is useful to attach an image when creating a storage volume. The storage size is in gigabytes.
 
 	volumerequest := CreateVolumeRequest{
@@ -154,8 +142,8 @@ ProfitBricks allows for the creation of multiple storage volumes that can be att
 
 	storage := CreateVolume(datacenter.Id, volumerequest)
 
- 
-###HOW TO: UPDATE SERVER CORES, AND MEMORY
+### How To: Update Cores and Memory
+
 ProfitBricks allows users to dynamically update cores, memory, and disk independently of each other. This removes the restriction of needing to upgrade to the next size available size to receive an increase in memory. You can now simply increase the instances memory keeping your costs in-line with your resource needs.
 
 Note: The memory parameter value must be a multiple of 256, e.g. 256, 512, 768, 1024, and so forth.
@@ -168,7 +156,8 @@ The following code illustrates how you can update cores and memory:
 	}
 	resp := PatchServer(datacenter.Id, server.Id, serverupdaterequest)
 
-###HOW TO: ATTACH AND DETACH A STORAGE VOLUME
+### How To: Attach or Detach Storage Volume
+
 ProfitBricks allows for the creation of multiple storage volumes. You can detach and reattach these on the fly. This allows for various scenarios such as re-attaching a failed OS disk to another server for possible recovery or moving a volume to another location and spinning it up.
 
 The following illustrates how you would attach and detach a volume and CDROM to/from a server:
@@ -179,30 +168,31 @@ The following illustrates how you would attach and detach a volume and CDROM to/
 	profitbricks.DetachVolume(datacenter.Id, server.Id, volume.Id)
 	profitbricks.DetachCdrom(datacenter.Id, server.Id, images.Items[0].Id)
 
-###HOW TO: LIST SERVERS, VOLUMES, AND DATA CENTERS
+### How To: List Servers, Volumes, and Data Centers
 
-GO SDK provides standard functions for retrieving a list of volumes, servers, and datacenters.
+Go SDK provides standard functions for retrieving a list of volumes, servers, and datacenters.
 
 The following code illustrates how to pull these three list types:
 
 	volumes := profitbricks.ListVolumes(datacenter.Id)
-	servers := profitbricks.ListServers(datacenter.Id)
-	datacenters := profitbricks.ListDatacenters()
 
+    servers := profitbricks.ListServers(datacenter.Id)
 
-###Example 
+    datacenters := profitbricks.ListDatacenters()
 
+### Example
 
+```go
 	package main
-	
+
 	import (
 		"fmt"
 		"profitbricks-sdk-go"
 	)
-	
+
 	func main() {
 
-		//Sets username and password 
+		//Sets username and password
 		profitbricks.SetAuth("username", "password")
 		//Sets depth.
 		profitbricks.SetDepth(5)
@@ -214,9 +204,9 @@ The following code illustrates how to pull these three list types:
 				Location:    "us/lasdev",
 			},
 		}
-	
+
 		datacenter := profitbricks.CreateDatacenter(dcrequest)
-	
+
 		serverrequest := profitbricks.CreateServerRequest{
 			ServerProperties: profitbricks.ServerProperties{
 				Name:  "go01",
@@ -225,11 +215,11 @@ The following code illustrates how to pull these three list types:
 			},
 		}
 		server := profitbricks.CreateServer(datacenter.Id, serverrequest)
-	
+
 		images := profitbricks.ListImages()
-	
+
 		fmt.Println(images.Items)
-	
+
 		volumerequest := profitbricks.CreateVolumeRequest{
 			VolumeProperties: profitbricks.VolumeProperties{
 				Size:        1,
@@ -237,27 +227,28 @@ The following code illustrates how to pull these three list types:
 				LicenceType: "LINUX",
 			},
 		}
-	
+
 		storage := profitbricks.CreateVolume(datacenter.Id, volumerequest)
-	
+
 		serverupdaterequest := profitbricks.ServerProperties{
 			Name:  "go01renamed",
 			Cores: 1,
 			Ram:   256,
 		}
 		resp := profitbricks.PatchServer(datacenter.Id, server.Id, serverupdaterequest)
-	
+
 		volumes := profitbricks.ListVolumes(datacenter.Id)
 		servers := profitbricks.ListServers(datacenter.Id)
 		datacenters := profitbricks.ListDatacenters()
-		
+
 		profitbricks.DeleteServer(datacenter.Id, server.Id)
 		profitbricks.DeleteDatacenter(datacenter.Id)
 	}
+```
 
-## Return Types  ##
+## Return Types
 
-## Resp struct
+### Resp struct
 * 	Resp is the struct returned by all Rest request functions
 
 ```go
@@ -269,11 +260,11 @@ Body       []byte
 }
 ```
 
-## ```Instance struct```
-* 	"Get", "Create", and "Patch" functions all return an Instance struct.
-*	A Resp struct is embedded in the Instance struct,
-*	the raw server response is available as Instance.Resp.Body
-		
+### Instance struct
+* 	`Get`, `Create`, and `Patch` functions all return an Instance struct.
+*	A Resp struct is embedded in the Instance struct.
+*	The raw server response is available as `Instance.Resp.Body`.
+
 ```go
 type Instance struct {
 Id_Type_Href
@@ -284,7 +275,7 @@ Resp       Resp                `json:"-"`
 }
 ```
 
-## Collection struct 
+### Collection struct
 * 	Collection Structs contain Instance arrays. 
 * 	List functions return Collections
 
