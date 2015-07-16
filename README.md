@@ -4,24 +4,42 @@ The ProfitBricks Client Library for [GO](https://www.golang.org/) provides you w
 
 This guide will walk you through getting setup with the library and performing various actions against the API.
 
+## Table of Contents
+* [Concepts](#concepts)
+* [Getting Started](#getting-started)
+* [Pre-Requisites](pre-requisites)
+* [How to: Create Data Center](how-to-create-data-center)
+* [How to: Delete Data Center](how-to-delete-data-center)
+* [How to: Create Server](how-to-create-server)
+* [How to: List Available Disk and ISO Images](how-to-list-available-disk-and-iso-images)
+* [How to: Create Storage Volume](how-to-create-a-storage-volume)
+* [How to: Update Server Cores and Memory](how-to-update-server-cores-and-memory)
+* [How to: Attach and Detach Storage Volume](how-to-attach-and-detach-storage-volume)
+* [How to: List Servers, Volumes, and Data Centers](how-to-list-servers-volumes-and-data-centers)
+* [Example](example)
+* [Return Types](return-types)
+
+
 ## Concepts
 
 The GO SDK wraps the latest version of the ProfitBricks REST API. All API operations are performed over SSL and authenticated using your ProfitBricks portal credentials. The API can be accessed within an instance running in ProfitBricks or directly over the Internet from any application that can send an HTTPS request and receive an HTTPS response.
 
 ## Getting Started
 
-Before you begin you will need to have [signed-up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you setup during sign-up will be used to authenticate against the API. 
+Before you begin you will need to have [signed-up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you setup during sign-up will be used to authenticate against the API.
 
 ## Pre-Requisites
 
 GO SDK has some pre-requisities before you're able to use it. You will need to:
- 
-- Install GO language environment from
 
-```	
-	https://golang.org/doc/install 
+- Install GO language environment from:
+
 ```
-#### Set your Environment
+	https://golang.org/doc/install
+```
+
+#### Set Environment
+
 The GOPATH environment variable specifies the location of your workspace. It is likely the only environment variable you'll need to set when developing Go code.
 
 ```
@@ -36,32 +54,31 @@ export PATH=$PATH:$GOBIN
 This will download profitbricks-sdk-go to the [GOPATH](#setenvironment)
 
 ```go
-go get "github.com/profitbricks/profitbricks-sdk-go" 
+go get "github.com/profitbricks/profitbricks-sdk-go"
 ```
 
-The source code of the package will be located at 
+The source code of the package will be located at:
 
 	$GOBIN\src\profitbricks-sdk-go
 
 Create main package file *example.go*:
 
 	package main
-	
+
 	import (
 		"fmt"
 	)
-	
+
 	func main() {
 	}
 
-Import GO SDK
+Import GO SDK:
 
 	import(
 		"profitbricks-sdk-go"
 	)
 
-	
-Set Username, Password, and Endpoint for testing
+Set Username, Password, and Endpoint for testing:
 
 	profitbricks.SetAuth("username", "password")
 
@@ -69,8 +86,7 @@ Set depth:
 
 	profitbricks.SetDepth("5")
 
-
-Depth controls the amount of data returned from the rest server ( range 1-5 ). Higher the number more information is returned from the server. This is especially useful if you are looking for the information in the nested objects. 
+Depth controls the amount of data returned from the rest server ( range 1-5 ). The larger the number the more information is returned from the server. This is especially useful if you are looking for the information in the nested objects.
 
 
 **Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
