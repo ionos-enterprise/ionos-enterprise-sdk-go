@@ -7,16 +7,18 @@ This guide will walk you through getting setup with the library and performing v
 ## Table of Contents
 * [Concepts](#concepts)
 * [Getting Started](#getting-started)
+* [Installation](#installation)
 * [How to: Create Data Center](#how-to-create-data-center)
 * [How to: Delete Data Center](#how-to-delete-data-center)
 * [How to: Create Server](#how-to-create-server)
 * [How to: List Available Images](#how-to-list-available-images)
 * [How to: Create Storage Volume](#how-to-create-a-storage-volume)
 * [How to: Update Cores and Memory](#how-to-update-cores-and-memory)
-* [How to: Attach and Detach Storage Volume](#how-to-attach-and-detach-storage-volume)
+* [How to: Attach or Detach Storage Volume](#how-to-attach-or-detach-storage-volume)
 * [How to: List Servers, Volumes, and Data Centers](#how-to-list-servers-volumes-and-data-centers)
 * [Example](#example)
 * [Return Types](#return-types)
+* [Support](#support)
 
 
 ## Concepts
@@ -29,7 +31,7 @@ Before you begin you will need to have [signed-up](https://www.profitbricks.com/
 
 Install the Go language from: [Go Installation](https://golang.org/doc/install)
 
-The GOPATH environment variable specifies the location of your workspace. It is likely the only environment variable you'll need to set when developing Go code. This is an example of pointing to a workspace configured under your home directory:
+The `GOPATH` environment variable specifies the location of your Go workspace. It is likely the only environment variable you'll need to set when developing Go code. This is an example of pointing to a workspace configured underneath your home directory:
 
 ```
 mkdir -p ~/go/bin
@@ -52,6 +54,7 @@ The source code of the package will be located at:
 
 Create main package file *example.go*:
 
+```go
 	package main
 
 	import (
@@ -60,20 +63,27 @@ Create main package file *example.go*:
 
 	func main() {
 	}
+```
 
 Import GO SDK:
 
+```go
 	import(
 		"profitbricks-sdk-go"
 	)
+```
 
 Set Username, Password, and Endpoint for testing:
 
+```go
 	profitbricks.SetAuth("username", "password")
+```
 
 Set depth:
 
+```go
 	profitbricks.SetDepth("5")
+```
 
 Depth controls the amount of data returned from the rest server ( range 1-5 ). The larger the number the more information is returned from the server. This is especially useful if you are looking for the information in the nested objects.
 
@@ -87,6 +97,7 @@ ProfitBricks introduces the concept of Data Centers. These are logically separat
 
 The following code example shows you how to programmatically create a data center:
 
+```go
 		request := profitbricks.CreateDatacenterRequest{
 		DCProperties: profitbricks.DCProperties{
 			Name:        "test",
@@ -96,6 +107,7 @@ The following code example shows you how to programmatically create a data cente
 	}
 
 	response := profitbricks.CreateDatacenter(request)
+```
 
 ### How To: Delete Data Center
 
@@ -103,7 +115,9 @@ You will want to exercise a bit of caution here. Removing a data center will des
 
 The code to remove a data center is as follows. This example assumes you want to remove previously data center:
 
+```go
 	profitbricks.DeleteDatacenter(response.Id)
+```
 
 ### How To: Create Server
 
@@ -111,6 +125,7 @@ The server create method has a list of required parameters followed by a hash of
 
 The following example shows you how to create a new server in the data center created above:
 
+```go
 	request = CreateServerRequest{
 		ServerProperties: ServerProperties{
 			Name:  "go01",
@@ -119,12 +134,15 @@ The following example shows you how to create a new server in the data center cr
 		},
 	}
 	server := CreateServer(datacenter.Id, req)
+```
 
 ### How To: List Available Images
 
 A list of disk and ISO images are available from ProfitBricks for immediate use. These can be easily viewed and selected. The following shows you how to get a list of images. This list represents both CDROM images and HDD images.
 
+```go
 	images := profitbricks.ListImages()
+```
 
 This will return a [collection](#Collection) object
 
@@ -132,6 +150,7 @@ This will return a [collection](#Collection) object
 
 ProfitBricks allows for the creation of multiple storage volumes that can be attached and detached as needed. It is useful to attach an image when creating a storage volume. The storage size is in gigabytes.
 
+```go
 	volumerequest := CreateVolumeRequest{
 		VolumeProperties: VolumeProperties{
 			Size:        1,
@@ -141,6 +160,7 @@ ProfitBricks allows for the creation of multiple storage volumes that can be att
 	}
 
 	storage := CreateVolume(datacenter.Id, volumerequest)
+```
 
 ### How To: Update Cores and Memory
 
@@ -150,11 +170,13 @@ Note: The memory parameter value must be a multiple of 256, e.g. 256, 512, 768, 
 
 The following code illustrates how you can update cores and memory:
 
+```go
 	serverupdaterequest := profitbricks.ServerProperties{
 		Cores: 1,
 		Ram:   256,
 	}
 	resp := PatchServer(datacenter.Id, server.Id, serverupdaterequest)
+```
 
 ### How To: Attach or Detach Storage Volume
 
@@ -162,11 +184,13 @@ ProfitBricks allows for the creation of multiple storage volumes. You can detach
 
 The following illustrates how you would attach and detach a volume and CDROM to/from a server:
 
+```go
 	profitbricks.AttachVolume(datacenter.Id, server.Id, volume.Id)
 	profitbricks.AttachCdrom(datacenter.Id, server.Id, images.Items[0].Id)
 
 	profitbricks.DetachVolume(datacenter.Id, server.Id, volume.Id)
 	profitbricks.DetachCdrom(datacenter.Id, server.Id, images.Items[0].Id)
+```
 
 ### How To: List Servers, Volumes, and Data Centers
 
@@ -174,11 +198,13 @@ Go SDK provides standard functions for retrieving a list of volumes, servers, an
 
 The following code illustrates how to pull these three list types:
 
+```go
 	volumes := profitbricks.ListVolumes(datacenter.Id)
 
     servers := profitbricks.ListServers(datacenter.Id)
 
     datacenters := profitbricks.ListDatacenters()
+```
 
 ### Example
 
@@ -286,3 +312,6 @@ Items []Instance `json:"items,omitempty"`
 Resp  Resp       `json:"-"`
 }
 ```
+
+## Support
+You can contact us through the [ProfitBricks DevOps Central](https://devops.profitbricks.com/) website. We are happy to answer any questions you might have.
