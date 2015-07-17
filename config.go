@@ -1,7 +1,7 @@
 package profitbricks
 
 // Endpoint is the base url for REST requests .
-var Endpoint = "https://private-anon-4354b0b6a-profitbricksrestapi.apiary-mock.com"
+var Endpoint = "https://api.profitbricks.com/rest"
 
 //  Username for authentication .
 var Username string
@@ -9,7 +9,7 @@ var Username string
 // Password for authentication .
 var Passwd string
 
-// SetEnpoint is used to set the REST Endpoint. Endpoint is declared in config.go
+// SetEndpoint is used to set the REST Endpoint. Endpoint is declared in config.go
 func SetEndpoint(newendpoint string) string {
 	Endpoint = newendpoint
 	return Endpoint

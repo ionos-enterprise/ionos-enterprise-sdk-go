@@ -69,11 +69,11 @@ Import GO SDK:
 
 ```go
 	import(
-		"profitbricks-sdk-go"
+		"github.com/profitbricks/profitbricks-sdk-go"
 	)
 ```
 
-Set Username, Password, and Endpoint for testing:
+Add your credentials for connecting to ProfitBricks:
 
 ```go
 	profitbricks.SetAuth("username", "password")
@@ -213,7 +213,7 @@ The following code illustrates how to pull these three list types:
 
 	import (
 		"fmt"
-		"profitbricks-sdk-go"
+		"github.com/profitbricks/profitbricks-sdk-go"
 	)
 
 	func main() {
