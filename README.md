@@ -176,24 +176,25 @@ The following code illustrates how to pull these three list types:
 
 ###Example 
 
-
+	
 	package main
 	
 	import (
 		"fmt"
 		"profitbricks-sdk-go"
+		"time"
 	)
 	
 	func main() {
-
-		//Sets username and password 
+	
+		//Sets username and password
 		profitbricks.SetAuth("username", "password")
 		//Sets depth.
-		profitbricks.SetDepth(5)
-
+		profitbricks.SetDepth("5")
+	
 		dcrequest := profitbricks.CreateDatacenterRequest{
 			DCProperties: profitbricks.DCProperties{
-				Name:        "test",
+				Name:        "example.go3",
 				Description: "description",
 				Location:    "us/lasdev",
 			},
@@ -213,7 +214,7 @@ The following code illustrates how to pull these three list types:
 		images := profitbricks.ListImages()
 	
 		fmt.Println(images.Items)
-	
+		
 		volumerequest := profitbricks.CreateVolumeRequest{
 			VolumeProperties: profitbricks.VolumeProperties{
 				Size:        1,
@@ -229,15 +230,27 @@ The following code illustrates how to pull these three list types:
 			Cores: 1,
 			Ram:   256,
 		}
-		resp := profitbricks.PatchServer(datacenter.Id, server.Id, serverupdaterequest)
+	
+		profitbricks.PatchServer(datacenter.Id, server.Id, serverupdaterequest)
+
+		//It takes a moment for a volume to be provisioned so we wait before we attach it to a server
+		time.Sleep(60 * time.Second)
+		
+		profitbricks.AttachVolume(datacenter.Id, server.Id, storage.Id)
 	
 		volumes := profitbricks.ListVolumes(datacenter.Id)
+		fmt.Println(volumes.Items)
+
 		servers := profitbricks.ListServers(datacenter.Id)
+		fmt.Println(servers.Items)
+
 		datacenters := profitbricks.ListDatacenters()
-		
+		fmt.Println(datacenters.Items)
+	
 		profitbricks.DeleteServer(datacenter.Id, server.Id)
 		profitbricks.DeleteDatacenter(datacenter.Id)
 	}
+
 
 ## Return Types  ##
 
