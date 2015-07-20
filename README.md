@@ -12,7 +12,7 @@ This guide will walk you through getting setup with the library and performing v
 * [How to: Delete Data Center](#how-to-delete-data-center)
 * [How to: Create Server](#how-to-create-server)
 * [How to: List Available Images](#how-to-list-available-images)
-* [How to: Create Storage Volume](#how-to-create-a-storage-volume)
+* [How to: Create Storage Volume](#how-to-create-storage-volume)
 * [How to: Update Cores and Memory](#how-to-update-cores-and-memory)
 * [How to: Attach or Detach Storage Volume](#how-to-attach-or-detach-storage-volume)
 * [How to: List Servers, Volumes, and Data Centers](#how-to-list-servers-volumes-and-data-centers)
