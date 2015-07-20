@@ -103,8 +103,8 @@ request := profitbricks.CreateDatacenterRequest{
 			Name:        "test",
 			Description: "description",
 			Location:    "us/lasdev",
-		},
-	}
+	},
+}
 
 response := profitbricks.CreateDatacenter(request)
 ```
