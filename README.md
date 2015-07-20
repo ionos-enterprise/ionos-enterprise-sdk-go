@@ -85,7 +85,7 @@ Set depth:
 	profitbricks.SetDepth("5")
 ```
 
-Depth controls the amount of data returned from the rest server ( range 1-5 ). The larger the number the more information is returned from the server. This is especially useful if you are looking for the information in the nested objects.
+Depth controls the amount of data returned from the REST server ( range 1-5 ). The larger the number the more information is returned from the server. This is especially useful if you are looking for the information in the nested objects.
 
 **Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
 
@@ -275,7 +275,7 @@ The following code illustrates how to pull these three list types:
 ## Return Types
 
 ### Resp struct
-* 	Resp is the struct returned by all Rest request functions
+* 	Resp is the struct returned by all REST request functions
 
 ```go
 type Resp struct {
@@ -314,4 +314,4 @@ Resp  Resp       `json:"-"`
 ```
 
 ## Support
-You can contact us through the [ProfitBricks DevOps Central](https://devops.profitbricks.com/) website. We are happy to answer any questions you might have.
+You are welcome to contact us via the [ProfitBricks DevOps Central](https://devops.profitbricks.com/) website.
