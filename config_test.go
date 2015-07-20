@@ -24,7 +24,7 @@ var username = "jclouds@stackpointcloud.com"
 var passwd = os.Getenv("PB_PASSWORD")
 
 // Set Endpoint for testing
-var endpoint = "https://api.profitbricks.com/rest"
+var endpoint = "https://private-anon-4354b0b6a-profitbricksrestapi.apiary-mock.com"
 
 func TestSetAuth(t *testing.T) {
 	fmt.Println("Current Username ", Username)
