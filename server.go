@@ -13,8 +13,8 @@ type ServerProperties struct {
 	Cores    			int		`json:"cores,omitempty"`
 	Availabilityzone 	string 	`json:"availabilityzone,omitempty"`
 	Licencetype 		string	`json:"licencetype,omitempty"`
-	bootVolume 			string	`json:"bootVolume,omitempty"`
-	bootCdrom 			string	`json:"bootCdrom,omitempty"`
+	BootVolume 			string	`json:"bootVolume,omitempty"`
+	BootCdrom 			string	`json:"bootCdrom,omitempty"`
 }
 
 
