@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"profitbricks-sdk-go"
+	"github.com/profitbricks/profitbricks-sdk-go"
 	"time"
 )
 
