@@ -47,7 +47,7 @@ func mknic(lbal_dcid, serverid string) string {
 	var request = NicCreateRequest{
 		NicProperties{
 			Name: "Original Nic",
-			Lan:  1,
+			Lan:  "0",
 		},
 	}
 
