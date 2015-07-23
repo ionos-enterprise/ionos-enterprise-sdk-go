@@ -10,7 +10,7 @@ type NicProperties struct {
 	Name string   `json:"name,omitempty"`
 	Ips  []string `json:"ips,omitempty"`
 	Dhcp bool     `json:"dhcp,omitempty"`
-	Lan  int      `json:"lan,omitempty"`
+	Lan  int      `json:"lan"`
 }
 
 // ListNics returns a Nics struct collection
