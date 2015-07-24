@@ -53,11 +53,11 @@ func toInstance(resp Resp) Instance {
 }
 
 type Instance struct {
-	Id_Type_Href
-	MetaData   StringMap           `json:"metaData"`
-	Properties StringIfaceMap      `json:"properties"`
-	Entities   StringCollectionMap `json:"entities"`
-	Resp       Resp                `json:"-"`
+	Id_Type_Href `json:"omitempty"`
+	MetaData     StringMap           `json:"metaData,omitempty"`
+	Properties   StringIfaceMap      `json:"properties,omitempty"`
+	Entities     StringCollectionMap `json:"entities,omitempty"`
+	Resp         Resp                `json:"-"`
 }
 
 // Save converts the Instance struct's properties to json
