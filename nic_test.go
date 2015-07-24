@@ -16,7 +16,7 @@ func TestCreateNic(t *testing.T) {
 	want := 202
 	var request = NicCreateRequest{
 		NicProperties{
-			Lan:  1,
+			Lan:  "1",
 			Name: "Test NIC",
 		},
 	}
