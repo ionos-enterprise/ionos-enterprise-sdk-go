@@ -7,6 +7,7 @@ type CreateServerRequest struct {
 }
 
 type ServerProperties struct {
+<<<<<<< HEAD
 	Name             string   `json:"name,omitempty"`
 	Ram              int      `json:"ram,omitempty"`
 	Cores            int      `json:"cores,omitempty"`
