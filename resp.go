@@ -57,9 +57,9 @@ func toInstance(resp Resp) Instance {
 
 type Instance struct {
 	Id_Type_Href 
-	MetaData     StringMap           `json:"metaData"`
-	Properties   StringIfaceMap      `json:"properties"`
-	Entities     StringCollectionMap `json:"entities"`
+	MetaData     StringMap           `json:"metaData,omitempty"`
+	Properties   StringIfaceMap      `json:"properties,omitempty"`
+	Entities     StringCollectionMap `json:"entities,omitempty"`
 	Resp         Resp                `json:"-"`
 }
 
