@@ -12,8 +12,8 @@ type ServerProperties struct {
 	Cores            int      `json:"cores,omitempty"`
 	Availabilityzone string   `json:"availabilityzone,omitempty"`
 	Licencetype      string   `json:"licencetype,omitempty"`
-	BootVolume       Instance `json:"bootVolume,omitempty"`
-	BootCdrom        Instance `json:"bootCdrom,omitempty"`
+	BootVolume       *Instance `json:"bootVolume,omitempty"`
+	BootCdrom        *Instance `json:"bootCdrom,omitempty"`
 }
 
 // ListServers returns a server struct collection
