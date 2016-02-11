@@ -10,7 +10,7 @@ var lan_dcid string
 var lanid string
 
 func TestCreateLan(t *testing.T) {
-	lan_dcid = mkdcid("LAN DC")
+	lan_dcid = mkdcid("GO SDK LAN DC")
 	want := 202
 	var request = CreateLanRequest{
 		LanProperties: LanProperties{
@@ -23,7 +23,7 @@ func TestCreateLan(t *testing.T) {
 	if lan.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, lan.Resp.StatusCode))
 	}
-	time.Sleep(2 * time.Second)
+	time.Sleep(20 * time.Second)
 }
 
 func TestListLans(t *testing.T) {

@@ -156,7 +156,9 @@ volumerequest := CreateVolumeRequest{
 	VolumeProperties: VolumeProperties{
 		Size:        1,
 		Name:        "Volume Test",
-		LicenceType: "LINUX",
+		ImageId: "imageid",
+		Type: "HDD",
+		SshKey: []string{"hQGOEJeFL91EG3+l9TtRbWNjzhDVHeLuL3NWee6bekA="},
 	},
 }
 

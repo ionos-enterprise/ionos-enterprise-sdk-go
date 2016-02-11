@@ -13,13 +13,18 @@ func TestCreateVolume(t *testing.T) {
 
 	var request = CreateVolumeRequest{
 		VolumeProperties: VolumeProperties{
-			Size:        1,
-			Name:        "Volume Test",
-			LicenceType: "LINUX",
+			Size:   4,
+			Name:   "Volume Test",
+			Image:  "fbaae2b2-c899-11e5-aa10-52540005ab80",
+			Type:   "HDD",
+			SshKey: []string{"hQGOEJeFL91EG3+l9TtRbWNjzhDVHeLuL3NWee6bekA="},
 		},
 	}
 
-	dcID = mkdcid("VOLUME DC")
+	dcID = mkdcid("GO SDK VOLUME DC")
+	fmt.Println("*****************")
+	fmt.Println(dcID)
+	fmt.Println("*****************")
 	resp := CreateVolume(dcID, request)
 
 	volumeId = resp.Id

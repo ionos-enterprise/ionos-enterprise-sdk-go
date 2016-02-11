@@ -10,7 +10,7 @@ var nic_srvid string
 var nicid string
 
 func TestCreateNic(t *testing.T) {
-	nic_dcid = mkdcid("NIC DC")
+	nic_dcid = mkdcid("GO SDK NIC DC")
 	nic_srvid = mksrvid(nic_dcid)
 	time.Sleep(15 * time.Second)
 	want := 202

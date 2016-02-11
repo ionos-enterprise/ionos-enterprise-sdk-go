@@ -23,7 +23,7 @@ func TestCreateDatacenter(t *testing.T) {
 	want := 202
 	var obj = CreateDatacenterRequest{
 		DCProperties: DCProperties{
-			Name:        "test",
+			Name:        "GO SDK",
 			Description: "description",
 			Location:    "us/lasdev",
 		},

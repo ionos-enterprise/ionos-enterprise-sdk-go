@@ -12,8 +12,9 @@ var lbalid string
 var lbal_srvid string
 
 func TestCreateLoadbalancer(t *testing.T) {
+	fmt.Println("TestCreateLoadbalancer")
 	want := 202
-	lbal_dcid = mkdcid("LB DC")
+	lbal_dcid = mkdcid("GO SDK LB DC")
 	lbal_srvid = mksrvid(lbal_dcid)
 	var request = LoablanacerCreateRequest{
 		LoablanacerProperties: LoablanacerProperties{
@@ -22,13 +23,15 @@ func TestCreateLoadbalancer(t *testing.T) {
 			Dhcp: true,
 		},
 	}
+	time.Sleep(30 * time.Second)
+
 	resp := CreateLoadbalancer(lbal_dcid, request)
 	lbalid = resp.Id
+	fmt.Println("Loadbalancer ID", lbalid)
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 
-	time.Sleep(20 * time.Second)
 }
 
 func TestListLoadbalancers(t *testing.T) {
@@ -47,6 +50,8 @@ func TestListLoadbalancers(t *testing.T) {
 func TestGetLoadbalancer(t *testing.T) {
 	shouldbe := "loadbalancer"
 	want := 200
+	fmt.Println("TestGetLoadbalancer", lbalid)
+	time.Sleep(120 * time.Second)
 
 	resp := GetLoadbalancer(lbal_dcid, lbalid)
 
@@ -65,7 +70,7 @@ func TestPatchLoadbalancer(t *testing.T) {
 
 	resp := PatchLoadbalancer(lbal_dcid, lbalid, obj)
 	if resp.Resp.StatusCode != want {
-		fmt.Println(resp.Resp.Body)
+		fmt.Println(string(resp.Resp.Body))
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 }
@@ -75,9 +80,9 @@ func TestAssociateNic(t *testing.T) {
 
 	nicid = mknic(lbal_dcid, lbal_srvid)
 
-	time.Sleep(40 * time.Second)
+	time.Sleep(120 * time.Second)
 
-	resp := AssociateNic(lbal_dcid, lbal_srvid, nicid)
+	resp := AssociateNic(lbal_dcid, lbalid, nicid)
 	nicid = resp.Id
 	if resp.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))

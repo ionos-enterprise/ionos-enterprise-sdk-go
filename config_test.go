@@ -1,13 +1,11 @@
 package profitbricks
 
 import (
-		"testing"
-		"fmt"
-		"os"
-		"strconv"
+	"fmt"
+	"os"
+	"strconv"
+	"testing"
 )
-
-
 
 // bad_type is the return string for bad type errors
 func bad_type(shouldbe, got string) string {
@@ -20,11 +18,14 @@ func bad_status(wanted, got int) string {
 }
 
 // Set Username and Password here for Testing.
-var username = "jclouds@stackpointcloud.com"
-var passwd = os.Getenv("PB_PASSWORD")
+/*var username = "jclouds@stackpointcloud.com"
+var passwd = os.Getenv("PB_PASSWORD")*/
+var username = "muhamed@stackpointcloud.com"
+var passwd = "test123!"
+
 
 // Set Endpoint for testing
-var endpoint = "https://private-anon-4354b0b6a-profitbricksrestapi.apiary-mock.com"
+var endpoint = "https://api.profitbricks.com/rest/v2"
 
 func TestSetAuth(t *testing.T) {
 	fmt.Println("Current Username ", Username)
@@ -40,8 +41,8 @@ func TestSetEndpoint(t *testing.T) {
 func TestMain(m *testing.M) {
 	r := m.Run()
 	serverCleanup()
-	os.Exit(r)	
- }
+	os.Exit(r)
+}
 
 // Setup creds for single running tests
 func setupCredentials() {

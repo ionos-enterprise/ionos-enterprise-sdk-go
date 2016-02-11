@@ -2,7 +2,6 @@ package profitbricks
 
 import "fmt"
 
-
 func mkdcid(name string) string {
 	request := CreateDatacenterRequest{
 		DCProperties: DCProperties{
@@ -28,11 +27,11 @@ func mklocid() string {
 }
 
 func mksrvid(srv_dcid string) string {
-		var req = CreateServerRequest {
+	var req = CreateServerRequest{
 		ServerProperties: ServerProperties{
-			Name:        "test",
-			Ram: 1024,
-			Cores:    2,
+			Name:  "GO SDK test",
+			Ram:   1024,
+			Cores: 2,
 		},
 	}
 	srv := CreateServer(srv_dcid, req)
@@ -46,8 +45,8 @@ func mksrvid(srv_dcid string) string {
 func mknic(lbal_dcid, serverid string) string {
 	var request = NicCreateRequest{
 		NicProperties{
-			Name: "Original Nic",
-			Lan:  "0",
+			Name: "GO SDK Original Nic",
+			Lan:  "1",
 		},
 	}
 
