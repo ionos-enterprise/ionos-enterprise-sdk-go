@@ -47,17 +47,20 @@ type MetaData StringIfaceMap
 // toInstance converts a Resp struct into a Instance struct
 func toInstance(resp Resp) Instance {
 	var ins Instance
-	json.Unmarshal(resp.Body, &ins)
+	err := json.Unmarshal(resp.Body, &ins)
+	if err != nil {
+		fmt.Println(err)
+	}
 	ins.Resp = resp
 	return ins
 }
 
 type Instance struct {
-	Id_Type_Href `json:"omitempty"`
-	MetaData     StringMap           `json:"metaData,omitempty"`
-	Properties   StringIfaceMap      `json:"properties,omitempty"`
-	Entities     StringCollectionMap `json:"entities,omitempty"`
-	Resp         Resp                `json:"-"`
+	Id_Type_Href
+	MetaData   StringMap           `json:"metaData,omitempty"`
+	Properties StringIfaceMap      `json:"properties,omitempty"`
+	Entities   StringCollectionMap `json:"entities,omitempty"`
+	Resp       Resp                `json:"-"`
 }
 
 // Save converts the Instance struct's properties to json

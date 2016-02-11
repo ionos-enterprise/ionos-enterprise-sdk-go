@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/profitbricks/profitbricks-sdk-go"
 	"time"
+
+	"github.com/profitbricks/profitbricks-sdk-go"
 )
 
 func main() {
@@ -41,6 +42,7 @@ func main() {
 			Size:        1,
 			Name:        "Volume Test",
 			LicenceType: "LINUX",
+			Type:        "HDD",
 		},
 	}
 
@@ -55,7 +57,7 @@ func main() {
 	profitbricks.PatchServer(datacenter.Id, server.Id, serverupdaterequest)
 	//It takes a moment for a volume to be provisioned so we wait.
 	time.Sleep(60 * time.Second)
-	
+
 	profitbricks.AttachVolume(datacenter.Id, server.Id, storage.Id)
 
 	volumes := profitbricks.ListVolumes(datacenter.Id)

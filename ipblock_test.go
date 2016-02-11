@@ -24,7 +24,7 @@ func TestReserveIpBlock(t *testing.T) {
 	want := 202
 	var obj = IPBlockReserveRequest{
 		IPBlockProperties: IPBlockProperties{
-			Size:     5,
+			Size:     1,
 			Location: "us/lasdev",
 		},
 	}

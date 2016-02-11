@@ -35,16 +35,18 @@ func TestGetImage(t *testing.T) {
 }
 
 func TestPatchImage(t *testing.T) {
-	want := 403
-	obj := map[string]string{"name": "Renamed img"}
+	want := 422
+	obj := map[string]string{"name": "GO SDK Renamed img"}
 	resp := PatchImage(imgid, obj)
+
 	if resp.Resp.StatusCode != want {
+
 		t.Errorf(bad_status(want, resp.Resp.StatusCode))
 	}
 }
 
 func TestDeleteImage(t *testing.T) {
-	want := 403
+	want := 422
 	resp := DeleteImage(imgid)
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))

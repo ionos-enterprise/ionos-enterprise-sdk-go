@@ -2,37 +2,36 @@
 package profitbricks
 
 import (
-	"testing"
-	"sync"
-	"time"
 	"fmt"
 	"strings"
+	"sync"
+	"testing"
+	"time"
 )
 
 var (
-	once_dc 	sync.Once
-	once_srv 	sync.Once
-	srv_dc_id  	string
-	srv_srvid	string
-	srv_srv01	string
-	srv_cdrom	string
+	once_dc   sync.Once
+	once_srv  sync.Once
+	srv_dc_id string
+	srv_srvid string
+	srv_srv01 string
+	srv_cdrom string
 )
 
-
-func setupDataCenter(){
+func setupDataCenter() {
 	setupCredentials()
-	srv_dc_id = mkdcid("SERVER DC 02")
+	srv_dc_id = mkdcid("GO SDK SERVER DC 02")
 	fmt.Println("Datacenter id: ", srv_dc_id)
-	if len(srv_dc_id) == 0 { 
+	if len(srv_dc_id) == 0 {
 		//panic("DataCenter not created")
 		fmt.Errorf("DataCenter not created")
 	}
 }
 
-func setupServer(){
+func setupServer() {
 	srv_srvid = setupCreateServer(srv_dc_id)
 	fmt.Println("Server id: ", srv_srvid)
-	if len(srv_srvid) == 0 { 
+	if len(srv_srvid) == 0 {
 		fmt.Errorf("Server not created")
 	}
 }
@@ -51,9 +50,9 @@ func setupCreateServer(srv_dc_id string) string {
 
 	var req = CreateServerRequest{
 		ServerProperties: ServerProperties{
-			Name:	"test",
-			Ram: 	1024,
-			Cores:	2,
+			Name:  "test",
+			Ram:   1024,
+			Cores: 2,
 		},
 	}
 	fmt.Println("Creating server....")
@@ -63,7 +62,7 @@ func setupCreateServer(srv_dc_id string) string {
 	srv_prop := GetServer(srv_dc_id, srv.Id)
 	num_tries := 120
 	seconds := 0
-	for seconds < num_tries && srv_prop.Resp.StatusCode == 404  {
+	for seconds < num_tries && srv_prop.Resp.StatusCode == 404 {
 		time.Sleep(time.Second)
 		srv_prop = GetServer(srv_dc_id, srv.Id)
 		seconds++
@@ -78,7 +77,6 @@ func setupCreateServer(srv_dc_id string) string {
 	return srvid
 }
 
-
 //
 //  ----------------- Tests -------------------
 //
@@ -87,12 +85,12 @@ func TestCreateServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 
 	want := 202
-	
+
 	var req = CreateServerRequest{
 		ServerProperties: ServerProperties{
-			Name:       "go01",
-			Ram: 		1024,
-			Cores:    	2,
+			Name:  "go01",
+			Ram:   1024,
+			Cores: 2,
 		},
 	}
 	t.Logf("Creating server in DC: %s", srv_dc_id)
@@ -102,13 +100,13 @@ func TestCreateServer(t *testing.T) {
 	if srv.Resp.StatusCode != want {
 		t.Errorf(bad_status(want, srv.Resp.StatusCode))
 	}
-    //t.Logf("Server ...... %s\n", string(srv.Resp.Body))
+	//t.Logf("Server ...... %s\n", string(srv.Resp.Body))
 }
 
 func TestGetServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	shouldbe := "server"
 	want := 200
 	resp := GetServer(srv_dc_id, srv_srvid)
@@ -123,10 +121,10 @@ func TestGetServer(t *testing.T) {
 func TestListServers(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	shouldbe := "collection"
 	want := 200
-	
+
 	//
 	// List Servers
 	//
@@ -144,11 +142,11 @@ func TestListServers(t *testing.T) {
 func TestPatchServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	want := 202
-	req  := ServerProperties {
-			Name:     "go01renamed",
-			Cores:    1,
+	req := ServerProperties{
+		Name:  "go01renamed",
+		Cores: 1,
 	}
 	resp := PatchServer(srv_dc_id, srv_srvid, req)
 	if resp.Resp.StatusCode != want {
@@ -157,46 +155,46 @@ func TestPatchServer(t *testing.T) {
 	}
 }
 
-func TestStopServer(t *testing.T){
+func TestStopServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	want := 202
 	resp := StopServer(srv_dc_id, srv_srvid)
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
-	
+
 }
 
-func TestStartServer(t *testing.T){
+func TestStartServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	want := 202
 	resp := StartServer(srv_dc_id, srv_srvid)
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
-	
+
 }
 
-func TestRebootServer(t *testing.T){
+func TestRebootServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	want := 202
 	resp := RebootServer(srv_dc_id, srv_srvid)
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
-	
+
 }
 
-func TestListAttachedVolumes_NoItems(t *testing.T){
+func TestListAttachedVolumes_NoItems(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	want := 200
 	shouldbe := "collection"
 
@@ -210,14 +208,13 @@ func TestListAttachedVolumes_NoItems(t *testing.T){
 	}
 }
 
-
-func TestListAttachedCdroms_NoItems(t *testing.T){
+func TestListAttachedCdroms_NoItems(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	want := 200
 	shouldbe := "collection"
-	
+
 	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
 	if resp.Type != shouldbe {
 		t.Errorf(bad_type(shouldbe, resp.Type))
@@ -231,42 +228,41 @@ func TestListAttachedCdroms_NoItems(t *testing.T){
 func TestAttachCdrom(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	want := 202
 
-
 	// Setup -- Find appropriate image
-	resp := ListImages()	
+	resp := ListImages()
 	for i := 0; i < len(resp.Items); i++ {
 		name := resp.Items[i].Properties["name"].(string)
 		region := resp.Items[i].Properties["location"].(string)
 		img_type := resp.Items[i].Properties["imageType"].(string)
-		
-		if ( strings.HasPrefix(name, "ubuntu-") &&
-			region == "us/lasdev" && img_type == "CDROM") {
-				fmt.Println("Found volume: ", name)
-				srv_cdrom = resp.Items[i].Id
-				break
-		}	
+
+		if strings.HasPrefix(name, "ubuntu-") &&
+			region == "us/lasdev" && img_type == "CDROM" {
+			fmt.Println("Found volume: ", name)
+			srv_cdrom = resp.Items[i].Id
+			break
+		}
 	}
-	
+
 	//
 	// Test
 	//
 	resp_cdrom := AttachCdrom(srv_dc_id, srv_srvid, srv_cdrom)
- 	if resp_cdrom.Resp.StatusCode != want {
+	if resp_cdrom.Resp.StatusCode != want {
 		t.Error(string(resp_cdrom.Resp.Body))
 		t.Errorf(bad_status(want, resp_cdrom.Resp.StatusCode))
 	}
 }
 
-func TestListAttachedCdroms(t *testing.T){
+func TestListAttachedCdroms(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
-	
+
 	want := 200
 	shouldbe := "collection"
-	
+
 	t.Log("Waiting for volume to attach...")
 	time.Sleep(time.Second * 120)
 	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
@@ -279,11 +275,10 @@ func TestListAttachedCdroms(t *testing.T){
 	}
 }
 
-
 func TestGetAttachedCdrom(t *testing.T) {
 	want := 200
 	shouldbe := "image"
-	
+
 	resp := GetAttachedCdrom(srv_dc_id, srv_srvid, srv_cdrom)
 	if resp.Type != shouldbe {
 		t.Errorf(bad_type(shouldbe, resp.Type))
@@ -296,18 +291,18 @@ func TestGetAttachedCdrom(t *testing.T) {
 
 func TestDetachCdrom(t *testing.T) {
 	want := 202
-	
+
 	resp := DetachCdrom(srv_dc_id, srv_srvid, srv_cdrom)
 	if resp.StatusCode != want {
 		t.Error(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))
-	}	
+	}
 }
 
 func TestDeleteServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_dc.Do(setupServer)
-	
+
 	want := 202
 
 	resp := DeleteServer(srv_dc_id, srv_srv01)
@@ -317,4 +312,3 @@ func TestDeleteServer(t *testing.T) {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
-
