@@ -47,10 +47,7 @@ type MetaData StringIfaceMap
 // toInstance converts a Resp struct into a Instance struct
 func toInstance(resp Resp) Instance {
 	var ins Instance
-	err := json.Unmarshal(resp.Body, &ins)
-	if err != nil {
-		fmt.Println(err)
-	}
+	json.Unmarshal(resp.Body, &ins)
 	ins.Resp = resp
 	return ins
 }

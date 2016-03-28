@@ -1,7 +1,7 @@
 package profitbricks
 
 // Endpoint is the base url for REST requests .
-var Endpoint = "https://api.profitbricks.com/rest"
+var Endpoint = "https://api.profitbricks.com/rest/v2"
 
 //  Username for authentication .
 var Username string
