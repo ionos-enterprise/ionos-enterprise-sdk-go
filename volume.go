@@ -52,6 +52,7 @@ func CreateSnapshot(dcid string, volid string, jason []byte) Resp {
 		{}
 		`
 	var path = volume_path(dcid, volid)
+	path = path + "/create-snapshot"
 	var data StringMap
 	json.Unmarshal(jason, &data)
 	for key, value := range data {
