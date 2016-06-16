@@ -71,6 +71,5 @@ func RestoreSnapshot(dcid string, volid string, snapshotId string) Resp {
 		path += ("&" + key + "=" + value)
 	}
 
-	fmt.Println(path)
 	return is_command(path, "snapshotId="+ snapshotId)
 }
