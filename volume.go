@@ -62,11 +62,16 @@ func CreateSnapshot(dcid string, volid string, jason []byte) Resp {
 	return is_command(path, empty)
 }
 
-/**
+func RestoreSnapshot(dcid string, volid string, snapshotId string) Resp {
+	var path = volume_path(dcid, volid)
+	path = path + "/restore-snapshot"
+	var data StringMap
 
-
-
-	restoreSnapshot : function(dc_id,volume_id,jason,callback){
-		pbreq.is_post([ "datacenters",dc_id,"volumes",volume_id,"restore-snapshot" ],str,callback)
+	for key, value := range data {
+		path += ("&" + key + "=" + value)
+		fmt.Println(path)
 	}
-**/
+
+	fmt.Println(path)
+	return is_command(path, "snapshotId="+ snapshotId)
+}
