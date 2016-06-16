@@ -1,7 +1,6 @@
 package profitbricks
 
 import "encoding/json"
-import "fmt"
 
 type CreateVolumeRequest struct {
 	VolumeProperties `json:"properties"`
@@ -57,7 +56,6 @@ func CreateSnapshot(dcid string, volid string, jason []byte) Resp {
 	json.Unmarshal(jason, &data)
 	for key, value := range data {
 		path += ("&" + key + "=" + value)
-		fmt.Println(path)
 	}
 	return is_command(path, empty)
 }
