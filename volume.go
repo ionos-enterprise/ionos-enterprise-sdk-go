@@ -69,7 +69,6 @@ func RestoreSnapshot(dcid string, volid string, snapshotId string) Resp {
 
 	for key, value := range data {
 		path += ("&" + key + "=" + value)
-		fmt.Println(path)
 	}
 
 	fmt.Println(path)
