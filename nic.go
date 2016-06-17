@@ -1,6 +1,8 @@
 package profitbricks
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type NicCreateRequest struct {
 	NicProperties `json:"properties"`
@@ -9,7 +11,7 @@ type NicCreateRequest struct {
 type NicProperties struct {
 	Name string   `json:"name,omitempty"`
 	Ips  []string `json:"ips,omitempty"`
-	Dhcp bool     `json:"dhcp,omitempty"`
+	Dhcp bool     `json:"dhcp"`
 	Lan  string   `json:"lan"`
 }
 

@@ -7,7 +7,7 @@ func mkdcid(name string) string {
 		DCProperties: DCProperties{
 			Name:        name,
 			Description: "description",
-			Location:    "us/lasdev",
+			Location:    "us/las",
 		},
 	}
 	dc := CreateDatacenter(request)
