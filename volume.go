@@ -45,29 +45,16 @@ func DeleteVolume(dcid, volid string) Resp {
 	return is_delete(path)
 }
 
-func CreateSnapshot(dcid string, volid string, jason []byte) Resp {
-
-	empty := `
-		{}
-		`
+func CreateSnapshot(dcid string, volid string, name string) Resp {
 	var path = volume_path(dcid, volid)
 	path = path + "/create-snapshot"
-	var data StringMap
-	json.Unmarshal(jason, &data)
-	for key, value := range data {
-		path += ("&" + key + "=" + value)
-	}
-	return is_command(path, empty)
+
+	return is_command(path, "name=" + name)
 }
 
 func RestoreSnapshot(dcid string, volid string, snapshotId string) Resp {
 	var path = volume_path(dcid, volid)
 	path = path + "/restore-snapshot"
-	var data StringMap
 
-	for key, value := range data {
-		path += ("&" + key + "=" + value)
-	}
-
-	return is_command(path, "snapshotId="+ snapshotId)
+	return is_command(path, "snapshotId=" + snapshotId)
 }
