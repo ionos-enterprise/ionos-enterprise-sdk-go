@@ -76,6 +76,28 @@ func TestPatchVolume(t *testing.T) {
 	}
 }
 
+func TestCreateSnapshot(t *testing.T) {
+	want := 202
+
+	resp := CreateSnapshot(dcID, volumeId, "testSnapshot")
+
+	if resp.StatusCode != want {
+		fmt.Println(string(resp.Body))
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+}
+
+func TestRestoreSnapshot(t *testing.T) {
+	want := 202
+
+	resp := RestoreSnapshot(dcID, volumeId, "snapshotId")
+
+	if resp.StatusCode != want {
+		fmt.Println(string(resp.Body))
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+}
+
 func TestCleanup(t *testing.T) {
 	fmt.Println("CLEANING UP AFTER VOLUMES")
 	resp := DeleteVolume(dcID, volumeId)
