@@ -3,13 +3,13 @@ package profitbricks
 
 import (
 	"testing"
-	"time"
 )
 
 var lan_dcid string
 var lanid string
 
 func TestCreateLan(t *testing.T) {
+	setupCredentials()
 	lan_dcid = mkdcid("GO SDK LAN DC")
 	want := 202
 	var request = CreateLanRequest{
@@ -19,35 +19,28 @@ func TestCreateLan(t *testing.T) {
 		},
 	}
 	lan := CreateLan(lan_dcid, request)
+	waitTillProvisioned(lan.Headers.Get("Location"))
 	lanid = lan.Id
-	if lan.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, lan.Resp.StatusCode))
+	if lan.StatusCode != want {
+		t.Errorf(bad_status(want, lan.StatusCode))
 	}
-	time.Sleep(20 * time.Second)
 }
 
 func TestListLans(t *testing.T) {
-	shouldbe := "collection"
 	want := 200
 	lans := ListLans(lan_dcid)
 
-	if lans.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, lans.Type))
-	}
-	if lans.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, lans.Resp.StatusCode))
+	if lans.StatusCode != want {
+		t.Errorf(bad_status(want, lans.StatusCode))
 	}
 }
 
 func TestGetLan(t *testing.T) {
-	shouldbe := "lan"
 	want := 200
 	lan := GetLan(lan_dcid, lanid)
-	if lan.Type != shouldbe {
-		t.Errorf(bad_status(want, lan.Resp.StatusCode))
-	}
-	if lan.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, lan.Resp.StatusCode))
+
+	if lan.StatusCode != want {
+		t.Errorf(bad_status(want, lan.StatusCode))
 	}
 }
 
@@ -56,8 +49,8 @@ func TestPatchLan(t *testing.T) {
 	obj := map[string]string{"public": "false"}
 
 	lan := PatchLan(lan_dcid, lanid, obj)
-	if lan.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, lan.Resp.StatusCode))
+	if lan.StatusCode != want {
+		t.Errorf(bad_status(want, lan.StatusCode))
 	}
 }
 
@@ -70,5 +63,6 @@ func TestDeleteLan(t *testing.T) {
 }
 
 func TestLanCleanup(t *testing.T) {
+	DeleteLan(lan_dcid, lanid)
 	DeleteDatacenter(lan_dcid)
 }

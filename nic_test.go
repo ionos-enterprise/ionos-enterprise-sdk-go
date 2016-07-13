@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"testing"
-	"time"
 )
 
 var nic_dcid string
@@ -10,57 +9,52 @@ var nic_srvid string
 var nicid string
 
 func TestCreateNic(t *testing.T) {
+	setupCredentials()
 	nic_dcid = mkdcid("GO SDK NIC DC")
 	nic_srvid = mksrvid(nic_dcid)
-	time.Sleep(15 * time.Second)
+
 	want := 202
-	var request = NicCreateRequest{
-		NicProperties{
+	var request = Nic{
+		Properties: NicProperties{
 			Lan:  "1",
 			Name: "Test NIC",
 		},
 	}
+
 	resp := CreateNic(nic_dcid, nic_srvid, request)
+	waitTillProvisioned(resp.Headers.Get("Location"))
 	nicid = resp.Id
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Error(resp.Response)
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
-	time.Sleep(20 * time.Second)
 }
 
 func TestListNics(t *testing.T) {
 	//t.Parallel()
-	shouldbe := "collection"
 	want := 200
 	resp := ListNics(nic_dcid, nic_srvid)
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
 func TestGetNic(t *testing.T) {
-	//t.Parallel()
-	shouldbe := "nic"
 	want := 200
 	resp := GetNic(nic_dcid, nic_srvid, nicid)
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 func TestPatchNic(t *testing.T) {
-	//t.Parallel()
 	want := 202
-	obj := map[string]string{"name": "Renamed Nic", "lan": "1"}
+	obj := NicProperties{Name: "Renamed Nic", Lan: "1"}
 
 	resp := PatchNic(nic_dcid, nic_srvid, nicid, obj)
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 func TestDeleteNic(t *testing.T) {

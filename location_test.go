@@ -1,33 +1,26 @@
 package profitbricks
 
-import "testing"
+import (
+	"testing"
+)
 
-//import "fmt"
+var locid string
 
 func TestListLocations(t *testing.T) {
-	//t.Parallel()
-	shouldbe := "collection"
+	setupCredentials()
 	want := 200
 	resp := ListLocations()
-
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
-	}
+	locid = resp.Items[0].Id
 }
 
 func TestGetLocation(t *testing.T) {
 	//t.Parallel()
-	shouldbe := "location"
 	want := 200
-	locid := mklocid()
 	resp := GetLocation(locid)
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }

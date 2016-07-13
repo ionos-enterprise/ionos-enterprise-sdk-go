@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/profitbricks/profitbricks-sdk-go"
+	"github.com/StackPointCloud/profitbricks-sdk-go"
 )
 
 func main() {
@@ -14,12 +14,10 @@ func main() {
 	//Sets depth.
 	profitbricks.SetDepth("5")
 
-	dcrequest := profitbricks.CreateDatacenterRequest{
-		DCProperties: profitbricks.DCProperties{
-			Name:        "example.go3",
-			Description: "description",
-			Location:    "us/lasdev",
-		},
+	dcrequest := profitbricks.DatacenterProperties{
+		Name:        "example.go3",
+		Description: "description",
+		Location:    "us/lasdev",
 	}
 
 	datacenter := profitbricks.CreateDatacenter(dcrequest)

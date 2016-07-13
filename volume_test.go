@@ -9,44 +9,38 @@ import (
 var volumeId string
 
 func TestCreateVolume(t *testing.T) {
+	setupCredentials()
 	want := 202
-
-	var request = CreateVolumeRequest{
-		VolumeProperties: VolumeProperties{
-			Size:   4,
-			Name:   "Volume Test",
-			Image:  "fbaae2b2-c899-11e5-aa10-52540005ab80",
-			Type:   "HDD",
-			SshKey: []string{"hQGOEJeFL91EG3+l9TtRbWNjzhDVHeLuL3NWee6bekA="},
+	var request = Volume{
+		Properties: VolumeProperties{
+			Size:          5,
+			Name:          "Volume Test",
+			Image:         "6aa59ab7-3f45-11e6-91c6-52540005ab80",
+			Type:          "HDD",
+			ImagePassword: "test1234",
 		},
 	}
 
 	dcID = mkdcid("GO SDK VOLUME DC")
-	fmt.Println("*****************")
-	fmt.Println(dcID)
-	fmt.Println("*****************")
 	resp := CreateVolume(dcID, request)
 
+	waitTillProvisioned(resp.Headers.Get("Location"))
 	volumeId = resp.Id
 
-	if resp.Resp.StatusCode != want {
-		fmt.Println(string(resp.Resp.Body))
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		fmt.Println(string(resp.Response))
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 
 	time.Sleep(30 * time.Second)
 }
 
 func TestListVolumes(t *testing.T) {
-	shouldbe := "collection"
 	want := 200
 	resp := ListVolumes(dcID)
 
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
@@ -56,8 +50,8 @@ func TestGetVolume(t *testing.T) {
 	resp := GetVolume(dcID, volumeId)
 	fmt.Println(dcID)
 	fmt.Println(volumeId)
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
@@ -70,9 +64,9 @@ func TestPatchVolume(t *testing.T) {
 
 	resp := PatchVolume(dcID, volumeId, obj)
 
-	if resp.Resp.StatusCode != want {
-		fmt.Println(string(resp.Resp.Body))
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		fmt.Println(string(resp.Response))
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
@@ -80,18 +74,21 @@ func TestCreateSnapshot(t *testing.T) {
 	want := 202
 
 	resp := CreateSnapshot(dcID, volumeId, "testSnapshot")
-
+	waitTillProvisioned(resp.Headers.Get("Location"))
 	if resp.StatusCode != want {
-		fmt.Println(string(resp.Body))
+		fmt.Println(string(resp.Response))
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
+	snapshotId = resp.Id
+
 }
 
 func TestRestoreSnapshot(t *testing.T) {
 	want := 202
 
-	resp := RestoreSnapshot(dcID, volumeId, "snapshotId")
+	resp := RestoreSnapshot(dcID, volumeId, snapshotId)
 
+	waitTillProvisioned(resp.Headers.Get("Location"))
 	if resp.StatusCode != want {
 		fmt.Println(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))
