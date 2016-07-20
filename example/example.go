@@ -14,8 +14,8 @@ func main() {
 	//Sets depth.
 	profitbricks.SetDepth("5")
 
-	dcrequest := profitbricks.CreateDatacenterRequest{
-		DCProperties: profitbricks.DCProperties{
+	dcrequest := profitbricks.Datacenter{
+		Properties: profitbricks.DatacenterProperties{
 			Name:        "example.go3",
 			Description: "description",
 			Location:    "us/lasdev",
@@ -24,8 +24,8 @@ func main() {
 
 	datacenter := profitbricks.CreateDatacenter(dcrequest)
 
-	serverrequest := profitbricks.CreateServerRequest{
-		ServerProperties: profitbricks.ServerProperties{
+	serverrequest := profitbricks.Server{
+		Properties: profitbricks.ServerProperties{
 			Name:  "go01",
 			Ram:   1024,
 			Cores: 2,
@@ -33,12 +33,8 @@ func main() {
 	}
 	server := profitbricks.CreateServer(datacenter.Id, serverrequest)
 
-	/*images := profitbricks.ListImages()
-
-	fmt.Println(images.Items)
-	*/
-	volumerequest := profitbricks.CreateVolumeRequest{
-		VolumeProperties: profitbricks.VolumeProperties{
+	volumerequest := profitbricks.Volume{
+		Properties: profitbricks.VolumeProperties{
 			Size:        1,
 			Name:        "Volume Test",
 			LicenceType: "LINUX",

@@ -1,65 +1,67 @@
 package profitbricks
 
 import (
-	"fmt"
+	"os"
 	"testing"
 )
 
 var dcID string
 
 func TestListDatacenters(t *testing.T) {
-	shouldbe := "collection"
+	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	want := 200
+
 	resp := ListDatacenters()
 
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
+
 func TestCreateDatacenter(t *testing.T) {
+	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	want := 202
-	var obj = CreateDatacenterRequest{
-		DCProperties: DCProperties{
+	var obj = Datacenter{
+		Properties: DatacenterProperties{
 			Name:        "GO SDK",
 			Description: "description",
-			Location:    "us/lasdev",
+			Location:    "us/las",
 		},
 	}
-	resp := CreateDatacenter(obj)
+	resp := CompositeCreateDatacenter(obj)
 	dcID = resp.Id
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 func TestGetDatacenter(t *testing.T) {
-	shouldbe := "datacenter"
+	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	want := 200
-
-	fmt.Println(dcID)
 	resp := GetDatacenter(dcID)
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
 func TestPatchDatacenter(t *testing.T) {
+	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	want := 202
-	obj := map[string]string{"name": "Renamed DC"}
+	newName := "Renamed DC"
+	obj := DatacenterProperties{Name: newName} //map[string]string{"name": "Renamed DC"}
 
 	resp := PatchDatacenter(dcID, obj)
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+	if resp.Properties.Name != newName {
+		t.Errorf("Not updated")
 	}
 
 }
 
 func TestDeleteDatacenter(t *testing.T) {
+	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	want := 202
 	resp := DeleteDatacenter(dcID)
 	if resp.StatusCode != want {

@@ -7,11 +7,6 @@ import (
 	"testing"
 )
 
-// bad_type is the return string for bad type errors
-func bad_type(shouldbe, got string) string {
-	return " Type is " + got + " should be " + shouldbe
-}
-
 // bad_status is the return string for bad status errors
 func bad_status(wanted, got int) string {
 	return " StatusCode is " + strconv.Itoa(got) + " wanted " + strconv.Itoa(wanted)
@@ -22,7 +17,6 @@ func bad_status(wanted, got int) string {
 var passwd = os.Getenv("PB_PASSWORD")*/
 var username = os.Getenv("PROFITBRICKS_USERNAME")
 var passwd = os.Getenv("PROFITBRICKS_PASSWORD")
-
 
 // Set Endpoint for testing
 var endpoint = "https://api.profitbricks.com/rest/v2"
@@ -40,12 +34,12 @@ func TestSetEndpoint(t *testing.T) {
 
 func TestMain(m *testing.M) {
 	r := m.Run()
-	serverCleanup()
+	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	os.Exit(r)
 }
 
 // Setup creds for single running tests
 func setupCredentials() {
-	SetEndpoint(endpoint)
-	SetAuth(username, passwd)
+	SetEndpoint("https://api.profitbricks.com/rest/v2")
+	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 }

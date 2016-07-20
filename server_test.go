@@ -3,19 +3,18 @@ package profitbricks
 
 import (
 	"fmt"
-	"strings"
 	"sync"
 	"testing"
-	"time"
 )
 
 var (
-	once_dc   sync.Once
-	once_srv  sync.Once
-	srv_dc_id string
-	srv_srvid string
-	srv_srv01 string
-	srv_cdrom string
+	once_dc     sync.Once
+	once_srv    sync.Once
+	once_volume sync.Once
+	srv_dc_id   string
+	srv_srvid   string
+	srv_vol     string
+	imageId     string
 )
 
 func setupDataCenter() {
@@ -36,20 +35,33 @@ func setupServer() {
 	}
 }
 
-// called from TestMain
-func serverCleanup() {
-	// TODO how to do cleanup, should use TestMain
-	fmt.Println("Performing cleanup...")
-	res := DeleteServer(srv_dc_id, srv_srvid)
-	fmt.Println("DeleteVolume: ", res.StatusCode)
-	res = DeleteDatacenter(srv_dc_id)
-	fmt.Println("DeleteDatacenter: ", res.StatusCode)
+func setupVolume() {
+
+	vol := Volume{
+		Properties: VolumeProperties{
+			Type:          "HDD",
+			Image:         "6aa59ab7-3f45-11e6-91c6-52540005ab80",
+			Size:          5,
+			ImagePassword: "test1234",
+		},
+	}
+	resp := CreateVolume(srv_dc_id, vol)
+	srv_vol = resp.Id
+	fmt.Println("Datacenter:", srv_vol)
+	fmt.Println("Volume:", srv_vol)
+	fmt.Println(resp.Headers.Get("Location"))
+
+	waitTillProvisioned(resp.Headers.Get("Location"))
+	if len(srv_vol) == 0 {
+		fmt.Errorf("Volume not created")
+	}
+
 }
 
 func setupCreateServer(srv_dc_id string) string {
 
-	var req = CreateServerRequest{
-		ServerProperties: ServerProperties{
+	var req = Server{
+		Properties: ServerProperties{
 			Name:  "test",
 			Ram:   1024,
 			Cores: 2,
@@ -58,36 +70,18 @@ func setupCreateServer(srv_dc_id string) string {
 	fmt.Println("Creating server....")
 	srv := CreateServer(srv_dc_id, req)
 	// wait for server to be running
-	fmt.Println("Waiting for server to start....")
-	srv_prop := GetServer(srv_dc_id, srv.Id)
-	num_tries := 120
-	seconds := 0
-	for seconds < num_tries && srv_prop.Resp.StatusCode == 404 {
-		time.Sleep(time.Second)
-		srv_prop = GetServer(srv_dc_id, srv.Id)
-		seconds++
-	}
-	if num_tries == 0 {
-		fmt.Errorf("Timeout! Server not running in 120 secs")
-	} else {
-		//fmt.Printf("Server %s created in %d seconds\n", string(srv.Properties["name"].(string)), seconds)
-	}
-
+	waitTillProvisioned(srv.Headers.Get("Location"))
 	srvid := srv.Id
 	return srvid
 }
-
-//
-//  ----------------- Tests -------------------
-//
 
 func TestCreateServer(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 
 	want := 202
 
-	var req = CreateServerRequest{
-		ServerProperties: ServerProperties{
+	var req = Server{
+		Properties: ServerProperties{
 			Name:  "go01",
 			Ram:   1024,
 			Cores: 2,
@@ -95,46 +89,34 @@ func TestCreateServer(t *testing.T) {
 	}
 	t.Logf("Creating server in DC: %s", srv_dc_id)
 	srv := CreateServer(srv_dc_id, req)
-
-	srv_srv01 = srv.Id
-	if srv.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, srv.Resp.StatusCode))
+	waitTillProvisioned(srv.Headers.Get("Location"))
+	srv_srvid = srv.Id
+	if srv.StatusCode != want {
+		t.Errorf(bad_status(want, srv.StatusCode))
 	}
-	//t.Logf("Server ...... %s\n", string(srv.Resp.Body))
 }
 
 func TestGetServer(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
-
-	shouldbe := "server"
 	want := 200
 	resp := GetServer(srv_dc_id, srv_srvid)
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
 func TestListServers(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
+	if srv_dc_id == "" {
+		once_dc.Do(setupDataCenter)
+		once_srv.Do(setupServer)
+	}
 
-	shouldbe := "collection"
 	want := 200
 
-	//
-	// List Servers
-	//
 	resp := ListServers(srv_dc_id)
-	//t.Logf("ListServers ...... %s\n", string(resp.Resp.Body))
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 
 }
@@ -148,10 +130,11 @@ func TestPatchServer(t *testing.T) {
 		Name:  "go01renamed",
 		Cores: 1,
 	}
+	fmt.Println("SERVER ID : ", srv_srvid)
 	resp := PatchServer(srv_dc_id, srv_srvid, req)
-	if resp.Resp.StatusCode != want {
-		t.Error("resp: ", resp.Resp.Body)
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Error("resp: ", resp.Response)
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
@@ -191,110 +174,122 @@ func TestRebootServer(t *testing.T) {
 
 }
 
-func TestListAttachedVolumes_NoItems(t *testing.T) {
+func TestAttachImage(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
+	once_volume.Do(setupVolume)
 
-	want := 200
-	shouldbe := "collection"
+	want := 202
 
-	resp := ListAttachedVolumes(srv_dc_id, srv_srvid)
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Error(string(resp.Resp.Body))
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	resp := AttachVolume(srv_dc_id, srv_srvid, srv_vol)
+	waitTillProvisioned(resp.Headers.Get("Location"))
+
+	if resp.StatusCode != want {
+		t.Error(string(resp.Response))
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
-func TestListAttachedCdroms_NoItems(t *testing.T) {
+func TestListAttachedVolumes(t *testing.T) {
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
 
 	want := 200
-	shouldbe := "collection"
 
-	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
+	resp := ListAttachedVolumes(srv_dc_id, srv_srvid)
+
+	if resp.StatusCode != want {
+		t.Error(string(resp.Response))
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
-	if resp.Resp.StatusCode != want {
-		t.Error(string(resp.Resp.Body))
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+}
+
+func TestGetAttachedVolume(t *testing.T) {
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
+
+	want := 200
+
+	resp := GetAttachedVolume(srv_dc_id, srv_srvid, srv_vol)
+	fmt.Println(resp)
+
+	if resp.StatusCode != want {
+		t.Error(string(resp.Response))
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+}
+
+func TestDetachVolume(t *testing.T) {
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
+	once_volume.Do(setupVolume)
+
+	want := 202
+	fmt.Println(srv_dc_id, srv_srvid, srv_vol)
+	resp := DetachVolume(srv_dc_id, srv_srvid, srv_vol)
+	if resp.StatusCode != want {
+		t.Error(string(resp.Body))
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
 func TestAttachCdrom(t *testing.T) {
+	want := 202
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
 
-	want := 202
-
-	// Setup -- Find appropriate image
-	resp := ListImages()
-	for i := 0; i < len(resp.Items); i++ {
-		name := resp.Items[i].Properties["name"].(string)
-		region := resp.Items[i].Properties["location"].(string)
-		img_type := resp.Items[i].Properties["imageType"].(string)
-
-		if strings.HasPrefix(name, "ubuntu-") &&
-			region == "us/lasdev" && img_type == "CDROM" {
-			fmt.Println("Found volume: ", name)
-			srv_cdrom = resp.Items[i].Id
+	images := ListImages()
+	for _, image := range images.Items {
+		if image.Properties.ImageType == "CDROM" && image.Properties.Location == "us/las" {
+			imageId = image.Id
 			break
 		}
 	}
 
-	//
-	// Test
-	//
-	resp_cdrom := AttachCdrom(srv_dc_id, srv_srvid, srv_cdrom)
-	if resp_cdrom.Resp.StatusCode != want {
-		t.Error(string(resp_cdrom.Resp.Body))
-		t.Errorf(bad_status(want, resp_cdrom.Resp.StatusCode))
+	resp := AttachCdrom(srv_dc_id, srv_srvid, imageId)
+
+	waitTillProvisioned(resp.Headers.Get("Location"))
+
+	if resp.StatusCode != want {
+		t.Error(string(resp.Response))
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
 func TestListAttachedCdroms(t *testing.T) {
+	want := 200
+
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
 
-	want := 200
-	shouldbe := "collection"
-
-	t.Log("Waiting for volume to attach...")
-	time.Sleep(time.Second * 120)
 	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Error(string(resp.Resp.Body))
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	if resp.StatusCode != want {
+		t.Error(string(resp.Response))
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
 func TestGetAttachedCdrom(t *testing.T) {
 	want := 200
-	shouldbe := "image"
 
-	resp := GetAttachedCdrom(srv_dc_id, srv_srvid, srv_cdrom)
-	if resp.Type != shouldbe {
-		t.Errorf(bad_type(shouldbe, resp.Type))
-	}
-	if resp.Resp.StatusCode != want {
-		t.Error(string(resp.Resp.Body))
-		t.Errorf(bad_status(want, resp.Resp.StatusCode))
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
+
+	resp := GetAttachedCdrom(srv_dc_id, srv_srvid, imageId)
+	if resp.StatusCode != want {
+		t.Error(string(resp.Response))
+		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
 
 func TestDetachCdrom(t *testing.T) {
 	want := 202
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
 
-	resp := DetachCdrom(srv_dc_id, srv_srvid, srv_cdrom)
+	resp := DetachCdrom(srv_dc_id, srv_srvid, imageId)
+
 	if resp.StatusCode != want {
-		t.Error(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 }
@@ -305,10 +300,68 @@ func TestDeleteServer(t *testing.T) {
 
 	want := 202
 
-	resp := DeleteServer(srv_dc_id, srv_srv01)
-	srv_srv01 = ""
+	resp := DeleteServer(srv_dc_id, srv_srvid)
+
 	if resp.StatusCode != want {
 		t.Error(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+
+	fmt.Println("Removed everything")
+}
+
+func TestCreateCompositeServer(t *testing.T) {
+	once_dc.Do(setupDataCenter)
+
+	want := 202
+
+	var req = Server{
+		Properties: ServerProperties{
+			Name:  "server1",
+			Ram:   2048,
+			Cores: 1,
+		},
+		Entities: &ServerEntities{
+			Volumes: &Volumes{
+				Items: []Volume{
+					Volume{
+						Properties: VolumeProperties{
+							Type:          "HDD",
+							Size:          5,
+							Name:          "volume1",
+							Image:         "6aa59ab7-3f45-11e6-91c6-52540005ab80",
+							ImagePassword: "test1234",
+						},
+					},
+				},
+			},
+			Nics: &Nics{
+				Items: []Nic{
+					Nic{
+						Properties: NicProperties{
+							Name: "nic",
+							Lan:  1,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	t.Logf("Creating server in DC: %s", srv_dc_id)
+	srv := CreateServer(srv_dc_id, req)
+
+	if srv.StatusCode != want {
+		fmt.Println(srv.Response)
+		t.Errorf(bad_status(want, srv.StatusCode))
+	}
+	waitTillProvisioned(srv.Headers.Get("Location"))
+
+	resp := DeleteDatacenter(srv_dc_id)
+
+	if resp.StatusCode != want {
+		fmt.Println(srv.Response)
+		t.Errorf(bad_status(want, resp.StatusCode))
+
 	}
 }
