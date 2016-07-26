@@ -23,10 +23,10 @@ type FirewallruleProperties struct {
 	SourceMac      string `json:"sourceMac,omitempty"`
 	SourceIp       string `json:"sourceIp,omitempty"`
 	TargetIp       string `json:"targetIp,omitempty"`
-	IcmpCode       int    `json:"icmpCode,omitempty"`
-	IcmpType       int    `json:"icmpType,omitempty"`
-	PortRangeStart int    `json:"portRangeStart,omitempty"`
-	PortRangeEnd   int    `json:"portRangeEnd,omitempty"`
+	IcmpCode       interface{}    `json:"icmpCode,omitempty"`
+	IcmpType       interface{}    `json:"icmpType,omitempty"`
+	PortRangeStart interface{}    `json:"portRangeStart,omitempty"`
+	PortRangeEnd   interface{}    `json:"portRangeEnd,omitempty"`
 }
 
 type FirewallRules struct {

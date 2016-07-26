@@ -20,7 +20,7 @@ type Lan struct {
 
 type LanProperties struct {
 	Name   string `json:"name,omitempty"`
-	Public bool   `json:"public,omitempty"`
+	Public interface{}   `json:"public,omitempty"`
 }
 
 type LanEntities struct {
