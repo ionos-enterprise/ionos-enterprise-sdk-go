@@ -31,3 +31,5 @@ _testmain.go
 .idea/profitbricks-sdk-go.iml
 .idea/vcs.xml
 .idea/workspace.xml
+/.idea/libraries/
+.DS_Store
