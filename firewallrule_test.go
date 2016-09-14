@@ -48,9 +48,8 @@ func setup() {
 	nicid = datacenter.Entities.Servers.Items[0].Entities.Nics.Items[0].Id
 }
 func TestCreateFirewallRule(t *testing.T) {
+	setupTestEnv()
 	want := 202
-	setupCredentials()
-
 	setup()
 
 	fw := FirewallRule{
@@ -83,9 +82,7 @@ func TestGetFirewallRule(t *testing.T) {
 
 func TestListFirewallRules(t *testing.T) {
 	want := 200
-
 	fws := ListFirewallRules(dcID, srv_srvid, nicid)
-
 	if fws.StatusCode != want {
 		t.Error(fws.Response)
 		t.Errorf(bad_status(want, fws.StatusCode))
@@ -94,13 +91,10 @@ func TestListFirewallRules(t *testing.T) {
 
 func TestPatchFirewallRule(t *testing.T) {
 	want := 202
-
 	props := FirewallruleProperties{
 		Name: "updated",
 	}
-
 	fw := PatchFirewallRule(dcID, srv_srvid, nicid, fwId, props)
-
 	if fw.StatusCode != want {
 		t.Error(fw.Response)
 		t.Errorf(bad_status(want, fw.StatusCode))
@@ -113,7 +107,6 @@ func TestPatchFirewallRule(t *testing.T) {
 
 func TestDeleteFirewallRule(t *testing.T) {
 	want := 202
-
 	resp := DeleteFirewallRule(dcID, srv_srvid, nicid, fwId)
 
 	if resp.StatusCode != want {

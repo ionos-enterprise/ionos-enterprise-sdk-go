@@ -7,7 +7,7 @@ import (
 var locid string
 
 func TestListLocations(t *testing.T) {
-	setupCredentials()
+	setupTestEnv()
 	want := 200
 	resp := ListLocations()
 	if resp.StatusCode != want {

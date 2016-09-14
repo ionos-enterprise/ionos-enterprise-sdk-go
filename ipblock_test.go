@@ -6,7 +6,7 @@ import "testing"
 var ipblkid string
 
 func TestListIpBlocks(t *testing.T) {
-	setupCredentials()
+	setupTestEnv()
 	want := 200
 	resp := ListIpBlocks()
 	if resp.StatusCode != want {

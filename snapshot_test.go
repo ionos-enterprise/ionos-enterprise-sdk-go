@@ -8,7 +8,7 @@ import (
 var snapshotId string
 
 func createVolume() {
-	setupCredentials()
+	setupTestEnv()
 	want := 202
 	var request = Volume{
 		Properties: VolumeProperties{

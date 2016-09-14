@@ -1,14 +1,13 @@
 package profitbricks
 
 import (
-	"os"
 	"testing"
 )
 
 var dcID string
 
 func TestListDatacenters(t *testing.T) {
-	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
+	setupTestEnv()
 	want := 200
 
 	resp := ListDatacenters()
@@ -19,7 +18,6 @@ func TestListDatacenters(t *testing.T) {
 }
 
 func TestCreateDatacenter(t *testing.T) {
-	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	want := 202
 	var obj = Datacenter{
 		Properties: DatacenterProperties{
@@ -36,7 +34,6 @@ func TestCreateDatacenter(t *testing.T) {
 	}
 }
 func TestGetDatacenter(t *testing.T) {
-	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	want := 200
 	resp := GetDatacenter(dcID)
 	if resp.StatusCode != want {
@@ -45,7 +42,6 @@ func TestGetDatacenter(t *testing.T) {
 }
 
 func TestPatchDatacenter(t *testing.T) {
-	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	want := 202
 	newName := "Renamed DC"
 	obj := DatacenterProperties{Name: newName} //map[string]string{"name": "Renamed DC"}
@@ -61,7 +57,6 @@ func TestPatchDatacenter(t *testing.T) {
 }
 
 func TestDeleteDatacenter(t *testing.T) {
-	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	want := 202
 	resp := DeleteDatacenter(dcID)
 	if resp.StatusCode != want {

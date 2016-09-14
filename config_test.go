@@ -17,9 +17,7 @@ func bad_status(wanted, got int) string {
 var passwd = os.Getenv("PB_PASSWORD")*/
 var username = os.Getenv("PROFITBRICKS_USERNAME")
 var passwd = os.Getenv("PROFITBRICKS_PASSWORD")
-
-// Set Endpoint for testing
-var endpoint = "https://api.profitbricks.com/rest/v2"
+var endpoint = os.Getenv("PROFITBRICKS_API_URL")
 
 func TestSetAuth(t *testing.T) {
 	fmt.Println("Current Username ", Username)
@@ -39,7 +37,7 @@ func TestMain(m *testing.M) {
 }
 
 // Setup creds for single running tests
-func setupCredentials() {
-	SetEndpoint("https://api.profitbricks.com/rest/v2")
+func setupTestEnv() {
 	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
+	SetEndpoint(os.Getenv("PROFITBRICKS_API_URL"))
 }

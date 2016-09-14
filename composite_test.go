@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"fmt"
-	"os"
 	"strconv"
 	"testing"
 	"time"
@@ -11,7 +10,7 @@ import (
 var ipId string
 
 func TestCompositeCreate(t *testing.T) {
-	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
+	setupTestEnv()
 	location := "us/las"
 
 	ipblockreq := IpBlock{
@@ -54,7 +53,6 @@ func TestCompositeCreate(t *testing.T) {
 	fmt.Println(ipblockresp.Properties.Ips)
 	dc := CompositeCreateDatacenter(datacenter)
 	dcID = dc.Id
-
 	waitTillProvisioned(dc.Headers.Get("Location"))
 	SetDepth("5")
 
