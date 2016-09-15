@@ -9,7 +9,7 @@ var nic_srvid string
 var nicid string
 
 func TestCreateNic(t *testing.T) {
-	setupCredentials()
+	setupTestEnv()
 	nic_dcid = mkdcid("GO SDK NIC DC")
 	nic_srvid = mksrvid(nic_dcid)
 
@@ -18,6 +18,7 @@ func TestCreateNic(t *testing.T) {
 		Properties: NicProperties{
 			Lan:  1,
 			Name: "Test NIC",
+			Nat:  false,
 		},
 	}
 

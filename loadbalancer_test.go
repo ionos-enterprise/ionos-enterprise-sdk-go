@@ -11,7 +11,7 @@ var lbalid string
 var lbal_srvid string
 
 func TestCreateLoadbalancer(t *testing.T) {
-	setupCredentials()
+	setupTestEnv()
 	want := 202
 	lbal_dcid = mkdcid("GO SDK LB DC")
 	lbal_srvid = mksrvid(lbal_dcid)

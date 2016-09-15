@@ -18,7 +18,7 @@ var (
 )
 
 func setupDataCenter() {
-	setupCredentials()
+	setupTestEnv()
 	srv_dc_id = mkdcid("GO SDK SERVER DC 02")
 	fmt.Println("Datacenter id: ", srv_dc_id)
 	if len(srv_dc_id) == 0 {

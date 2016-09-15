@@ -32,7 +32,8 @@ func SetDepth(newdepth string) string {
 func mk_url(path string) string {
 	if strings.HasPrefix(path, "http") {
 		//REMOVE AFTER TESTING
-		path := strings.Replace(path, "https://api.profitbricks.com/rest/v2", Endpoint, 1)
+		//FIXME @jasmin Is this still relevant?
+		path := strings.Replace(path, "https://api.profitbricks.com/cloudapi/v3", Endpoint, 1)
 		// END REMOVE
 		return path
 	}

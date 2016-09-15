@@ -9,7 +9,7 @@ var lan_dcid string
 var lanid string
 
 func TestCreateLan(t *testing.T) {
-	setupCredentials()
+	setupTestEnv()
 	lan_dcid = mkdcid("GO SDK LAN DC")
 	want := 202
 	var request = Lan{

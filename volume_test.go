@@ -9,15 +9,16 @@ import (
 var volumeId string
 
 func TestCreateVolume(t *testing.T) {
-	setupCredentials()
+	setupTestEnv()
 	want := 202
 	var request = Volume{
 		Properties: VolumeProperties{
-			Size:          5,
-			Name:          "Volume Test",
-			Image:         "6aa59ab7-3f45-11e6-91c6-52540005ab80",
-			Type:          "HDD",
-			ImagePassword: "test1234",
+			Size:             5,
+			Name:             "Volume Test",
+			Image:            "6aa59ab7-3f45-11e6-91c6-52540005ab80",
+			Type:             "HDD",
+			ImagePassword:    "test1234",
+			AvailabilityZone: "ZONE_3",
 		},
 	}
 

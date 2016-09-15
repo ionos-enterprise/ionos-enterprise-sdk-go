@@ -10,8 +10,7 @@ import (
 var imgid string
 
 func TestListImages(t *testing.T) {
-	setupCredentials()
-
+	setupTestEnv()
 	want := 200
 	resp := ListImages()
 
