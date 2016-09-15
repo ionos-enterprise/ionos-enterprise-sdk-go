@@ -18,6 +18,8 @@ var passwd = os.Getenv("PB_PASSWORD")*/
 var username = os.Getenv("PROFITBRICKS_USERNAME")
 var passwd = os.Getenv("PROFITBRICKS_PASSWORD")
 var endpoint = os.Getenv("PROFITBRICKS_API_URL")
+var location = "us/las"
+var image = getImageId(location, "ubuntu-16.04", "HDD")
 
 func TestSetAuth(t *testing.T) {
 	fmt.Println("Current Username ", Username)
@@ -28,6 +30,10 @@ func TestSetAuth(t *testing.T) {
 func TestSetEndpoint(t *testing.T) {
 	SetEndpoint(endpoint)
 	fmt.Println("Endpoint is ", Endpoint)
+}
+
+func TestImage(t *testing.T){
+	fmt.Println("Image ID is:", image)
 }
 
 func TestMain(m *testing.M) {

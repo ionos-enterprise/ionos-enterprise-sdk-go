@@ -11,7 +11,7 @@ func setup() {
 	datacenter := Datacenter{
 		Properties: DatacenterProperties{
 			Name:     "composite test",
-			Location: "us/las",
+			Location: location,
 		},
 		Entities: DatacenterEntities{
 			Servers: &Servers{

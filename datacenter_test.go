@@ -23,7 +23,7 @@ func TestCreateDatacenter(t *testing.T) {
 		Properties: DatacenterProperties{
 			Name:        "GO SDK",
 			Description: "description",
-			Location:    "us/las",
+			Location:    location,
 		},
 	}
 	resp := CompositeCreateDatacenter(obj)

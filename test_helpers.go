@@ -3,6 +3,8 @@ package profitbricks
 import (
 	"fmt"
 	"time"
+	"strings"
+	"os"
 )
 
 func mkdcid(name string) string {
@@ -69,4 +71,34 @@ func waitTillProvisioned(path string) {
 		time.Sleep(10 * time.Second)
 		i++
 	}
+}
+
+func getImageId(location string, imageName string, imageType string) string {
+	if imageName == "" {
+		return ""
+	}
+
+	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
+
+	images := ListImages()
+	if images.StatusCode > 299 {
+		fmt.Printf("Error while fetching the list of images %s", images.Response)
+	}
+
+	if len(images.Items) > 0 {
+		for _, i := range images.Items {
+			imgName := ""
+			if i.Properties.Name != "" {
+				imgName = i.Properties.Name
+			}
+
+			if imageType == "SSD" {
+				imageType = "HDD"
+			}
+			if imgName != "" && strings.Contains(strings.ToLower(imgName), strings.ToLower(imageName)) && i.Properties.ImageType == imageType && i.Properties.Location == location && i.Properties.Public == true {
+				return i.Id
+			}
+		}
+	}
+	return ""
 }

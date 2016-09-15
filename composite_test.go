@@ -11,7 +11,6 @@ var ipId string
 
 func TestCompositeCreate(t *testing.T) {
 	setupTestEnv()
-	location := "us/las"
 
 	datacenter := Datacenter{
 		Properties: DatacenterProperties{
@@ -51,7 +50,7 @@ func TestCompositeCreate(t *testing.T) {
 							Type:    "HDD",
 							Size:    10,
 							Name:    "volume1",
-							Image:   "a410fd07-57e6-11e6-ba9b-52540005ab80",
+							Image:   image,
 							Bus:     "VIRTIO",
 							SshKeys: []string{"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoLVLHON4BSK3D8L4H79aFo+0cj7VM2NiRR/K9wrfkK/XiTc7FlEU4Bs8WLZcsIOxbCGWn2zKZmrLaxYlY+/3aJrxDxXYCy8lRUMnqcQ2JCFY6tpZt/DylPhS9L6qYNpJ0F4FlqRsWxsjpF8TDdJi64k2JFJ8TkvX36P2/kqyFfI+N0/axgjhqV3BgNgApvMt9jxWB5gi8LgDpw9b+bHeMS7TrAVDE7bzT86dmfbTugtiME8cIday8YcRb4xAFgRH8XJVOcE3cs390V/dhgCKy1P5+TjQMjKbFIy2LJoxb7bd38kAl1yafZUIhI7F77i7eoRidKV71BpOZsaPEbWUP jasmin@Jasmins-MBP"},
 						},

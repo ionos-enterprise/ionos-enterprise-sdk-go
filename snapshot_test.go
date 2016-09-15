@@ -14,7 +14,7 @@ func createVolume() {
 		Properties: VolumeProperties{
 			Size:          5,
 			Name:          "Volume Test",
-			Image:         "6aa59ab7-3f45-11e6-91c6-52540005ab80",
+			Image:         image,
 			Type:          "HDD",
 			ImagePassword: "test1234",
 		},
