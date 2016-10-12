@@ -8,13 +8,13 @@ import (
 )
 
 var (
-	once_dc     sync.Once
-	once_srv    sync.Once
+	once_dc sync.Once
+	once_srv sync.Once
 	once_volume sync.Once
-	srv_dc_id   string
-	srv_srvid   string
-	srv_vol     string
-	imageId     string
+	srv_dc_id string
+	srv_srvid string
+	srv_vol string
+	imageId string
 )
 
 func setupDataCenter() {
@@ -22,8 +22,7 @@ func setupDataCenter() {
 	srv_dc_id = mkdcid("GO SDK SERVER DC 02")
 	fmt.Println("Datacenter id: ", srv_dc_id)
 	if len(srv_dc_id) == 0 {
-		//panic("DataCenter not created")
-		fmt.Errorf("DataCenter not created")
+		fmt.Errorf("DataCenter not created %s", srv_dc_id)
 	}
 }
 
@@ -31,7 +30,7 @@ func setupServer() {
 	srv_srvid = setupCreateServer(srv_dc_id)
 	fmt.Println("Server id: ", srv_srvid)
 	if len(srv_srvid) == 0 {
-		fmt.Errorf("Server not created")
+		fmt.Errorf("Server not created %s", srv_srvid)
 	}
 }
 
@@ -47,13 +46,10 @@ func setupVolume() {
 	}
 	resp := CreateVolume(srv_dc_id, vol)
 	srv_vol = resp.Id
-	fmt.Println("Datacenter:", srv_vol)
-	fmt.Println("Volume:", srv_vol)
-	fmt.Println(resp.Headers.Get("Location"))
 
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	if len(srv_vol) == 0 {
-		fmt.Errorf("Volume not created")
+		fmt.Errorf("Volume not created %s", 1)
 	}
 
 }
@@ -122,6 +118,9 @@ func TestListServers(t *testing.T) {
 }
 
 func TestPatchServer(t *testing.T) {
+	once_dc.Do(setupDataCenter)
+	once_srv.Do(setupServer)
+
 	once_dc.Do(setupDataCenter)
 	once_srv.Do(setupServer)
 
@@ -324,7 +323,7 @@ func TestCreateCompositeServer(t *testing.T) {
 		Entities: &ServerEntities{
 			Volumes: &Volumes{
 				Items: []Volume{
-					Volume{
+					{
 						Properties: VolumeProperties{
 							Type:          "HDD",
 							Size:          5,
@@ -337,7 +336,7 @@ func TestCreateCompositeServer(t *testing.T) {
 			},
 			Nics: &Nics{
 				Items: []Nic{
-					Nic{
+					{
 						Properties: NicProperties{
 							Name: "nic",
 							Lan:  1,

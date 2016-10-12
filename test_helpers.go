@@ -57,18 +57,19 @@ func mknic(lbal_dcid, serverid string) string {
 	fmt.Println("created a nic with id " + resp.Id)
 	fmt.Println(resp.StatusCode)
 	fmt.Println("===========================")
+	waitTillProvisioned(resp.Headers.Get("Location"))
 	return resp.Id
 }
 
 func waitTillProvisioned(path string) {
-	waitCount := 20
+	waitCount := 120
 	fmt.Println(path)
 	for i := 0; i < waitCount; i++ {
 		request := GetRequestStatus(path)
 		if request.Metadata.Status == "DONE" {
 			break
 		}
-		time.Sleep(10 * time.Second)
+		time.Sleep(1 * time.Second)
 		i++
 	}
 }

@@ -27,13 +27,11 @@ func TestCreateVolume(t *testing.T) {
 
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	volumeId = resp.Id
-
+	fmt.Println(resp.Properties.AvailabilityZone)
 	if resp.StatusCode != want {
 		fmt.Println(string(resp.Response))
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
-
-	time.Sleep(30 * time.Second)
 }
 
 func TestListVolumes(t *testing.T) {
@@ -80,8 +78,8 @@ func TestCreateSnapshot(t *testing.T) {
 		fmt.Println(string(resp.Response))
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
+	time.Sleep(30 * time.Second)
 	snapshotId = resp.Id
-
 }
 
 func TestRestoreSnapshot(t *testing.T) {
@@ -97,8 +95,11 @@ func TestRestoreSnapshot(t *testing.T) {
 }
 
 func TestCleanup(t *testing.T) {
+	fmt.Println("CLEANING UP AFTER SNAPSHOTS")
+	resp := DeleteSnapshot(snapshotId)
+	fmt.Println(resp.StatusCode)
 	fmt.Println("CLEANING UP AFTER VOLUMES")
-	resp := DeleteVolume(dcID, volumeId)
+	resp = DeleteVolume(dcID, volumeId)
 	fmt.Println(resp.StatusCode)
 	resp = DeleteDatacenter(dcID)
 	fmt.Println(resp.StatusCode)
