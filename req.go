@@ -9,10 +9,12 @@ import (
 )
 
 //FullHeader is the standard header to include with all http requests except is_patch and is_command
-const FullHeader = "application/vnd.profitbricks.resource+json"
+const FullHeader = "application/json"
+
+const AgentHeader = "profitbricks-sdk-go/v3.0.0"
 
 //PatchHeader is used with is_patch .
-const PatchHeader = "application/vnd.profitbricks.partial-properties+json"
+const PatchHeader = "application/json"
 
 //CommandHeader is used with is_command
 const CommandHeader = "application/x-www-form-urlencoded"
@@ -68,6 +70,7 @@ func is_delete(path string) Resp {
 	url := mk_url(path)
 	req, _ := http.NewRequest("DELETE", url, nil)
 	req.Header.Add("Content-Type", FullHeader)
+	req.Header.Add("Agent", AgentHeader)
 	return do(req)
 }
 
@@ -77,5 +80,6 @@ func is_command(path string, jason string) Resp {
 	body := json.RawMessage(jason)
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	req.Header.Add("Content-Type", CommandHeader)
+	req.Header.Add("Agent", AgentHeader)
 	return do(req)
 }
