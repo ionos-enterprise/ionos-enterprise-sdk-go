@@ -51,6 +51,7 @@ func mk_url(path string) string {
 func do(req *http.Request) Resp {
 	client := &http.Client{}
 	req.SetBasicAuth(Username, Passwd)
+	req.Header.Add("User-Agent", AgentHeader)
 	resp, err := client.Do(req)
 	if err != nil {
 		panic(err)
@@ -70,7 +71,7 @@ func is_delete(path string) Resp {
 	url := mk_url(path)
 	req, _ := http.NewRequest("DELETE", url, nil)
 	req.Header.Add("Content-Type", FullHeader)
-	req.Header.Add("Agent", AgentHeader)
+	req.Header.Add("User-Agent", AgentHeader)
 	return do(req)
 }
 
@@ -80,6 +81,6 @@ func is_command(path string, jason string) Resp {
 	body := json.RawMessage(jason)
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	req.Header.Add("Content-Type", CommandHeader)
-	req.Header.Add("Agent", AgentHeader)
+	req.Header.Add("User-Agent", AgentHeader)
 	return do(req)
 }
