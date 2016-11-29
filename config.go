@@ -21,3 +21,7 @@ func SetAuth(u, p string) {
 	Username = u
 	Passwd = p
 }
+
+func SetUserAgent(userAgent string) {
+	AgentHeader = userAgent
+}
