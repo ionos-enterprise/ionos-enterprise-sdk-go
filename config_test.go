@@ -32,7 +32,7 @@ func TestSetEndpoint(t *testing.T) {
 	fmt.Println("Endpoint is ", Endpoint)
 }
 
-func TestImage(t *testing.T){
+func TestImage(t *testing.T) {
 	fmt.Println("Image ID is:", image)
 }
 
@@ -46,4 +46,12 @@ func TestMain(m *testing.M) {
 func setupTestEnv() {
 	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	SetEndpoint(os.Getenv("PROFITBRICKS_API_URL"))
+}
+
+func TestSetUserAgent(t *testing.T) {
+	SetUserAgent("blah")
+
+	if AgentHeader != "blah" {
+		t.Errorf("AgentHeader not equal %s", "blah")
+	}
 }
