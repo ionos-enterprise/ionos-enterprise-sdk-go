@@ -11,7 +11,7 @@ import (
 //FullHeader is the standard header to include with all http requests except is_patch and is_command
 const FullHeader = "application/json"
 
-var AgentHeader = "profitbricks-sdk-go/3.0.0"
+var AgentHeader = "profitbricks-sdk-go/3.0.1"
 
 //PatchHeader is used with is_patch .
 const PatchHeader = "application/json"
