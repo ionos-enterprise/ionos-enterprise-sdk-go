@@ -2,6 +2,7 @@ package profitbricks
 
 import (
 	"testing"
+	"fmt"
 )
 
 var locid string
@@ -19,7 +20,8 @@ func TestListLocations(t *testing.T) {
 func TestGetLocation(t *testing.T) {
 	//t.Parallel()
 	want := 200
-	resp := GetLocation(locid)
+	resp := GetLocation("us/las")
+
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
