@@ -10,7 +10,7 @@ type Nic struct {
 	Id         string                     `json:"id,omitempty"`
 	Type_      string                     `json:"type,omitempty"`
 	Href       string                     `json:"href,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Metadata   *Metadata `json:"metadata,omitempty"`
 	Properties NicProperties              `json:"properties,omitempty"`
 	Entities   *NicEntities               `json:"entities,omitempty"`
 	Response   string                     `json:"Response,omitempty"`
@@ -57,8 +57,8 @@ func ListNics(dcid, srvid string) Nics {
 
 // CreateNic creates a nic on a server
 // from a jason []byte and returns a Instance struct
-func CreateNic(dcid string, srvid string, request Nic) Nic {
-	obj, _ := json.Marshal(request)
+func CreateNic(dcid string, srvid string, nic Nic) Nic {
+	obj, _ := json.Marshal(nic)
 	path := nic_col_path(dcid, srvid)
 	url := mk_url(path) + `?depth=` + Depth
 	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))

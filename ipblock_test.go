@@ -18,6 +18,7 @@ func TestReserveIpBlock(t *testing.T) {
 	want := 202
 	var obj = IpBlock{
 		Properties: IpBlockProperties{
+			Name: "test",
 			Size:     1,
 			Location: "us/las",
 		},

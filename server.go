@@ -10,7 +10,7 @@ type Server struct {
 	Id         string                     `json:"id,omitempty"`
 	Type_      string                     `json:"type,omitempty"`
 	Href       string                     `json:"href,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Metadata   *Metadata `json:"metadata,omitempty"`
 	Properties ServerProperties           `json:"properties,omitempty"`
 	Entities   *ServerEntities            `json:"entities,omitempty"`
 	Response   string                     `json:"Response,omitempty"`

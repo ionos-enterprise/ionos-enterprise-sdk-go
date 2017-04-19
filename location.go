@@ -9,8 +9,8 @@ type Location struct {
 	Id         string                    `json:"id,omitempty"`
 	Type_      string                    `json:"type,omitempty"`
 	Href       string                    `json:"href,omitempty"`
-	Metadata   DatacenterElementMetadata `json:"metadata,omitempty"`
-	Properties Properties                `json:"properties,omitempty"`
+	Metadata   Metadata `json:"metadata,omitempty"`
+	Properties LocationProperties                `json:"properties,omitempty"`
 	Response   string                    `json:"Response,omitempty"`
 	Headers    *http.Header              `json:"headers,omitempty"`
 	StatusCode int                       `json:"headers,omitempty"`
@@ -26,7 +26,7 @@ type Locations struct {
 	StatusCode int          `json:"headers,omitempty"`
 }
 
-type Properties struct {
+type LocationProperties struct {
 	Name     string `json:"name,omitempty"`
 	Features []string `json:"features,omitempty"`
 }

@@ -10,7 +10,7 @@ type Lan struct {
 	Id         string                     `json:"id,omitempty"`
 	Type_      string                     `json:"type,omitempty"`
 	Href       string                     `json:"href,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Metadata   *Metadata `json:"metadata,omitempty"`
 	Properties LanProperties              `json:"properties,omitempty"`
 	Entities   *LanEntities               `json:"entities,omitempty"`
 	Response   string                     `json:"Response,omitempty"`
@@ -20,7 +20,7 @@ type Lan struct {
 
 type LanProperties struct {
 	Name   string `json:"name,omitempty"`
-	Public interface{}   `json:"public,omitempty"`
+	Public bool   `json:"public,omitempty"`
 }
 
 type LanEntities struct {

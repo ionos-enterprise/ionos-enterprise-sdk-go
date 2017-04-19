@@ -10,7 +10,7 @@ type FirewallRule struct {
 	Id         string                     `json:"id,omitempty"`
 	Type_      string                     `json:"type,omitempty"`
 	Href       string                     `json:"href,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Metadata   *Metadata `json:"metadata,omitempty"`
 	Properties FirewallruleProperties     `json:"properties,omitempty"`
 	Response   string                     `json:"Response,omitempty"`
 	Headers    *http.Header               `json:"headers,omitempty"`
@@ -23,10 +23,10 @@ type FirewallruleProperties struct {
 	SourceMac      string `json:"sourceMac,omitempty"`
 	SourceIp       string `json:"sourceIp,omitempty"`
 	TargetIp       string `json:"targetIp,omitempty"`
-	IcmpCode       interface{}    `json:"icmpCode,omitempty"`
-	IcmpType       interface{}    `json:"icmpType,omitempty"`
-	PortRangeStart interface{}    `json:"portRangeStart,omitempty"`
-	PortRangeEnd   interface{}    `json:"portRangeEnd,omitempty"`
+	IcmpCode       int    `json:"icmpCode,omitempty"`
+	IcmpType       int    `json:"icmpType,omitempty"`
+	PortRangeStart int    `json:"portRangeStart,omitempty"`
+	PortRangeEnd   int    `json:"portRangeEnd,omitempty"`
 }
 
 type FirewallRules struct {

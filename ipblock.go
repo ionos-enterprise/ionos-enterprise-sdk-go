@@ -10,7 +10,7 @@ type IpBlock struct {
 	Id         string                     `json:"id,omitempty"`
 	Type_      string                     `json:"type,omitempty"`
 	Href       string                     `json:"href,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Metadata   *Metadata `json:"metadata,omitempty"`
 	Properties IpBlockProperties          `json:"properties,omitempty"`
 	Response   string                     `json:"Response,omitempty"`
 	Headers    *http.Header               `json:"headers,omitempty"`
@@ -18,6 +18,7 @@ type IpBlock struct {
 }
 
 type IpBlockProperties struct {
+	Name     string `json:"name,omitempty"`
 	Ips      []string `json:"ips,omitempty"`
 	Location string   `json:"location,omitempty"`
 	Size     int      `json:"size,omitempty"`

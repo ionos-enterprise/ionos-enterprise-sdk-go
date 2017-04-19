@@ -10,7 +10,7 @@ type Volume struct {
 	Id         string                     `json:"id,omitempty"`
 	Type_      string                     `json:"type,omitempty"`
 	Href       string                     `json:"href,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Metadata   *Metadata `json:"metadata,omitempty"`
 	Properties VolumeProperties           `json:"properties,omitempty"`
 	Response   string                     `json:"Response,omitempty"`
 	Headers    *http.Header               `json:"headers,omitempty"`

@@ -9,7 +9,7 @@ type Image struct {
 	Id         string                     `json:"id,omitempty"`
 	Type       string                     `json:"type,omitempty"`
 	Href       string                     `json:"href,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
+	Metadata   *Metadata `json:"metadata,omitempty"`
 	Properties ImageProperties            `json:"properties,omitempty"`
 	Response   string                     `json:"Response,omitempty"`
 	Headers    *http.Header               `json:"headers,omitempty"`
