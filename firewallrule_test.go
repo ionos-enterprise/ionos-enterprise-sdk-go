@@ -26,7 +26,7 @@ func setup() {
 							Nics: &Nics{
 								Items: []Nic{
 									Nic{
-										Properties: NicProperties{
+										Properties: &NicProperties{
 											Name: "nic",
 											Lan:  1,
 										},

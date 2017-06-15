@@ -44,7 +44,7 @@ func mksrvid(srv_dcid string) string {
 
 func mknic(lbal_dcid, serverid string) string {
 	var request = Nic{
-		Properties: NicProperties{
+		Properties: &NicProperties{
 			Name: "GO SDK Original Nic",
 			Lan:  1,
 		},

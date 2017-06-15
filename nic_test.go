@@ -15,7 +15,7 @@ func TestCreateNic(t *testing.T) {
 
 	want := 202
 	var request = Nic{
-		Properties: NicProperties{
+		Properties: &NicProperties{
 			Lan:  1,
 			Name: "Test NIC",
 			Nat:  false,

@@ -19,12 +19,18 @@ type Lan struct {
 }
 
 type LanProperties struct {
-	Name   string `json:"name,omitempty"`
-	Public bool   `json:"public,omitempty"`
+	Name       string `json:"name,omitempty"`
+	Public     bool   `json:"public,omitempty"`
+	IpFailover []IpFailover `json:"ipFailover,omitempty"`
 }
 
 type LanEntities struct {
 	Nics *LanNics `json:"nics,omitempty"`
+}
+
+type IpFailover struct {
+	Ip    string `json:"ip,omitempty"`
+	nicId string   `json:"nicUuid,omitempty"`
 }
 
 type LanNics struct {

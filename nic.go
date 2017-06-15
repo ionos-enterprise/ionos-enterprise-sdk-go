@@ -11,7 +11,7 @@ type Nic struct {
 	Type_      string                     `json:"type,omitempty"`
 	Href       string                     `json:"href,omitempty"`
 	Metadata   *Metadata `json:"metadata,omitempty"`
-	Properties NicProperties              `json:"properties,omitempty"`
+	Properties *NicProperties              `json:"properties,omitempty"`
 	Entities   *NicEntities               `json:"entities,omitempty"`
 	Response   string                     `json:"Response,omitempty"`
 	Headers    *http.Header               `json:"headers,omitempty"`

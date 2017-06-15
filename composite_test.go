@@ -60,7 +60,7 @@ func TestCompositeCreate(t *testing.T) {
 			Nics: &Nics{
 				Items: []Nic{
 					Nic{
-						Properties: NicProperties{
+						Properties: &NicProperties{
 							Name: "nic",
 							Lan:  lan_id,
 						},

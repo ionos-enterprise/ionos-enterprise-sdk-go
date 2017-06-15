@@ -23,6 +23,7 @@ type VolumeProperties struct {
 	Size                int      `json:"size,omitempty"`
 	AvailabilityZone    string   `json:"availabilityZone,omitempty"`
 	Image               string   `json:"image,omitempty"`
+	ImageAlias	    string   `json:"imageAlias,omitempty"`
 	ImagePassword       string   `json:"imagePassword,omitempty"`
 	SshKeys             []string `json:"sshKeys,omitempty"`
 	Bus                 string   `json:"bus,omitempty"`

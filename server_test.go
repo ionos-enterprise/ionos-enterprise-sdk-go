@@ -337,7 +337,7 @@ func TestCreateCompositeServer(t *testing.T) {
 			Nics: &Nics{
 				Items: []Nic{
 					{
-						Properties: NicProperties{
+						Properties: &NicProperties{
 							Name: "nic",
 							Lan:  1,
 						},
