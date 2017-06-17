@@ -3,6 +3,7 @@ package profitbricks
 
 import (
 	"testing"
+	"github.com/stretchr/testify/assert"
 )
 
 var lan_dcid string
@@ -13,12 +14,12 @@ var reservedIp string
 
 func TestCreateLan(t *testing.T) {
 	setupTestEnv()
-	lan_dcid = mkdcid("GO SDK LAN DC")
+	lan_dcid = mkdcid("GO SDK Test")
 	want := 202
 	var request = Lan{
 		Properties: LanProperties{
 			Public: true,
-			Name:   "Lan Test",
+			Name:   "GO SDK Test",
 		},
 	}
 	lan := CreateLan(lan_dcid, request)
@@ -27,9 +28,24 @@ func TestCreateLan(t *testing.T) {
 	if lan.StatusCode != want {
 		t.Errorf(bad_status(want, lan.StatusCode))
 	}
+
+	assert.Equal(t, lan.Type_, "lan")
+	assert.Equal(t, lan.Properties.Name, "GO SDK Test")
+	assert.True(t, lan.Properties.Public)
 }
 
-func TestCreateLanWithIpFailover(t *testing.T) {
+func TestCreateLanFailure(t *testing.T) {
+	want := 422
+	var request = Lan{
+		Properties: LanProperties{
+			Public: true,
+		},
+	}
+	lan := CreateLan(lan_dcid, request)
+	assert.Equal(t, lan.StatusCode, want)
+}
+
+func TestCreateCompositeLan(t *testing.T) {
 
 	var obj = IpBlock{
 		Properties: IpBlockProperties{
@@ -85,6 +101,10 @@ func TestCreateLanWithIpFailover(t *testing.T) {
 	if lan.StatusCode != want {
 		t.Errorf(bad_status(want, lan.StatusCode))
 	}
+
+	assert.Equal(t, lan.Type_, "lan")
+	assert.Equal(t, lan.Properties.Name, "GO SDK Test")
+	assert.True(t, lan.Properties.Public)
 }
 
 func TestListLans(t *testing.T) {
@@ -94,6 +114,7 @@ func TestListLans(t *testing.T) {
 	if lans.StatusCode != want {
 		t.Errorf(bad_status(want, lans.StatusCode))
 	}
+	assert.True(t, len(lans.Items) > 0)
 }
 
 func TestGetLan(t *testing.T) {
@@ -103,16 +124,26 @@ func TestGetLan(t *testing.T) {
 	if lan.StatusCode != want {
 		t.Errorf(bad_status(want, lan.StatusCode))
 	}
+
+	assert.Equal(t, lan.Id, lanid)
+	assert.Equal(t, lan.Type_, "lan")
+	assert.Equal(t, lan.Properties.Name, "GO SDK Test")
+	assert.True(t, lan.Properties.Public)
 }
 
 func TestPatchLan(t *testing.T) {
 	want := 202
-	obj := LanProperties{Public: false}
+	obj := LanProperties{Name:"GO SDK Test - RENAME",Public: false}
 
 	lan := PatchLan(lan_dcid, lanid, obj)
 	if lan.StatusCode != want {
 		t.Errorf(bad_status(want, lan.StatusCode))
 	}
+
+	assert.Equal(t, lan.Id, lanid)
+	assert.Equal(t, lan.Type_, "lan")
+	assert.Equal(t, lan.Properties.Name, "GO SDK Test - RENAME")
+	assert.False(t, lan.Properties.Public)
 }
 
 func TestDeleteLan(t *testing.T) {

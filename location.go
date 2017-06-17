@@ -41,11 +41,11 @@ func ListLocations() Locations {
 }
 
 // GetRegionalLocations returns a list of available locations in a specific region
-func GetRegionalLocations(regid string) Location {
+func GetRegionalLocations(regid string) Locations {
 	url := mk_url(location_reg_path(regid)) + `?depth=` + Depth
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("Content-Type", FullHeader)
-	return toLocation(do(req))
+	return toLocations(do(req))
 }
 
 // GetLocation returns location data

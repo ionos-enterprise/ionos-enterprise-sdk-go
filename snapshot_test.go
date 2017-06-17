@@ -32,7 +32,10 @@ func createVolume() {
 }
 
 func createSnapshot() {
-	resp := CreateSnapshot(dcID, volumeId, "testSnapshot")
+	req := CreateSnapshotRequest{
+		Name: "testSnapshot",
+	}
+	resp := CreateSnapshot(dcID, volumeId, req)
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	snapshotId = resp.Id
 
