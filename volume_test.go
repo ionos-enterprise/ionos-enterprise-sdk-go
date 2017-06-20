@@ -134,11 +134,7 @@ func TestPatchVolume(t *testing.T) {
 func TestCreateSnapshot(t *testing.T) {
 	want := 202
 
-	req := CreateSnapshotRequest{
-		Name: "GO SDK test",
-		Description:"GO SDK test snapshot",
-	}
-	resp := CreateSnapshot(dcID, volumeId, req)
+	resp := CreateSnapshot(dcID, volumeId, snapshotname,snapshotdescription)
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	if resp.StatusCode != want {
 		fmt.Println(string(resp.Response))

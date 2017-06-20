@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"net/http"
+	"net/url"
 )
 
 type Volume struct {
@@ -55,11 +56,6 @@ type CreateVolumeRequest struct {
 	VolumeProperties `json:"properties"`
 }
 
-type CreateSnapshotRequest struct {
-	Name        string   `json:"name,omitempty"`
-	Description string   `json:"description,omitempty"`
-}
-
 // ListVolumes returns a Collection struct for volumes in the Datacenter
 func ListVolumes(dcid string) Volumes {
 	path := volume_col_path(dcid)
@@ -102,12 +98,14 @@ func DeleteVolume(dcid, volid string) Resp {
 	return is_delete(path)
 }
 
-func CreateSnapshot(dcid string, volid string, request CreateSnapshotRequest) Snapshot {
-	obj, _ := json.Marshal(request)
+func CreateSnapshot(dcid string, volid string, name string, description string) Snapshot {
 	var path = volume_path(dcid, volid)
 	path = path + "/create-snapshot"
-	url := mk_url(path)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))
+	req_url := mk_url(path)
+	data := url.Values{}
+	data.Set("name", name)
+	data.Add("description", description)
+	req, _ := http.NewRequest("POST", req_url, bytes.NewBufferString(data.Encode()))
 	req.Header.Add("Content-Type", CommandHeader)
 	return toSnapshot(do(req))
 }

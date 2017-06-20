@@ -7,6 +7,42 @@ import (
 	"os"
 )
 
+func mkVolume(dcID string) string {
+
+	var request = Volume{
+		Properties: VolumeProperties{
+			Size:          5,
+			Name:          "Volume Test",
+			Type:          "HDD",
+			ImagePassword: "test1234",
+		},
+	}
+
+	resp := CreateVolume(dcID, request)
+	waitTillProvisioned(resp.Headers.Get("Location"))
+	return resp.Id
+}
+
+func mkipid(name string) string {
+	var obj = IpBlock{
+		Properties: IpBlockProperties{
+			Name:     "GO SDK Test",
+			Size:     1,
+			Location: "us/las",
+		},
+	}
+
+	resp := ReserveIpBlock(obj)
+	return resp.Id
+}
+
+func mksnapshotId(name string, dcId string) string {
+	volumeId := mkVolume(dcId)
+	resp := CreateSnapshot(dcId, volumeId, name, "description")
+	waitTillProvisioned(resp.Headers.Get("Location"))
+	return resp.Id
+}
+
 func mkdcid(name string) string {
 	request := Datacenter{
 		Properties: DatacenterProperties{
