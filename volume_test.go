@@ -143,7 +143,7 @@ func TestCreateSnapshot(t *testing.T) {
 	time.Sleep(30 * time.Second)
 	snapshotId = resp.Id
 
-	//assert.Equal(t, resp.Properties.Description, "GO SDK test")
+	assert.Equal(t, resp.Properties.Name, snapshotname)
 	assert.Equal(t, resp.Type_,"snapshot")
 }
 

@@ -167,7 +167,7 @@ func um_groups() string {
 
 // um_group_path	returns the string "/groups/groupid"
 func um_group_path(grpid string) string {
-	return um() + slash("groups") + slash(grpid)
+	return um_groups() + slash(grpid)
 }
 
 // um_group_shares	returns the string "groups/{groupId}/shares"

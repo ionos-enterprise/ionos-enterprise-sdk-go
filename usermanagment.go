@@ -22,7 +22,7 @@ type Group struct {
 	Type_      string                     `json:"type,omitempty"`
 	Href       string                     `json:"href,omitempty"`
 	Properties GroupProperties            `json:"properties,omitempty"`
-	Entities   GroupEntities              `json:"entities,omitempty"`
+	Entities   *GroupEntities              `json:"entities,omitempty"`
 	Response   string                     `json:"Response,omitempty"`
 	Headers    *http.Header               `json:"headers,omitempty"`
 	StatusCode int                        `json:"headers,omitempty"`
@@ -30,10 +30,10 @@ type Group struct {
 
 type GroupProperties struct {
 	Name              string `json:"name,omitempty"`
-	CreateDataCenter  bool `json:"createDataCenter,omitempty"`
-	CreateSnapshot    bool `json:"createSnapshot,omitempty"`
-	ReserveIp         bool  `json:"reserveIp,omitempty"`
-	AccessActivityLog bool  `json:"accessActivityLog,omitempty"`
+	CreateDataCenter  *bool `json:"createDataCenter,omitempty"`
+	CreateSnapshot    *bool `json:"createSnapshot,omitempty"`
+	ReserveIp         *bool  `json:"reserveIp,omitempty"`
+	AccessActivityLog *bool  `json:"accessActivityLog,omitempty"`
 }
 
 type GroupEntities struct {
@@ -144,8 +144,8 @@ type Share struct {
 }
 
 type ShareProperties struct {
-	EditPrivilege  bool `json:"editPrivilege,omitempty"`
-	SharePrivilege bool `json:"sharePrivilege,omitempty"`
+	EditPrivilege  *bool `json:"editPrivilege,omitempty"`
+	SharePrivilege *bool `json:"sharePrivilege,omitempty"`
 }
 
 //Group fucntions
@@ -176,7 +176,7 @@ func CreateGroup(grp Group) Group {
 	return toGroup(do(req))
 }
 
-func UpdateGroup(groupid string, obj GroupProperties) Group {
+func UpdateGroup(groupid string, obj Group) Group {
 	jason_patch := []byte(MkJson(obj))
 	path := um_group_path(groupid)
 	url := mk_url(path) + `?depth=` + Depth
@@ -236,7 +236,7 @@ func AddShare(share Share, groupid string, resourceid string) Share {
 	return toShare(do(req))
 }
 
-func UpdateShare(groupid string, resourceid string, obj ShareProperties) Share {
+func UpdateShare(groupid string, resourceid string, obj Share) Share {
 	jason_patch := []byte(MkJson(obj))
 	path := um_group_share_path(groupid, resourceid)
 	url := mk_url(path) + `?depth=` + Depth

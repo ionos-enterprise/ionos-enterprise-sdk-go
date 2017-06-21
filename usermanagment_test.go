@@ -13,8 +13,9 @@ var groupid string
 var resourceId string
 var userid string
 var email string
-var snapshotIdUSR string
 var ipblockId string
+var TRUE bool = true
+var FALSE bool = false
 
 func setupTest() {
 	setupTestEnv()
@@ -23,7 +24,6 @@ func setupTest() {
 	email = "test" + strconv.Itoa(r1.Intn(100)) + "@go.com"
 	resourceId = mkdcid("GO SDK TEST")
 	ipblockId = mkipid("GO SDK TEST")
-	snapshotIdUSR = mksnapshotId("GO SDK TEST", resourceId)
 }
 
 func TestCreateUser(t *testing.T) {
@@ -127,10 +127,10 @@ func TestCreateGroup(t *testing.T) {
 	var obj = Group{
 		Properties: GroupProperties{
 			Name:              "GO SDK Test",
-			CreateDataCenter:  true,
-			CreateSnapshot:    true,
-			ReserveIp:         true,
-			AccessActivityLog: true,
+			CreateDataCenter:  &TRUE,
+			CreateSnapshot:    &TRUE,
+			ReserveIp:         &TRUE,
+			AccessActivityLog: &TRUE,
 
 		},
 	}
@@ -142,20 +142,20 @@ func TestCreateGroup(t *testing.T) {
 	}
 
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
-	assert.Equal(t, resp.Properties.CreateDataCenter, true)
-	assert.Equal(t, resp.Properties.CreateSnapshot, true)
-	assert.Equal(t, resp.Properties.AccessActivityLog, true)
-	assert.Equal(t, resp.Properties.ReserveIp, true)
+	assert.Equal(t, *resp.Properties.CreateDataCenter, true)
+	assert.Equal(t, *resp.Properties.CreateSnapshot, true)
+	assert.Equal(t, *resp.Properties.AccessActivityLog, true)
+	assert.Equal(t, *resp.Properties.ReserveIp, true)
 }
 
 func TestCreateGroupFaliure(t *testing.T) {
 	want := 422
 	var obj = Group{
 		Properties: GroupProperties{
-			CreateDataCenter:  true,
-			CreateSnapshot:    true,
-			ReserveIp:         true,
-			AccessActivityLog: true,
+			CreateDataCenter:  &TRUE,
+			CreateSnapshot:    &TRUE,
+			ReserveIp:         &TRUE,
+			AccessActivityLog: &TRUE,
 
 		},
 	}
@@ -189,10 +189,10 @@ func TestGetGroup(t *testing.T) {
 
 	assert.Equal(t, resp.Id, groupid)
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
-	assert.Equal(t, resp.Properties.CreateDataCenter, true)
-	assert.Equal(t, resp.Properties.CreateSnapshot, true)
-	assert.Equal(t, resp.Properties.AccessActivityLog, true)
-	assert.Equal(t, resp.Properties.ReserveIp, true)
+	assert.Equal(t, *resp.Properties.CreateDataCenter, true)
+	assert.Equal(t, *resp.Properties.CreateSnapshot, true)
+	assert.Equal(t, *resp.Properties.AccessActivityLog, true)
+	assert.Equal(t, *resp.Properties.ReserveIp, true)
 }
 
 func TestGetGroupFailure(t *testing.T) {
@@ -209,12 +209,14 @@ func TestGetGroupFailure(t *testing.T) {
 func TestUpdateGroup(t *testing.T) {
 	want := 202
 	newName := "GO SDK Test - RENAME"
-	obj := GroupProperties{
-		Name:              newName,
-		CreateSnapshot:    true,
-		CreateDataCenter:  false,
-		ReserveIp:         true,
-		AccessActivityLog: true,
+	obj := Group{
+		Properties: GroupProperties{
+			Name:              newName,
+			CreateDataCenter:  &FALSE,
+			CreateSnapshot:    &TRUE,
+			ReserveIp:         &TRUE,
+			AccessActivityLog: &TRUE,
+		},
 	}
 
 	resp := UpdateGroup(groupid, obj)
@@ -227,7 +229,7 @@ func TestUpdateGroup(t *testing.T) {
 
 	assert.Equal(t, resp.Id, groupid)
 	assert.Equal(t, resp.Properties.Name, newName)
-	assert.Equal(t, resp.Properties.CreateDataCenter, false)
+	assert.Equal(t, *resp.Properties.CreateDataCenter, false)
 	assert.Equal(t, resp.Type_, "group")
 }
 
@@ -235,8 +237,8 @@ func TestAddShare(t *testing.T) {
 	want := 202
 	var obj = Share{
 		Properties: ShareProperties{
-			SharePrivilege: true,
-			EditPrivilege:  true,
+			SharePrivilege: &TRUE,
+			EditPrivilege:  &TRUE,
 		},
 	}
 	resp := AddShare(obj, groupid, resourceId)
@@ -244,8 +246,8 @@ func TestAddShare(t *testing.T) {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 
-	assert.Equal(t, resp.Properties.EditPrivilege, true)
-	assert.Equal(t, resp.Properties.SharePrivilege, true)
+	assert.Equal(t, *resp.Properties.EditPrivilege, true)
+	assert.Equal(t, *resp.Properties.SharePrivilege, true)
 }
 
 func TestAddShareFailure(t *testing.T) {
@@ -281,8 +283,8 @@ func TestGetShare(t *testing.T) {
 	}
 
 	assert.Equal(t, resp.Id, resourceId)
-	assert.Equal(t, resp.Properties.EditPrivilege, true)
-	assert.Equal(t, resp.Properties.SharePrivilege, true)
+	assert.Equal(t, *resp.Properties.EditPrivilege, true)
+	assert.Equal(t, *resp.Properties.SharePrivilege, true)
 }
 
 func TestGetShareFailure(t *testing.T) {
@@ -297,7 +299,12 @@ func TestGetShareFailure(t *testing.T) {
 
 func TestUpdateShare(t *testing.T) {
 	want := 202
-	obj := ShareProperties{SharePrivilege: true, EditPrivilege: false, }
+	obj := Share{
+		Properties: ShareProperties{
+			SharePrivilege: &TRUE,
+			EditPrivilege:  &FALSE,
+		},
+	}
 
 	resp := UpdateShare(groupid, resourceId, obj)
 	if resp.StatusCode != want {
@@ -305,8 +312,8 @@ func TestUpdateShare(t *testing.T) {
 	}
 
 	assert.Equal(t, resp.Id, resourceId)
-	assert.Equal(t, resp.Properties.EditPrivilege, false)
-	assert.Equal(t, resp.Properties.SharePrivilege, true)
+	assert.Equal(t, *resp.Properties.EditPrivilege, false)
+	assert.Equal(t, *resp.Properties.SharePrivilege, true)
 }
 
 func TestAddUserToGroup(t *testing.T) {
@@ -363,16 +370,6 @@ func TestListDatacenterResources(t *testing.T) {
 	assert.True(t, len(resp.Items) > 0)
 }
 
-func TestListSnapshotResources(t *testing.T) {
-	want := 200
-	resp := ListResourcesByType("snapshot")
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-	assert.True(t, len(resp.Items) > 0)
-}
-
 func TestGetDatacenterResource(t *testing.T) {
 	want := 200
 	resp := GetResourceByType("datacenter", resourceId)
@@ -382,18 +379,6 @@ func TestGetDatacenterResource(t *testing.T) {
 	}
 	assert.Equal(t, resp.Id, resourceId)
 	assert.Equal(t, resp.Type_, "datacenter")
-}
-
-func TestGetSnapshotResource(t *testing.T) {
-	want := 200
-	resp := GetResourceByType("snapshot", snapshotIdUSR)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.Equal(t, resp.Id, snapshotIdUSR)
-	assert.Equal(t, resp.Type_, "snapshot")
 }
 
 func TestGetIPBlockResource(t *testing.T) {
@@ -449,5 +434,4 @@ func TestDeleteUser(t *testing.T) {
 func CleanUpResources() {
 	DeleteDatacenter(resourceId)
 	ReleaseIpBlock(ipblockId)
-	DeleteSnapshot(snapshotIdUSR)
 }

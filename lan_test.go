@@ -5,6 +5,7 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"strconv"
+	"time"
 )
 
 var lan_dcid string
@@ -181,5 +182,6 @@ func TestLanCleanup(t *testing.T) {
 	DeleteLan(lan_dcid, lanid)
 	deleted := DeleteDatacenter(lan_dcid)
 	waitTillProvisioned(deleted.Headers.Get("Location"))
+	time.Sleep(40 * time.Second)
 	ReleaseIpBlock(ipblockId2)
 }
