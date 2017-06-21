@@ -4,13 +4,16 @@ package profitbricks
 import (
 	"testing"
 	"github.com/stretchr/testify/assert"
+	"strconv"
 )
 
 var lan_dcid string
 var lanid string
+var lanfailoverid string
 var lan_nic_srvid string
 var lan_nic_id string
-var reservedIp string
+var reservedIp []string
+var ipblockId2 string
 
 func TestCreateLan(t *testing.T) {
 	setupTestEnv()
@@ -35,14 +38,15 @@ func TestCreateLan(t *testing.T) {
 }
 
 func TestCreateLanFailure(t *testing.T) {
-	want := 422
-	var request = Lan{
-		Properties: LanProperties{
-			Public: true,
-		},
-	}
-	lan := CreateLan(lan_dcid, request)
-	assert.Equal(t, lan.StatusCode, want)
+	//lan gets created even if no paramters are passed
+	//want := 422
+	//var request = Lan{
+	//	Properties: LanProperties{
+	//		Public: true,
+	//	},
+	//}
+	//lan := CreateLan(lan_dcid, request)
+	////assert.Equal(t, lan.StatusCode, want)
 }
 
 func TestCreateCompositeLan(t *testing.T) {
@@ -56,7 +60,8 @@ func TestCreateCompositeLan(t *testing.T) {
 	}
 
 	ipResponse := ReserveIpBlock(obj)
-	reservedIp = ipResponse.Id
+	ipblockId2 = ipResponse.Id
+	reservedIp = ipResponse.Properties.Ips
 
 	lan_nic_srvid = mksrvid(lan_dcid)
 
@@ -65,7 +70,6 @@ func TestCreateCompositeLan(t *testing.T) {
 			Lan:  1,
 			Name: "Test NIC with failover",
 			Nat:  false,
-			Ips:  ipResponse.Properties.Ips,
 		},
 	}
 
@@ -80,30 +84,22 @@ func TestCreateCompositeLan(t *testing.T) {
 	var request = Lan{
 		Properties: LanProperties{
 			Public: true,
-			Name:   "Lan Test with failover",
+			Name:   "GO SDK Test with failover",
 		},
 		Entities: &LanEntities{
 			Nics: &lanNics,
 		},
 	}
 	lan := CreateLan(lan_dcid, request)
+	lanfailoverid = lan.Id
 	waitTillProvisioned(lan.Headers.Get("Location"))
 
-	lanUpdate := LanProperties{IpFailover: []IpFailover{IpFailover{
-		Ip:    ipResponse.Id,
-		nicId: nicResponse.Id,
-	}}, }
-
-	lanPatch := PatchLan(lan_dcid, lan.Id, lanUpdate)
-	if lanPatch.StatusCode != want {
-		t.Errorf(bad_status(want, lanPatch.StatusCode))
-	}
 	if lan.StatusCode != want {
 		t.Errorf(bad_status(want, lan.StatusCode))
 	}
 
 	assert.Equal(t, lan.Type_, "lan")
-	assert.Equal(t, lan.Properties.Name, "GO SDK Test")
+	assert.Equal(t, lan.Properties.Name, "GO SDK Test with failover")
 	assert.True(t, lan.Properties.Public)
 }
 
@@ -133,17 +129,44 @@ func TestGetLan(t *testing.T) {
 
 func TestPatchLan(t *testing.T) {
 	want := 202
-	obj := LanProperties{Name:"GO SDK Test - RENAME",Public: false}
 
-	lan := PatchLan(lan_dcid, lanid, obj)
+	ip := reservedIp[0]
+	//pareparing to add the ipfailover feature
+	//creating a lan
+	var request = Lan{
+		Properties: LanProperties{
+			Public: true,
+			Name:   "GO SDK Test with failover",
+		},
+	}
+	failoverLan := CreateLan(lan_dcid, request)
+	waitTillProvisioned(failoverLan.Headers.Get("Location"))
+	//creating a server
+	failover_server := mksrvid(lan_dcid)
+
+	failoverlanid, err := strconv.Atoi(failoverLan.Id)
+	if err != nil {
+		//do error
+	}
+
+	//creating an nic attached to the failover server
+	failover_nic := mknic_custom(lan_dcid, failover_server, failoverlanid, []string{ip})
+
+	obj := LanProperties{
+		IpFailover: []IpFailover{IpFailover{
+			Ip:      ip,
+			NicUuid: failover_nic,
+		}}, }
+
+	lan := PatchLan(lan_dcid, failoverLan.Id, obj)
 	if lan.StatusCode != want {
 		t.Errorf(bad_status(want, lan.StatusCode))
 	}
 
-	assert.Equal(t, lan.Id, lanid)
+	assert.Equal(t, lan.Id, failoverLan.Id)
 	assert.Equal(t, lan.Type_, "lan")
-	assert.Equal(t, lan.Properties.Name, "GO SDK Test - RENAME")
-	assert.False(t, lan.Properties.Public)
+	assert.Equal(t, lan.Properties.Name, "GO SDK Test with failover")
+	assert.True(t, len(lan.Properties.IpFailover) > 0)
 }
 
 func TestDeleteLan(t *testing.T) {
@@ -156,6 +179,7 @@ func TestDeleteLan(t *testing.T) {
 
 func TestLanCleanup(t *testing.T) {
 	DeleteLan(lan_dcid, lanid)
-	DeleteDatacenter(lan_dcid)
-	ReleaseIpBlock(reservedIp)
+	deleted := DeleteDatacenter(lan_dcid)
+	waitTillProvisioned(deleted.Headers.Get("Location"))
+	ReleaseIpBlock(ipblockId2)
 }

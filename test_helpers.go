@@ -15,6 +15,7 @@ func mkVolume(dcID string) string {
 			Name:          "Volume Test",
 			Type:          "HDD",
 			ImagePassword: "test1234",
+			ImageAlias:    "ubuntu:latest",
 		},
 	}
 
@@ -37,8 +38,8 @@ func mkipid(name string) string {
 }
 
 func mksnapshotId(name string, dcId string) string {
-	volumeId := mkVolume(dcId)
-	resp := CreateSnapshot(dcId, volumeId, name, "description")
+	svolumeId := mkVolume(dcId)
+	resp := CreateSnapshot(dcId, svolumeId, name, "description")
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	return resp.Id
 }
@@ -87,6 +88,29 @@ func mknic(lbal_dcid, serverid string) string {
 			Dhcp:           true,
 			FirewallActive: true,
 			Ips:            []string{"10.0.0.1"},
+		},
+	}
+
+	resp := CreateNic(lbal_dcid, serverid, request)
+	fmt.Println("===========================")
+	fmt.Println("created a nic at server " + serverid)
+
+	fmt.Println("created a nic with id " + resp.Id)
+	fmt.Println(resp.StatusCode)
+	fmt.Println("===========================")
+	waitTillProvisioned(resp.Headers.Get("Location"))
+	return resp.Id
+}
+
+func mknic_custom(lbal_dcid, serverid string, lanid int, ips []string) string {
+	var request = Nic{
+		Properties: &NicProperties{
+			Lan:            lanid,
+			Name:           "GO SDK Test",
+			Nat:            false,
+			Dhcp:           true,
+			FirewallActive: true,
+			Ips:            ips,
 		},
 	}
 

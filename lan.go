@@ -29,8 +29,8 @@ type LanEntities struct {
 }
 
 type IpFailover struct {
-	Ip    string `json:"ip,omitempty"`
-	nicId string   `json:"nicUuid,omitempty"`
+	NicUuid string   `json:"nicUuid,omitempty"`
+	Ip      string `json:"ip,omitempty"`
 }
 
 type LanNics struct {
