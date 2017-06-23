@@ -38,7 +38,7 @@ func TestCreate(t *testing.T) {
 			Location:    location,
 		},
 	}
-	resp := CompositeCreateDatacenter(obj)
+	resp := CreateDatacenter(obj)
 	dcID = resp.Id
 
 	if resp.StatusCode != want {

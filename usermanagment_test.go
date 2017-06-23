@@ -101,25 +101,25 @@ func TestGetUser(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	//want := 202
-	//newName := "user updated"
-	//obj := UserProperties{
-	//	Firstname:     "go sdk ",
-	//	Lastname:      newName,
-	//	Email:         "test@go.com",
-	//	Password:      "abc123-321CBA",
-	//	Administrator: false,
-	//	ForceSecAuth:  false,
-	//	SecAuthActive: false,
-	//}
-	//
-	//resp := UpdateUser(groupid, obj)
-	//if resp.StatusCode != want {
-	//	t.Errorf(bad_status(want, resp.StatusCode))
-	//}
-	//if resp.Properties.Lastname != newName {
-	//	t.Errorf("Not updated")
-	//}
+	want := 202
+	newName := "user updated"
+	obj := UserProperties{
+		Firstname:     "go sdk ",
+		Lastname:      newName,
+		Email:         "test@go.com",
+		Password:      "abc123-321CBA",
+		Administrator: false,
+		ForceSecAuth:  false,
+		SecAuthActive: false,
+	}
+
+	resp := UpdateUser(userid, obj)
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+	if resp.Properties.Lastname != newName {
+		t.Errorf("Not updated")
+	}
 }
 
 func TestCreateGroup(t *testing.T) {

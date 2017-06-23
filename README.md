@@ -1,83 +1,204 @@
 # Go SDK
 
+Version: profitbricks-sdk-go **4.0.0**
+
 The ProfitBricks Client Library for [Go](https://www.golang.org/) provides you with access to the ProfitBricks REST API. It is designed for developers who are building applications in Go.
 
 This guide will walk you through getting setup with the library and performing various actions against the API.
 
-# Table of Contents
-* [Concepts](#concepts)
-* [Getting Started](#getting-started)
-* [Installation](#installation)
-* [How to: Create Data Center](#how-to-create-data-center)
-* [How to: Delete Data Center](#how-to-delete-data-center)
-* [How to: Create Server](#how-to-create-server)
-* [How to: List Available Images](#how-to-list-available-images)
-* [How to: Create Storage Volume](#how-to-create-storage-volume)
-* [How to: Update Cores and Memory](#how-to-update-cores-and-memory)
-* [How to: Attach or Detach Storage Volume](#how-to-attach-or-detach-storage-volume)
-* [How to: List Servers, Volumes, and Data Centers](#how-to-list-servers-volumes-and-data-centers)
-* [Reference](#reference)
-	* [Objects](#objects) 
-		* [Datacenter](#datacenter) 
-		    * [DatacenterProperties](#datacenterproperties) 
-		    * [DatacenterEntities](#datacenterentities) 
-		* [Datacenters](#datacenters)
-		* [Server](#server)
-            * [ServerProperties](#serverproperties) 
-            * [ServerEntities](#serverentities)
-        * [Servers](#servers)
-        * [Volume](#volume)
-            * [VolumeProperties](#volumeproperties) 
-        * [Volumes](#volumes)
-        * [Nic](#nic)
-            * [NicProperties](#niceproperties) 
-            * [NicEntities](#nicentities)
-        * [Nics](#nics)
-        * [FirewallRule](#firewallrule)
-            * [FirewallruleProperties](#firewallruleproperties)
-        * [FirewallRules](#firewallrules)
-        * [Lan](#lan)
-            * [LanProperties](#lanproperties)
-        * [Lans](#lans) 
-        * [Image](#image)
-            * [ImageProperties](#imageproperties)
-        * [Images](#images)     
-        * [Loadbalancer](#loadbalancer)
-            * [LoadbalancerProperties](#loadbalancerproperties) 
-            * [LoadbalancerEntities](#loadbalancerentities)
-        * [Loadbalancers](#loadbalancers)
-        * [Location](#location)
-            * [LocationProperties](#locationproperties) 
-        * [Locations](#locations)
-        * [IpBlock](#ipblock)
-            * [IpBlockProperties](#ipblockproperties) 
-        * [IpBlocks](#ipblocks)
-        * [Snapshot](#snapshot)
-            * [SnapshotProperties](#snapshotproperties) 
-        * [Snapshots](#snapshots)
-        * [Request](#request)
-            * [RequestProperties](#requestproperties)
-            * [RequestStatusMetadata](#requeststatusmetadata)
-            * [RequestStatusMetadata](#requeststatusmetadata)  
-        * [Requests](#requests)
-                    
-	* [Functions](#functions) 
-	    * [Virtual Data Centers](#virtual-data-centers)
-	    * [Servers](#servers)
-	    * [Volumes](#volumes)
-	    * [NICs](#nics)
-	    * [Firewall Rules](#firewall-rules)
-	    * [LANs](#lans)
-	    * [Images](#images)
-	    * [Load Balancers](#load-balancers)
-	    * [IP Blocks](#ip-blocks)
-	    * [Snapshot](#snapshot-functions)
-	    * [Requests](#request-functions)
-        * [Locations](#location-functions)    	
-    
-* [Example](#example)
-* [Support](#support)
+## Table of Contents
 
+* [Description](#description)
+* [Getting Started](#getting-started)
+  * [Installation](#installation)
+  * [Authenticating](#authenticating)
+  * [Error Handling](#error-handling)
+* [Reference](#reference)
+    * [Data Centers](#data-centers)
+        * [List Data Centers](#list-data-centers)
+        * [Retrieve a Data Center](#retrieve-a-data-center)
+        * [Create a Data Center](#create-a-data-center)
+        * [Update a Data Center](#update-a-data-center)
+        * [Delete a Data Center](#delete-a-data-center)
+    * [Locations](#locations)
+        * [List Locations](#list-locations)
+        * [Get a Location](#get-a-location)
+    * [Servers](#servers)
+        * [List Servers](#list-servers)
+        * [Retrieve a Server](#retrieve-a-server)
+        * [Create a Server](#create-a-server)
+        * [Update a Server](#update-a-server)
+        * [Delete a Server](#delete-a-server)
+        * [List Attached Volumes](#list-attached-volumes)
+        * [Attach a Volume](#attach-a-volume)
+        * [Retrieve an Attached Volume](#retrieve-an-attached-volume)
+        * [Detach a Volume](#detach-a-volume)
+        * [List Attached CD-ROMs](#list-attached-cd-roms)
+        * [Attach a CD-ROM](#attach-a-cd-rom)
+        * [Retrieve an Attached CD-ROM](#retrieve-an-attached-cd-rom)
+        * [Detach a CD-ROM](#detach-a-cd-rom)
+        * [Reboot a Server](#reboot-a-server)
+        * [Start a Server](#start-a-server)
+        * [Stop a Server](#stop-a-server)
+    * [Images](#images)
+        * [List Images](#list-images)
+        * [Get an Image](#get-an-image)
+        * [Update an Image](#update-an-image)
+        * [Delete an Image](#delete-an-image)
+    * [Volumes](#volumes)
+        * [List Volumes](#list-volumes)
+        * [Get a Volume](#get-a-volume)
+        * [Create a Volume](#create-a-volume)
+        * [Update a Volume](#update-a-volume)
+        * [Delete a Volume](#delete-a-volume)
+        * [Create a Volume Snapshot](#create-a-volume-snapshot)
+        * [Restore a Volume Snapshot](#restore-a-volume-snapshot)
+    * [Snapshots](#snapshots)
+        * [List Snapshots](#list-snapshots)
+        * [Get a Snapshot](#get-a-snapshot)
+        * [Update a Snapshot](#update-a-snapshot)
+        * [Delete a Snapshot](#delete-a-snapshot)
+    * [IP Blocks](#ip-blocks)
+        * [List IP Blocks](#list-ip-blocks)
+        * [Get an IP Block](#get-an-ip-block)
+        * [Create an IP Block](#create-an-ip-block)
+        * [Delete an IP Block](#delete-an-ip-block)
+    * [LANs](#lans)
+        * [List LANs](#list-lans)
+        * [Create a LAN](#create-a-lan)
+        * [Get a LAN](#get-a-lan)
+        * [Get LAN Members](#get-lan-members)
+        * [Update a LAN](#update-a-lan)
+        * [Delete a LAN](#delete-a-lan)
+    * [Network Interfaces (NICs)](#network-interfaces-nics)
+        * [List NICs](#list-nics)
+        * [Get a NIC](#get-a-nic)
+        * [Create a NIC](#create-a-nic)
+        * [Update a NIC](#update-a-nic)
+        * [Delete a NIC](#delete-a-nic)
+    * [Firewall Rules](#firewall-rules)
+        * [List Firewall Rules](#list-firewall-rules)
+        * [Get a Firewall Rule](#get-a-firewall-rule)
+        * [Create a Firewall Rule](#create-a-firewall-rule)
+        * [Update a Firewall Rule](#update-a-firewall-rule)
+        * [Delete a Firewall Rule](#delete-a-firewall-rule)
+    * [Load Balancers](#load-balancers)
+        * [List Load Balancers](#list-load-balancers)
+        * [Get a Load Balancer](#get-a-load-balancer)
+        * [Create a Load Balancer](#create-a-load-balancer)
+        * [Update a Load Balancer](#update-a-load-balancer)
+        * [List Load Balanced NICs](#list-load-balanced-nics)
+        * [Get a Load Balanced NIC](#get-a-load-balanced-nic)
+        * [Associate NIC to a Load Balancer](#associate-nic-to-a-load-balancer)
+        * [Remove a NIC Association](#remove-a-nic-association)
+    * [Requests](#requests)
+        * [List Requests](#list-requests)
+        * [Get a Request](#get-a-request)
+        * [Get a Request Status](#get-a-request-status)
+    * [Contract Resources](#contract-resources)
+    * [Users Management](#users-management)
+        * [List Groups](#list-groups)
+        * [Retrieve a Group](#retrieve-a-group)
+        * [Create a Group](#create-a-group)
+        * [Update a Group](#update-a-group)
+        * [Delete a Group](#delete-a-group)
+        * [List Shares](#list-shares)
+        * [Retrieve a Share](#retrieve-a-share)
+        * [Add a Share](#add-a-share)
+        * [Update a Share](#update-a-share)
+        * [Delete a Share](#delete-a-share)
+        * [List Users in a Group](#list-users-in-a-group)
+        * [Add User to Group](#add-user-to-group)
+        * [Remove User from a Group](#remove-user-from-a-group)
+        * [List Users](#list-users)
+        * [Retrieve a User](#retrieve-a-user)
+        * [Create a User](#create-a-user)
+        * [Update a User](#update-a-user)
+        * [Delete a User](#delete-a-user)
+        * [List Resources](#list-resources)
+        * [List All Resources of a Type](#list-all-resources-of-a-type)
+        * [List a specific Resource Type](#list-a-specific-resource-type)
+* [Example](#example)    
+* [Support](#support)
+* [Testing](#testing)
+* [Contributing](#contributing)
+
+
+# Description
+
+The Go SDK wraps the latest version of the ProfitBricks REST API. All API operations are performed over SSL and authenticated using your ProfitBricks portal credentials. The API can be accessed within an instance running in ProfitBricks or directly over the Internet from any application that can send an HTTPS request and receive an HTTPS response.
+
+## Getting Started
+
+Before you begin you will need to have [signed-up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you setup during sign-up will be used to authenticate against the API.
+
+### Installation
+
+Install the Go language from: [Go Installation](https://golang.org/doc/install)
+
+The `GOPATH` environment variable specifies the location of your Go workspace. It is likely the only environment variable you'll need to set when developing Go code. This is an example of pointing to a workspace configured underneath your home directory:
+
+```
+mkdir -p ~/go/bin
+export GOPATH=~/go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:$GOBIN
+```
+
+
+The following go command will download `profitbricks-sdk-go` to your configured `GOPATH`:
+
+```go
+go get "github.com/profitbricks/profitbricks-sdk-go"
+```
+
+The source code of the package will be located at:
+
+	$GOBIN\src\profitbricks-sdk-go
+
+Create main package file *example.go*:
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+}
+```
+
+Import GO SDK:
+
+```go
+import(
+	"github.com/profitbricks/profitbricks-sdk-go"
+)
+```
+
+
+### Authenticating
+Add your credentials for connecting to ProfitBricks:
+
+```go
+profitbricks.SetAuth("username", "password")
+```
+
+
+
+**Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
+
+### Error Handling
+
+The SDK will raise custom exceptions when the Cloud API returns an error. There are four response types:
+
+| HTTP Code | Description |
+|---|---|
+| 401 | The supplied user credentials are invalid. |
+| 404 | The requested resource cannot be found. |
+| 422 | The request body includes invalid JSON. |
+| 429 | The Cloud API rate limit has been exceeded. |
 
 # Concepts
 
@@ -147,623 +268,46 @@ Depth controls the amount of data returned from the REST server ( range 1-5 ). T
 
 **Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
 
-# How To's
 
-## How To: Create Data Center
+## Reference
 
-ProfitBricks introduces the concept of Data Centers. These are logically separated from one another and allow you to have a self-contained environment for all servers, volumes, networking, snapshots, and so forth. The goal is to give you the same experience as you would have if you were running your own physical data center.
+This section provides details on all the available operations and the arguments they accept. Brief code snippets demonstrating usage are also included.
 
-The following code example shows you how to programmatically create a data center:
 
-```go
-dcrequest := profitbricks.Datacenter{
-		Properties: profitbricks.DatacenterProperties{
-			Name:        "example.go3",
-			Description: "description",
-			Location:    "us/lasdev",
-		},
-	}
+##### Depth
 
-datacenter := profitbricks.CreateDatacenter(dcrequest)
-```
+Many of the *List* or *Get* operations will accept an optional *depth* argument. Setting this to a value between 0 and 5 affects the amount of data that is returned. The detail returned varies somewhat depending on the resource being queried, however it generally follows this pattern.
 
-## How To: Create Data Center with Multiple Resources
+| Depth | Description |
+|:-:|---|
+| 0 | Only direct properties are included. Children are not included. |
+| 1 | Direct properties and children's references are returned. |
+| 2 | Direct properties and children's properties are returned. |
+| 3 | Direct properties, children's properties, and descendant's references are returned. |
+| 4 | Direct properties, children's properties, and descendant's properties are returned. |
+| 5 | Returns all available properties. |
 
-To create a complex Data Center you would do this. As you can see, you can create quite a few of the objects you will need later all in one request.:
+This SDK sets the *Depth=5* by default as that works well in the majority of cases. You may find that setting *Depth* to a lower or higher value could simplify a later operation by reducing or increasing the data available in the response object.
 
-```go
-datacenter := model.Datacenter{
-		Properties: model.DatacenterProperties{
-			Name: "composite test",
-			Location:location,
-		},
-		Entities:model.DatacenterEntities{
-			Servers: &model.Servers{
-				Items:[]model.Server{
-					model.Server{
-						Properties: model.ServerProperties{
-							Name : "server1",
-							Ram: 2048,
-							Cores: 1,
-						},
-						Entities:model.ServerEntities{
-							Volumes: &model.AttachedVolumes{
-								Items:[]model.Volume{
-									model.Volume{
-										Properties: model.VolumeProperties{
-											Type_:"HDD",
-											Size:10,
-											Name:"volume1",
-											Image:"1f46a4a3-3f47-11e6-91c6-52540005ab80",
-											Bus:"VIRTIO",
-											ImagePassword:"test1234",
-											SshKeys: []string{"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoLVLHON4BSK3D8L4H79aFo..."},
-										},
-									},
-								},
-							},
-							Nics: &model.Nics{
-								Items: []model.Nic{
-									model.Nic{
-										Properties: model.NicProperties{
-											Name : "nic",
-											Lan : "1",
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-	
-dc := CompositeCreateDatacenter(datacenter)
+### Data Centers
 
-```
-
-
-## How To: Delete Data Center
-
-You will want to exercise a bit of caution here. Removing a data center will destroy all objects contained within that data center -- servers, volumes, snapshots, and so on.
-
-The code to remove a data center is as follows. This example assumes you want to remove previously data center:
-
-```go
-profitbricks.DeleteDatacenter(response.Id)
-```
-
-## How To: Create Server
-
-The server create method has a list of required parameters followed by a hash of optional parameters. The optional parameters are specified within the "options" hash and the variable names match the [REST API](https://devops.profitbricks.com/api/rest/) parameters.
-
-The following example shows you how to create a new server in the data center created above:
-
-```go
-req := profitbricks.Server{
- 		Properties: profitbricks.ServerProperties{
- 			Name:  "go01",
- 			Ram:   1024,
- 			Cores: 2,
- 		},
-}
-server := CreateServer(datacenter.Id, req)
-```
-
-## How To: List Available Images
-
-A list of disk and ISO images are available from ProfitBricks for immediate use. These can be easily viewed and selected. The following shows you how to get a list of images. This list represents both CDROM images and HDD images.
-
-```go
-images := profitbricks.ListImages()
-```
-
-This will return a [collection](#Collection) object
-
-## How To: Create Storage Volume
-
-ProfitBricks allows for the creation of multiple storage volumes that can be attached and detached as needed. It is useful to attach an image when creating a storage volume. The storage size is in gigabytes.
-
-```go
-volumerequest := profitbricks.Volume{
-		Properties: profitbricks.VolumeProperties{
-			Size:        1,
-			Name:        "Volume Test",
-			LicenceType: "LINUX",
-			Type:        "HDD",
-		},
-}
-
-storage := CreateVolume(datacenter.Id, volumerequest)
-```
-
-## How To: Update Cores and Memory
-
-ProfitBricks allows users to dynamically update cores, memory, and disk independently of each other. This removes the restriction of needing to upgrade to the next size available size to receive an increase in memory. You can now simply increase the instances memory keeping your costs in-line with your resource needs.
-
-Note: The memory parameter value must be a multiple of 256, e.g. 256, 512, 768, 1024, and so forth.
-
-The following code illustrates how you can update cores and memory:
-
-```go
-serverupdaterequest := profitbricks.ServerProperties{
-	Cores: 1,
-	Ram:   256,
-}
-
-resp := PatchServer(datacenter.Id, server.Id, serverupdaterequest)
-```
-
-## How To: Attach or Detach Storage Volume
-
-ProfitBricks allows for the creation of multiple storage volumes. You can detach and reattach these on the fly. This allows for various scenarios such as re-attaching a failed OS disk to another server for possible recovery or moving a volume to another location and spinning it up.
-
-The following illustrates how you would attach and detach a volume and CDROM to/from a server:
-
-```go
-profitbricks.AttachVolume(datacenter.Id, server.Id, volume.Id)
-profitbricks.AttachCdrom(datacenter.Id, server.Id, images.Items[0].Id)
-
-profitbricks.DetachVolume(datacenter.Id, server.Id, volume.Id)
-profitbricks.DetachCdrom(datacenter.Id, server.Id, images.Items[0].Id)
-```
-
-## How To: List Servers, Volumes, and Data Centers
-
-Go SDK provides standard functions for retrieving a list of volumes, servers, and datacenters.
-
-The following code illustrates how to pull these three list types:
-
-```go
-volumes := profitbricks.ListVolumes(datacenter.Id)
-
-servers := profitbricks.ListServers(datacenter.Id)
-
-datacenters := profitbricks.ListDatacenters()
-```
-
-## Reference  
-
------
-
-## Objects
-
-### Common object properties
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Id | String | Unique identifier of the object|
-| Type_ | String | Type of the object as returned from the Cloud API|
-| Href | String | URL to the object’s representation|
-| Metadata | *Metadata | See [Metadata](#metadata) |
-| Headers | *http.Header | Response headers|
-| Response | string | Raw JSON response|
-| StatusCode | int | Http response status code |
-
-### Metadata
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|CreatedDate     |time.Time|The date when the resource was created.|
-|CreatedBy       |string|The user who created the resource.|
-|Etag            |string|The etag for the request.|
-|LastModifiedDate|time.Time|The last time the resource has been modified.|
-|LastModifiedBy  |string|The user who last modified the resource.|
-|State            |string|*AVAILABLE* There are no pending modification requests for this item; *BUSY* There is at least one modification request pending and all following requests will be queued; *INACTIVE* Resource has been de-provisioned.|
-
-
-### Resp
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Req        | *http.Request | A Request represents an HTTP request received by a server or to be sent by a client. |
-| StatusCode | int           | Request status code |
-| Headers    | http.Header   | A Header represents the key-value pairs in an HTTP header. |
-| Body       | []byte        | Byte encoded response body |
-
-### Datacenter
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Properties| DatacenterProperties  | See [DatacenterProperties](#datacenterproperties)|
-| Entities  | DatacenterEntities    |See [DatacenterEntities](#datacenterentities)|
-
-### DatacenterProperties
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Name        |string| Name of the data center|
-|Description |string|Description of the data center|
-|Location    |string|Location of the data center|
-|Version     |int32 |The version of the data center|
-
-### DatacenterEntities
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Servers       |*Servers      |See [Servers](#servers)|
-|Volumes       |*Volumes      |See [Volumes](#volumes)|
-|Loadbalancers |*Loadbalancers|See [LoadBalancers](#loadbalancers)|
-|Lans          |*Lans         |See [Lans](#lans)|
-
-### Datacenters
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Datacenter | Array of [Datacenters](#datacenter)|
-
----
-
-### Server
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Id         |string|      |           
-| Type_      |string| |
-| Properties | ServerProperties |           See [ServerProperties](#serverproperties)|
-| Entities   | *ServerEntities | See [ServerEntities](#serverentities)|
-	
-### ServerProperties
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Name | string | The hostname of the server.|
-| Cores | int | The total number of cores for the server.|
-| Ram | int | The amount of memory for the server in MB, e.g. 2048. | 
-| AvailabilityZone | string |The availability zone in which the server should exist.|
-| VmState | string | Status of the virtual Machine.|
-| BootCdrom | *ResourceReference | 	Reference to a CD-ROM used for booting. |
-| BootVolume | *ResourceReference | Reference to a Volume used for booting.|
-| CpuFamily | string | Type of CPU assigned. |
-
-### ServerEntities
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Cdroms  |*Cdroms | See [Cdrom](#cdroms) |
-|Volumes |*Volumes | See [Volumes](#volumes)|
-|Nics    |*Nics | See [Nics](#nics)|
-
-
-### Servers
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Server | Array of [Servers](#server)|
-
----
-
-### Volume
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Properties | VolumeProperties | See [VolumeProperties](#volueproperties) |
-
-### VolumeProperties
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Name                | string  |	The name of the volume. | 
-| Type                | string  | The volume type, HDD or SSD. | 
-| Size                | int     | The size of the volume in GB. | 
-| AvailabilityZone    | string  | The storage availability zone assigned to the volume. | 
-| Image               | string  | The image or snapshot ID.| 
-| ImagePassword       | string  | Always returns "null".| 
-| SshKeys             | []string| Always returns "null".| 
-| Bus                 | string  | The bus type: VIRTIO or IDE. Returns "null" if not connected to a server.| 
-| LicenceType         | string  | Licence type. | 
-| CpuHotPlug          | bool    | This volume is capable of CPU hot plug | 
-| CpuHotUnplug        | bool    | This volume is capable of CPU hot unplug | 
-| RamHotPlug          | bool    | This volume is capable of memory hot plug | 
-| RamHotUnplug        | bool    | This volume is capable of memory hot unplug | 
-| NicHotPlug          | bool    | This volume is capable of nic hot plug | 
-| NicHotUnplug        | bool    | This volume is capable of nic hot unplug | 
-| DiscVirtioHotPlug   | bool    | This volume is capable of VirtIO drive hot plug | 
-| DiscVirtioHotUnplug | bool    | This volume is capable of VirtIO drive hot unplug | 
-| DiscScsiHotPlug     | bool    | This volume is capable of SCSI drive hot plug | 
-| DiscScsiHotUnplug   | bool    | This volume is capable of SCSI drive hot unplug | 
-| DeviceNumber        | int64   | The LUN ID of the storage volume. | 
-
-### Volumes
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Volume | Array of [Volumes](#server) |
-
----
-
-### Nic
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Properties |NicProperties | See [NicProperties](#nicproperties) |
-|Entities |*NicEntities | See [NicEntities](#nicentities)|
-
-
-### NicProperties 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Name           | string   |The name of the NIC.|
-| Mac            | string   |The MAC address of the NIC.|
-| Ips            | []string |IPs assigned to the NIC represented as a collection of strings|
-| Dhcp           | bool     |Boolean value that indicates if the NIC is using DHCP or not.|
-| Lan            | int      |The LAN ID the NIC sits on.|
-| FirewallActive | bool     |A true value indicates the firewall is enabled. A false value indicates the firewall is disabled.|
-| Nat            | bool     |Boolean value indicating if the private IP address has outbound access to the public internet.|
-
-### NicEntities
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Firewallrules    |*Firewallrules | See [Firewallrules](#firewallrules)|
-
-### Nics 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Nic | Array of [Nics](#nic) |
-
----
-
-### FirewallRule
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Properties |FirewallruleProperties | See [FirewallruleProperties](#firewallruleproperties) |
-
-
-### FirewallruleProperties 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Name           | string   |The name of the firewall rule.|
-| Protocol           | string   |The protocol for the rule: TCP, UDP, ICMP, ANY.|
-| SourceMac            | string   |Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. Value null allows all source MAC address.|
-| SourceIp            | string |Only traffic originating from the respective IPv4 address is allowed. Value null allows all source IPs.|
-| TargetIp           | string     |In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. Value null allows all target IPs.|
-| IcmpCode            | int      |Defines the allowed type (from 0 to 254) if the protocol ICMP is chosen. Value null allows all types.|
-| IcmpType | int     |Defines the allowed code (from 0 to 254) if protocol ICMP is chosen. Value null allows all codes.|
-| PortRangeStart            | int      |Defines the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd value null to allow all ports.|
-| PortRangeEnd            | int      |Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd null to allow all ports.|
-
-
-### FirewallRules 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []FirewallRule | Array of [FirewallRule](#firewallrule) |
-
----
-
-### Lan
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Properties |LanProperties | See [LanProperties](#lanproperties) |
-
-
-### LanProperties 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Name           | string   |The name of the firewall rule.|
-| Public           | interface{} |Boolean indicating if the LAN faces the public Internet or not.| 65534) if the protocol TCP or UDP is chosen. Leave portRangeStart and portRangeEnd null to allow all ports.|
-
-
-### Lans 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Lan | Array of [Lans](#lan) |
-
----
-
-### Image
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Properties |ImageProperties | See [ImageProperties](#imageproperties) |
-
-### ImageProperties 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Name                | string |The name of the image.|
-|Description         | string |The description of the image.|
-|Location            | string |The image's location.|
-|Size                | int    |The size of the image in GB.|
-|CpuHotPlug          | bool   |This volume is capable of CPU hot plug (no reboot required)|
-|CpuHotUnplug        | bool   |This volume is capable of CPU hot unplug (no reboot required)|
-|RamHotPlug          | bool   |This volume is capable of memory hot plug (no reboot required)|
-|RamHotUnplug        | bool   |This volume is capable of memory hot unplug (no reboot required)|
-|NicHotPlug          | bool   |This volume is capable of nic hot plug (no reboot required)|
-|NicHotUnplug        | bool   |This volume is capable of nic hot unplug (no reboot required)|
-|DiscVirtioHotPlug   | bool   |This volume is capable of Virt-IO drive hot plug (no reboot required)|
-|DiscVirtioHotUnplug | bool   |This volume is capable of Virt-IO drive hot unplug (no reboot required)|
-|DiscScsiHotPlug     | bool   |This volume is capable of Scsi drive hot plug (no reboot required)|
-|DiscScsiHotUnplug   | bool   |This volume is capable of Scsi drive hot unplug (no reboot required)|
-|LicenceType         | string |The image's licence type: LINUX, WINDOWS, WINDOWS2016, OTHER or UNKNOWN.|
-|ImageType           | string |The type of image: HDD, CDROM.|
-|Public              | bool   |	Indicates if the image is part of the public repository or not.|
-	
-	
-### Images 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Image | Array of [Images](#image) |
-
----
-
-### Loadbalancer
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Properties |LoadbalancerProperties | See [LoadbalancerProperties](#loadbalancerproperties) |
-|Entities |LoadbalancerEntities | See [LoadbalancerEntities](#loadbalancerentities) |
-
-### LoadbalancerProperties 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Name               | string |The name of the loadbalancer.|
-|Ip                 | string |IPv4 address of the loadbalancer. All attached NICs will inherit this IP.|
-|Dhcp               | bool |Indicates if the loadbalancer will reserve an IP using DHCP.|
-	
-### LoadbalancerEntities 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Balancednics               | BalancedNics |See [BalancedNics](#nics)|
-	
-### Loadbalancers 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Loadbalancer | Array of [Loadbalancers](#loadbalancer) |
-
----
-
-### Location
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Properties |LocationProperties | See [LocationProperties](#locationproperties) |
-
-### LocationProperties 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Name               | string |The name of the location.|
-|Features           | []string |Features available at this location.|
-
-### Locations
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Location | Array of [Locations](#location) |
-
----
-
----
-
-### IpBlock
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Properties |IpBlockProperties | See [IpBlockProperties](#ipblockproperties) |
-
-### IpBlockProperties 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Ips               | []string |A collection of IPs associated with the IP Block.|
-|Location           | string |	Location the IP block resides in.|
-|Size           | int | Number of IP addresses in the block.|
-
-### IpBlocks
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []IpBlock | Array of [IpBlock](#ipblock) |
-
----
-
-### Snapshot
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-|Properties |SnapshotProperties | See [SnapshotProperties](#snapshotproperties) |
-
-### SnapshotProperties 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| name | string | The name of the snapshot. | 
-| description | string | The description of the snapshot. | No |
-| cpuHotPlug | bool | This volume is capable of CPU hot plug (no reboot required) | 
-| cpuHotUnplug | bool | This volume is capable of CPU hot unplug (no reboot required) | 
-| ramHotPlug | bool | This volume is capable of memory hot plug (no reboot required) | 
-| ramHotUnplug | bool | This volume is capable of memory hot unplug (no reboot required) | 
-| nicHotPlug | bool | This volume is capable of NIC hot plug (no reboot required) | 
-| nicHotUnplug | bool | This volume is capable of NIC hot unplug (no reboot required) | 
-| discVirtioHotPlug | bool | This volume is capable of Virt-IO drive hot plug (no reboot required) | 
-| discVirtioHotUnplug | bool | This volume is capable of Virt-IO drive hot unplug (no reboot required) | 
-| discScsiHotPlug | bool | This volume is capable of SCSI drive hot plug (no reboot required) | 
-| discScsiHotUnplug | bool | This volume is capable of SCSI drive hot unplug (no reboot required) | 
-| licenceType | string | The snapshot's licence type: LINUX, WINDOWS, or UNKNOWN. | 
-
-### Snapshots
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Snapshot | Array of [Snapshot](#snapshot) |
-
----
-
-### Request
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Properties |RequestProperties | See [RequestProperties](#requestproperties) |
-| Metadata | Metadata | See [Metadata](#requestmetadata) | 
-
-### RequestProperties 
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Method  | string | | 
-| Headers  | interface{} | | 
-| Body     |interface{} | | 
-| URL      | string | | 
-
-### Requests
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Items | []Requests | Array of [Requests](#request) |
-
-### RequestStatusMetadata
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Metadata | Metadata | See [RequestStatusMetadata](#requeststatusmetadata) |
- 
-### RequestStatusMetadata
-
-| Property Name |  Type | Description|
-|---|-----|-----|
-| Status  |string||
-| Message|string ||
-| Etag   |string||
-| Targets|[]RequestTarget||
-
-
-
----
-
-
-## Functions
-
-### Virtual Data Centers
-
-Virtual Data Centers are the foundation of the ProfitBricks platform. Virtual Data Centers act as logical containers for all other objects you will be creating, e.g., servers. You can provision as many data centers as you want. Data centers have their own private network and are logically segmented from each other to create isolation.
-
+Virtual Data Centers (VDCs) are the foundation of the ProfitBricks platform. VDCs act as logical containers for all other objects you will be creating, e.g., servers. You can provision as many VDCs as you want. VDCs have their own private network and are logically segmented from each other to create isolation.
 
 #### List Data Centers
 
-#### Return Type
+This operation will list all currently provisioned VDCs that your account credentials provide access to.
 
-[Datacenters](#datacenters)
+There are no request arguments that need to be supplied.
 
-```
-ListDatacenters()
-```
+Call `ListDatacenters`:
+
+    ListDatacenters()
+
 ---
 
 #### Retrieve a Data Center
+
+Use this to retrieve details about a specific VDC.
 
 The following table describes the request arguments:
 
@@ -771,206 +315,425 @@ The following table describes the request arguments:
 |---|---|---|---|
 | dcid | Yes | string | The ID of the data center.  |
 
+Pass the arguments to `GetDatacenter`:
 
-#### Return Type
+    GetDatacenter(dcid string)
 
-[Datacenter](#datacenter)
-
-```
-GetDatacenter(dcid string)
-```
 ---
 
 #### Create a Data Center
 
+Use this operation to create a new VDC. You can create a "simple" VDC by supplying just the required *Name* and *Location* arguments. This operation also has the capability of provisioning a "complex" VDC by supplying additional arguments for servers, volumes, LANs, and/or load balancers.
+
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dc | Datacenter |See [Datacenter](#datacetner) | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenter | **yes** | object | A [Datacenter object](#datacenter-resource-object) describing the VDC being created. |
+
+Build the `Datacenter` resource object:
+
+    var obj = Datacenter{
+		Properties: DatacenterProperties{
+		Name:        "GO SDK Test",
+		Description: "GO SDK test datacenter",
+		Location:    location,
+		},
+	}
+
+Pass the object to `CreateDatacenter`:
+
+    CreateDatacenter(obj)
+
+##### Datacenter Resource Object
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Name | **yes** | string | The name of the VDC. |
+| Location | **yes** | string | The physical ProfitBricks location where the VDC will be created. |
+| Description | no | string | A description for the VDC, e.g. staging, production. |
+| Servers | no | list | A list of one or more [Server objects](#server-resource-object) to be created. |
+| Volumes | no | list | A list of one or more [Volume objects](#volume-resource-object) to be created. |
+| Lans | no | list | A list of one or more [LAN objects](#lan-resource-object) to be created. |
+| Loadbalancers | no | list | A list of one or more [LoadBalancer objects](#load-balancer-resource-object) to be created. |
 
 The following table outlines the locations currently supported:
 
-| ID | Country | City |
+| Value| Country | City |
 |---|---|---|
 | us/las | United States | Las Vegas |
 | de/fra | Germany | Frankfurt |
 | de/fkb | Germany | Karlsruhe |
 
-```
-CreateDatacenter(dc Datacenter)
-```
+**NOTES**:
 
-#### Return Type
-
-[Datacenter](#datacenter)
-
-*NOTES*:
-- The value for `name` cannot contain the following characters: (@, /, , |, ‘’, ‘).
-- You cannot change a data center's `location` once it has been provisioned.
+* The value for `Name` cannot contain the following characters: (@, /, , |, ‘’, ‘).
+* You cannot change the VDC `Location` once it has been provisioned.
 
 ---
 
 #### Update a Data Center
 
-After retrieving a data center, you can change it's properties:
+After retrieving a VDC, either by ID or as a create response object, you can change its properties by calling the `update_datacenter` method. Some arguments may not be changed using `update_datacenter`.
 
-```
+The following table describes the available request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| dcid | **yes** | string | The ID of the VDC. |
+| Name | no | string | The new name of the VDC. |
+| Description | no | string | The new description of the VDC. |
+
+Build the `DatacenterProperties` resource object:
+
+    var obj = DatacenterProperties{Name: "new Name",Description: "new desc"}
+
+Pass the arguments to `PatchDatacenter`:
+
 PatchDatacenter(dcid string, obj DatacenterProperties)
-```
-
-The following table describes the request arguments:
-
-| Name | Type | Description | Required |
-| --- | --- | --- | --- |
-| dcid | string | ID of the datacenter | Yes |
-| obj | DatacenterProperties | See [DatacenterProperties](#datacenterproperties | Yes |
-
-
-#### Return Type
-
-[Datacenter](#datacenter)
 
 ---
 
 #### Delete a Data Center
 
-This will remove all objects within the data center and remove the data center object itself.
+This will remove all objects within the VDC and remove the VDC object itself.
 
-**NOTE**: This is a highly destructive operation which should be used with extreme caution.
+**NOTE**: This is a highly destructive operation which should be used with extreme caution!
 
-```
-DeleteDatacenter(dcid string)
-```
+The following table describes the available request arguments:
 
-#### Return Type
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| dcid | **yes** | string | The ID of the VDC that you want to delete. |
 
-[Resp](#resp)
+Pass the argument to `DeleteDatacenter`:
 
-### Server Functions
+    DeleteDatacenter(dcid)
 
-#### List Servers
+---
 
-You can retrieve a list of all servers within a data center.
+### Locations
+
+Locations are the physical ProfitBricks data centers where you can provision your VDCs.
+
+#### List Locations
+
+The `ListLocations` operation will return the list of currently available locations.
+
+There are no request arguments to supply.
+
+    ListLocations()
+
+---
+
+#### Get a Location
+
+Retrieves the attributes of a specific location.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| locationid | **yes** | string | The ID consisting of country/city. |
 
-```
-ListServers(dcid string)
-```
+Pass the argument to `GetLocation`:
 
-#### Return Type
+    GetLocation("us/las")
 
-[Server](#server)
+---
+
+#### Get a Regional Location
+
+Retrieves the locations available in a specific region.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| regionid | **yes** | string | The ID consisting of country/city. |
+
+Pass the argument to `GetRegionalLocations`:
+
+    GetRegionalLocations("us")
+
+---
+
+### Servers
+
+#### List Servers
+
+You can retrieve a list of all the servers provisioned inside a specific VDC.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| dcid | **yes**  | string | The ID of the VDC. |
+
+Pass the arguments to `ListServers`:
+
+    ListServers(dcid)
 
 ---
 
 #### Retrieve a Server
 
-Returns information about a server such as its configuration, provisioning status, etc.
+Returns information about a specific server such as its configuration, provisioning status, etc.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| dcId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
 
-```
-GetServer(dcid, srvid string)
-```
+Pass the arguments to `GetServer`:
 
-#### Return Type
-
-[Servers](#servers)
+    GetServer(dcId, serverId)
 
 ---
 
 #### Create a Server
 
-Creates a server within an existing data center. You can configure additional properties such as specifying a boot volume and connecting the server to an existing LAN.
+Creates a server within an existing VDC. You can configure additional properties such as specifying a boot volume and connecting the server to a LAN.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| server | Server | See [Server](#server) | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| server | **yes** | object | A [Server object](#server-resource-object) describing the server being created. |
 
-The following table outlines the various licence types you can define:
+Build a [Server](#server-resource-object) object:
 
-| Licence Type | Description |
+    var server = Server{
+		Properties: ServerProperties{
+			Name:             "GO SDK Test",
+			Ram:              1024,
+			Cores:            1,
+			AvailabilityZone: "ZONE_1",
+			CpuFamily:        "INTEL_XEON",
+		},
+	}
+
+Pass the object and other arguments to `CreateServer`:
+
+    CreateServer(datacenterId, server)
+
+##### Server Resource Object
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Name | **yes** | string | The name of the server. |
+| Cores | **yes** | int | The total number of cores for the server. |
+| Ram | **yes** | int | The amount of memory for the server in MB, e.g. 2048. Size must be specified in multiples of 256 MB with a minimum of 256 MB; however, if you set `RamHotPlug` to *true* then you must use a minimum of 1024 MB. |
+| AvailabilityZone | no | string | The availability zone in which the server should exist. |
+| CpuFamily | no | string | Sets the CPU type. "AMD_OPTERON" or "INTEL_XEON". Defaults to "AMD_OPTERON". |
+| BootVolume | no | string | A volume ID that the server will boot from. If not *nil* then `BootCdrom` has to be *nil*. |
+| BootCdrom | no | string | A CD-ROM image ID used for booting. If not *nil* then `BootVolume` has to be *nil*. |
+| Cdroms | no | list | A list of existing volume IDs that you want to connect to the server. |
+| Volumes | no | list | One or more [Volume objects](#volume-resource-object) that you want to create and attach to the server.|
+| Nics | no | list | One or more [NIC objects](#nic-resource-object) that you wish to create at the time the server is provisioned. |
+
+The following table outlines the server availability zones currently supported:
+
+| Availability Zone | Comment |
 |---|---|
-| WINDOWS | You must specify this if you are using your own, custom Windows image due to Microsoft's licensing terms. |
-| LINUX | |
-| UNKNOWN | If you are using an image uploaded to your account your OS Type will inherit as UNKNOWN. |
-
-The following table outlines the availability zones currently supported:
-
-| Availability Zone | Description |
-|---|---|
-| AUTO | Automatically selected zone |
-| ZONE_1 | Zone 1 |
-| ZONE_2 | Zone 2 |
-| ZONE_3 | Zone 3 |
-
-```
-CreateServer(dcid string, server Server)
-```
-
-
-#### Return Type
-
-[Server](#server)
+| AUTO | Automatically Selected Zone |
+| ZONE_1 | Fire Zone 1 |
+| ZONE_2 | Fire Zone 2 |
 
 ---
 
 #### Update a Server
 
-Perform updates to attributes of a server.
+Perform updates to the attributes of a server.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvId | string | The ID of the server. | Yes |
-| props | ServerProperties | See [ServerProperties](#serverproperties) | No |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| Name | no | string | The name of the server. |
+| Cores | no | int | The number of cores for the server. |
+| Ram | no | int | The amount of memory in the server. |
+| AvailabilityZone | no | string | The new availability zone for the server. |
+| CpuFamily | no | string | Sets the CPU type. "AMD_OPTERON" or "INTEL_XEON". Defaults to "AMD_OPTERON". |
+| BootVolume | no | string | A volume ID used for booting. If not *nil* then `BootCdrom` has to be *nil*. |
+| BootCdrom | no | string | A CD-ROM image ID used for booting. If not *nil* then `BootVolume` has to be *nil*. |
+
+Build a [ServerProperties](#serverproperties) object:
+
+    var server = ServerProperties{
+		Name: "GO SDK Test RENAME",
+	}
 
 
-```
-PatchServer(dcid string, srvid string, props ServerProperties)
-```
+Pass the arguments to `update_server`:
 
-#### Return Type
-
-[Server](#server)
+    PatchServer(datacenterId, serverId, server)
 
 ---
 
 #### Delete a Server
 
-This will remove a server from a data center. NOTE: This will not automatically remove the storage volume(s) attached to a server. A separate API call is required to perform that action.
+This will remove a server from a VDC. **NOTE**: This will not automatically remove the storage volume(s) attached to a server. A separate operation is required to delete a storage volume.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server that will be deleted. |
 
+Pass the arguments to `delete_server`:
 
-```
-DeleteServer(dcid, srvid string)
-```
+     DeleteServer(datacenterId, serverId)
 
-#### Return Type
+---
 
-[Resp](#resp)
+#### List Attached Volumes
+
+Retrieves a list of volumes attached to the server.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+
+Pass the arguments to `ListAttachedVolumes`:
+
+    ListAttachedVolumes(datacenterId, serverId)
+
+---
+
+#### Attach a Volume
+
+This will attach a pre-existing storage volume to the server.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| volumeId | **yes** | string | The ID of a storage volume. |
+
+Pass the arguments to `AttachVolume`:
+
+AttachVolume(datacenterId, serverId, volumeId)
+
+---
+
+#### Retrieve an Attached Volume
+
+This will retrieve the properties of an attached volume.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| volumeId | **yes** | string | The ID of the attached volume. |
+
+Pass the arguments to `get_attached_volume`:
+
+    GetAttachedVolume(srv_dc_id, srv_srvid, srv_vol)
+
+---
+
+#### Detach a Volume
+
+This will detach the volume from the server. Depending on the volume `hot_unplug` settings, this may result in the server being rebooted. If `disc_virtio_hot_unplug` has been set to *true*, then a reboot should not be required.
+
+This will **NOT** delete the volume from your VDC. You will need to make a separate request to delete a volume.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| volumeId | **yes** | string | The ID of the attached volume. |
+
+Pass the arguments to `detach_volume`:
+
+     DetachVolume(datacenterId, serverId, volumeId)
+
+---
+
+#### List Attached CD-ROMs
+
+Retrieves a list of CD-ROMs attached to a server.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+
+Pass the arguments to `ListAttachedCdroms`:
+
+   ListAttachedCdroms(srv_dc_id, srv_srvid)
+
+---
+
+#### Attach a CD-ROM
+
+You can attach a CD-ROM to an existing server.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| cdromId | **yes** | string | The ID of a CD-ROM. |
+
+Pass the arguments to `attach_cdrom`:
+
+	AttachCdrom(datacenterId, serverId, cdromId)
+
+---
+
+#### Retrieve an Attached CD-ROM
+
+You can retrieve a specific CD-ROM attached to the server.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| cdromId | **yes** | string | The ID of the attached CD-ROM. |
+
+Pass the arguments to `GetAttachedCdrom`:
+
+GetAttachedCdrom(datacenterId, serverId, cdromId)
+
+---
+
+#### Detach a CD-ROM
+
+This will detach a CD-ROM from the server.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| cdromId | **yes** | string | The ID of the attached CD-ROM. |
+
+Pass the arguments to `DetachCdrom`:
+
+	DetachCdrom(datacenterId, serverId, cdromId)
 
 ---
 
@@ -980,41 +743,31 @@ This will force a hard reboot of the server. Do not use this method if you want 
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dataCenterId | string | The ID of the data center. | Yes |
-| serverId | string | The ID of the server. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
 
+Pass the arguments to `RebootServer`:
 
-```
-RebootServer(dcid, srvid string)
-```
-
-#### Return Type
-
-[Resp](#resp)
+    RebootServer(datacenterId, serverId)
 
 ---
 
 #### Start a Server
 
-This will start a server. If the server's public IP was deallocated then a new IP will be assigned.
+This will start a server. If a DHCP assigned public IP was deallocated when the server was stopped, then a new IP will be assigned.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
 
+Pass the arguments to `StartServer`:
 
-```
-StartServer(dcid, srvid string)
-```
-
-#### Return Type
-
-[Resp](#resp)
+    StartServer(datacenterId, serverId)
 
 ---
 
@@ -1024,153 +777,523 @@ This will stop a server. The machine will be forcefully powered off, billing wil
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid  | string | The ID of the data center. | Yes |
-|  srvid | string | The ID of the server. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
 
+Pass the arguments to `StopServer`:
 
-```
-StopServer(dcid, srvid string)
-```
-
-#### Return Type
-
-[Resp](#resp)
+	StopServer(datacenterId, serverId)
 
 ---
 
-#### Attach a CDROM
+### Images
 
-This will attach a CDROM to the server.
+#### List Images
 
-The following table describes the request arguments:
+Retrieve a list of images.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
-| cdid | string | The ID of a ProfitBricks image of type CDROM. | Yes |
+Just call the `ListImages`:
 
-
-```
-AttachCdrom(dcid string, srvid string, cdid string)
-```
-
-#### Return Type
-
-[Image](#image)
+    ListImages()
 
 ---
 
-#### Detach a CDROM
+#### Get an Image
 
-This will detach the CDROM from the server. Depending on the volume "hot_unplug" settings, this may result in the server being rebooted.
+Retrieves the attributes of a specific image.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvId | string | The ID of the server. | Yes |
-| cdid | string | The ID of the attached CDROM. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| imgId | **yes** | string | The ID of the image. |
 
+Pass the arguments to `GetImage`:
 
-```
-DetachCdrom(dcid, srvid, cdid string)
-```
-
-#### Return Type
-
-[Resp](#resp)
+    GetImage(imgid)
 
 ---
 
-#### List attached CDROMs
 
-This will list CDROMs that are attached to the server
+### Volumes
+
+#### List Volumes
+
+Retrieve a list of volumes within the VDC. If you want to retrieve a list of volumes attached to a server please see the [List Attached Volumes](#list-attached-volumes) entry in the Server section for details.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
 
+Pass the arguments to `ListVolumes`:
 
-```
-ListAttachedCdroms(dcid, srvid string)
-```
-
-#### Return Type
-
-[Images](#images)
+    ListVolumes(datacenterId)
 
 ---
 
-#### Get attached CDROM
+#### Get a Volume
 
-This will retrieve a CDROM that is attached to the server
-
-The following table describes the request arguments:
-
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
-| cdid | string | The ID of the attached CDROM. | Yes |
-
-
-```
-GetAttachedCdrom(dcid, srvid, cdid string)
-```
-
-#### Return Type
-
-[Image](#image)
-
-
-#### Delete Volume
-
-This will delete a volume:
+Retrieves the attributes of a given volume.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| volid | string | The ID of the volume. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| volumeId | **yes** | string | The ID of the volume. |
 
-```
-DeleteVolume(dcid, volid string)
-```
+Pass the arguments to `GetVolume`:
 
-#### Return Type
-
-[Resp](#resp)
+    GetVolume(datacenterId, volumeId)
 
 ---
 
-### NIC Functions
+#### Create a Volume
+
+Creates a volume within the VDC. This will NOT attach the volume to a server. Please see the [Attach a Volume](#attach-a-volume) entry in the Server section for details on how to attach storage volumes.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenter_id | **yes** | string | The ID of the VDC. |
+| volume | **yes** | object | A [Volume object](#volume-resource-object) you wish to create. |
+
+Build the `Volume` resource object:
+
+    var request = Volume{
+		Properties: VolumeProperties{
+			Size:             2,
+			Name:             "GO SDK Test",
+			ImageAlias:       "ubuntu:latest",
+			Bus:              "VIRTIO",
+			SshKeys:          []string{"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoLVLHON4BSK3D8L4H79aFo..."},
+			Type:             "HDD",
+			ImagePassword:    "test1234",
+			AvailabilityZone: "ZONE_3",
+		},
+	}
+
+Pass the object and arguments to `CreateVolume`:
+
+    CreateVolume(dcID, request)
+
+##### Volume Resource Object
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Name | no | string | The name of the volume. |
+| Size | **yes** | int | The size of the volume in GB. |
+| Bus | no | string | The bus type of the volume (VIRTIO or IDE). Default: VIRTIO. |
+| Image | **yes** | string | The image or snapshot ID. Can be left empty for a data volume, however you'll need to set the `licence_type`. Default: *null* |
+| Type | **yes** | string | The volume type, HDD or SSD. Default: HDD|
+| LicenceType | **yes** | string | The licence type of the volume. Options: LINUX, WINDOWS, WINDOWS2016, UNKNOWN, OTHER. Default: UNKNOWN |
+| ImagePassword | **yes** | string | A password to set on the volume for the appropriate root or administrative account. This field may only be set in creation requests. When reading, it always returns *null*. The password has to contain 8-50 characters. Only these characters are allowed: [abcdefghjkmnpqrstuvxABCDEFGHJKLMNPQRSTUVX23456789] |
+| ImageAlias | **yes** | string | An alias to a ProfitBricks public image. Use instead of "image".] |
+| SshKeys | **yes** | string | SSH keys to allow access to the volume via SSH. |
+| AvailabilityZone | no | string | The storage availability zone assigned to the volume. Valid values: AUTO, ZONE_1, ZONE_2, or ZONE_3. This only applies to HDD volumes. Leave blank or set to AUTO when provisioning SSD volumes. |
+
+The following table outlines the various licence types you can define:
+
+| Licence Type | Comment |
+|---|---|
+| WINDOWS2016 | Use this for the Microsoft Windows Server 2016 operating system. |
+| WINDOWS | Use this for the Microsoft Windows Server 2008 and 2012 operating systems. |
+| LINUX |Use this for Linux distributions such as CentOS, Ubuntu, Debian, etc. |
+| OTHER | Use this for any volumes that do not match one of the other licence types. |
+| UNKNOWN | This value may be inherited when you've uploaded an image and haven't set the license type. Use one of the options above instead. |
+
+The following table outlines the storage availability zones currently supported:
+
+| Availability Zone | Comment |
+|---|---|
+| AUTO | Automatically Selected Zone |
+| ZONE_1 | Fire Zone 1 |
+| ZONE_2 | Fire Zone 2 |
+| ZONE_3 | Fire Zone 3 |
+
+**Note:** You will need to provide either the `Image` or the `LicenceType` arguments when creating a volume. A `LicenceType` is required, but if `Image` is supplied, it is already set and cannot be changed. Either the `ImagePassword` or `SshKeys` arguments need to be supplied when creating a volume using one of the official ProfitBricks images. Only official ProfitBricks provided images support the `SshKeys` and `ImagePassword` arguments.
+
+---
+
+#### Update a Volume
+
+You can update various attributes of an existing volume; however, some restrictions are in place:
+
+You can increase the size of an existing storage volume. You cannot reduce the size of an existing storage volume. The volume size will be increased without requiring a reboot if the relevant hot plug settings (`disc_virtio_hot_plug`, `disc_virtio_hot_unplug`, etc.) have been set to *true*. The additional capacity is not added automatically added to any partition, therefore you will need to handle that inside the OS afterwards. Once you have increased the volume size you cannot decrease the volume size.
+
+Since an existing volume is being modified, none of the request arguments are specifically required as long as the changes being made satisfy the requirements for creating a volume.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| volumeId | **yes** | string | The ID of the volume. |
+| Name | no | string | The name of the volume. |
+| Size | no | int | The size of the volume in GB. You may only increase the `size` when updating. |
+| Bus | no | string | The bus type of the volume (VIRTIO or IDE). Default: VIRTIO. |
+| LicenceType | no | string | The licence type of the volume. Options: LINUX, WINDOWS, WINDOWS2016, UNKNOWN, OTHER. You may get an error trying to update `LicenceType` depending on the `Image` that was used to create the volume. For example, you cannot update the `LicenceType` for a volume created from a ProfitBricks supplied OS image. |
+
+**Note**: Trying to change the `Image`, `Type`, or `AvailabilityZone` in an update request will result in an error.
+
+Pass the arguments to `PatchVolume`:
+
+    var obj := VolumeProperties{
+		Name: "GO SDK Test - RENAME",
+		Size: 5,
+	}
+	PatchVolume(datacenterId, volumeId, obj)
+
+---
+
+#### Delete a Volume
+
+Deletes the specified volume. This will result in the volume being removed from your data center. Use this with caution.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| volumeId | **yes** | string | The ID of the volume. |
+
+Pass the arguments to `DeleteVolume`:
+
+	DeleteVolume(datacenterId, volumeId)
+
+---
+
+#### Create a Volume Snapshot
+
+Creates a snapshot of a volume within the VDC. You can use a snapshot to create a new storage volume or to restore a storage volume.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| volumeId | **yes** | string | The ID of the volume. |
+| Name | no | string | The name of the snapshot. |
+| Description | no | string | The description of the snapshot. |
+
+Pass the arguments to `CreateSnapshot`:
+
+    CreateSnapshot(datacenterId, volumeId, Name,Description)
+
+---
+
+#### Restore a Volume Snapshot
+
+This will restore a snapshot onto a volume. A snapshot is created as just another image that can be used to create new volumes or to restore an existing volume.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| volumeId | **yes** | string | The ID of the volume. |
+| snapshotId | **yes** | string |  The ID of the snapshot. |
+
+Pass the arguments to `restore_snapshot`:
+
+   RestoreSnapshot(datacenterId, volumeId, snapshotId)
+
+---
+
+### Snapshots
+
+#### List Snapshots
+
+Call the `ListSnapshots`:
+
+    ListSnapshots()
+
+---
+
+#### Get a Snapshot
+
+Retrieves the attributes of a specific snapshot.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| snapshotId | **yes** | string | The ID of the snapshot. |
+
+Pass the arguments to `GetSnapshot`:
+
+    GetSnapshot(snapshotId)
+
+---
+
+#### Update a Snapshot
+
+Perform updates to attributes of a snapshot.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| snapshotId | **yes** | string | The ID of the snapshot. |
+| Name | no | string | The name of the snapshot. |
+| Description | no | string | The description of the snapshot. |
+| LicenceType | no | string | The snapshot's licence type: LINUX, WINDOWS, WINDOWS2016, or OTHER. |
+| CpuHotPlug | no | bool | This volume is capable of CPU hot plug (no reboot required) |
+| CpuHotUnplug | no | bool | This volume is capable of CPU hot unplug (no reboot required) |
+| RamHotPlug | no | bool |  This volume is capable of memory hot plug (no reboot required) |
+| RamHotUnplug | no | bool | This volume is capable of memory hot unplug (no reboot required) |
+| NicHotPlug | no | bool | This volume is capable of NIC hot plug (no reboot required) |
+| NicHotUnplug | no | bool | This volume is capable of NIC hot unplug (no reboot required) |
+| DiscVirtioHotPlug | no | bool | This volume is capable of VirtIO drive hot plug (no reboot required) |
+| DiscVirtioHotUnplug | no | bool | This volume is capable of VirtIO drive hot unplug (no reboot required) |
+| DiscScsiHotPlug | no | bool | This volume is capable of SCSI drive hot plug (no reboot required) |
+| DiscScsiHotUnplug | no | bool | This volume is capable of SCSI drive hot unplug (no reboot required) |
+
+Pass the arguments to `UpdateSnapshot`:
+
+    UpdateSnapshot(snapshotId, SnapshotProperties{Name: newValue})
+
+---
+
+#### Delete a Snapshot
+
+Deletes the specified snapshot.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| snapshotId | **yes** | string | The ID of the snapshot. |
+
+Pass the arguments to `DeleteSnapshot`:
+
+    DeleteSnapshot(snapshotId)
+
+---
+
+### IP Blocks
+
+The IP block operations assist with managing reserved /static public IP addresses.
+
+#### List IP Blocks
+
+Retrieve a list of available IP blocks.
+
+
+    ListIpBlocks()
+
+---
+
+#### Get an IP Block
+
+Retrieves the attributes of a specific IP block.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| ipblock_id | **yes** | string | The ID of the IP block. |
+
+Pass the arguments to `get_ipblock`:
+
+    response = client.get_ipblock('UUID')
+
+---
+
+#### Create an IP Block
+
+Creates an IP block. Creating an IP block is a bit different than some of the other available create operations. IP blocks are not attached to a particular VDC, but rather to a location. Therefore, you must specify a valid `location` along with a `size` argument indicating the number of IP addresses you want to reserve in the IP block. Any resources using an IP address from an IP block must be in the same `location`.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenter_id | **yes** | string | The ID of the VDC. |
+| ipblock | **yes** | object | An [IPBlock object](#ipblock-resource-object) you wish to create. |
+
+To create an IP block, define the `IPBlock` resource object:
+
+    var ipblock = IpBlock{
+		Properties: IpBlockProperties{
+			Name:     "GO SDK Test",
+			Size:     2,
+			Location: location,
+		},
+	}
+
+Pass it to `ReserveIpBlock`:
+
+    ReserveIpBlock(ipblock)
+
+##### IPBlock Resource Object
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Location | **yes** | string | This must be one of the available locations: us/las, de/fra, de/fkb. |
+| Size | **yes** | int | The size of the IP block you want. |
+| Name | no | string | A descriptive name for the IP block |
+
+The following table outlines the locations currently supported:
+
+| Value| Country | City |
+|---|---|---|
+| us/las | United States | Las Vegas |
+| de/fra | Germany | Frankfurt |
+| de/fkb | Germany | Karlsruhe |
+
+---
+
+#### Delete an IP Block
+
+Deletes the specified IP Block.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| ipblkid | **yes** | string | The ID of the IP block. |
+
+Pass the arguments to `ReleaseIpBlock`:
+
+    ReleaseIpBlock(ipblkid)
+
+---
+
+### LANs
+
+#### List LANs
+
+Retrieve a list of LANs within the VDC.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterd | **yes** | string | The ID of the VDC. |
+
+
+Pass the arguments to `ListLans`:
+
+    ListLans(datacenterd)
+
+---
+
+#### Create a LAN
+
+Creates a LAN within a VDC.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| lan | **yes** | object | A [LAN object](#lan-resource-object) describing the LAN to create. |
+
+Create the `LAN` resource object:
+
+    var request = Lan{
+		Properties: LanProperties{
+			Public: true,
+			Name:   "GO SDK Test with failover",
+		},
+		Entities: &LanEntities{
+			Nics: lanNics,
+		},
+	}
+
+Pass the object and arguments to `create_lan`:
+
+    CreateLan(datacenterId, request)
+
+##### LAN Resource Object
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Name | no | string | The name of your LAN. |
+| Public | **Yes** | bool | Boolean indicating if the LAN faces the public Internet or not. |
+| Nics | no | list | One or more NIC IDs attached to the LAN. |
+
+---
+
+#### Get a LAN
+
+Retrieves the attributes of a given LAN.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| lanId | **yes** | int | The ID of the LAN. |
+
+Pass the arguments to `GetLan`:
+
+    GetLan(datacenterId, lanId)
+
+---
+
+#### Update a LAN
+
+Perform updates to attributes of a LAN.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| lanId | **yes** | int | The ID of the LAN. |
+| Name | no | string | A descriptive name for the LAN. |
+| Public | no | bool | Boolean indicating if the LAN faces the public Internet or not. |
+| IpFailover | no | array | A list of IP fail-over dicts. |
+
+Pass the arguments to `update_lan`:
+
+    var obj = LanProperties{
+		Properties: LanProperties{
+			Public: true,
+			Name:   "GO SDK Test with failover",
+		}
+	PatchLan(datacenterId, lanId, obj)
+
+---
+
+#### Delete a LAN
+
+Deletes the specified LAN.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| lanId | **yes** | string | The ID of the LAN. |
+
+Pass the arguments to `delete_lan`:
+
+    DeleteLan(lan_dcid, lanid)
+---
+
+### Network Interfaces (NICs)
 
 #### List NICs
 
-Retrieve a list of LANs within the data center.
+Retrieve a list of LANs within the VDC.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
 
-```
-ListNics(dcid, srvid string)
-```
+Pass the arguments to `ListNics`:
 
-#### Return Type
-
-[Nics](#nics)
+    ListNics(datacenterId, serverId)
 
 ---
 
@@ -1180,19 +1303,15 @@ Retrieves the attributes of a given NIC.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvId | string | The ID of the server. | Yes |
-| nicid | string | The ID of the NIC. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| nicId | **yes** | string | The ID of the NIC. |
 
-```
-GetNic(dcid, srvid, nicid string)
-```
+Pass the arguments to `GetNic`:
 
-#### Return Type
-
-[Nic](#nic)
+    GetNic(datacenterId, serverId, nicId)
 
 ---
 
@@ -1202,19 +1321,40 @@ Adds a NIC to the target server.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvId | string | The ID of the server. | Yes |
-| nic | Nic | See [Nic](#nic)| Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string| The ID of the server. |
+| nic | **yes** | object | A [NIC object](#nic-resource-object) describing the NIC to be created. |
 
-```
-CreateNic(dcid string, srvid string, request Nic)
-```
+Create the `NIC` resource object:
 
-#### Return Type
+    var nic = Nic{
+		Properties: &NicProperties{
+			Lan:            1,
+			Name:           "GO SDK Test",
+			Nat:            false,
+			Dhcp:           true,
+			FirewallActive: true,
+			Ips:            []string{"10.0.0.1"},
+		},
+	}
 
-[Nic](#nic)
+Pass the object and arguments to `create_nic`:
+
+   CreateNic(datacenterId, serverId, nic)
+
+##### NIC Resource Object
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Name | no | string | The name of the NIC. |
+| Ips | no | list | IP addresses assigned to the NIC. |
+| Dhcp | no | bool | Set to *false* if you wish to disable DHCP on the NIC. Default: *true*. |
+| Lan | **yes** | int | The LAN ID the NIC will sit on. If the LAN ID does not exist it will be created. |
+| Nat | no | bool | Indicates the private IP address has outbound access to the public internet. |
+| FirewallActive | no | bool | Set this to *true* to enable the ProfitBricks firewall, *false* to disable. |
+| Firewallrules | no | list | A list of [FirewallRule objects](#firewall-rule-resource-object) to be created with the NIC. |
 
 ---
 
@@ -1228,65 +1368,60 @@ The user can specify and assign private IPs manually. Valid IP addresses for pri
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
-| nicid | string | The ID of the NIC. | Yes |
-| obj | NicProperties | See [NicProperties](#nicproperties) | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string| The ID of the server. |
+| nicId | **yes** | string| The ID of the NIC. |
+| Name | no | string | The name of the NIC. |
+| Ips | no | list | IPs assigned to the NIC represented as a list of strings. |
+| Dhcp | no | bool | Boolean value that indicates if the NIC is using DHCP or not. |
+| Lan | no | int | The LAN ID the NIC sits on. |
+| Nat | no | bool | Indicates the private IP address has outbound access to the public internet. |
+| FirewallActive | no | bool | Set this to *true* to enable the ProfitBricks firewall, *false* to disable. |
 
+Pass the arguments to `update_nic`:
 
-```
-PatchNic(dcid string, srvid string, nicid string, obj NicProperties)
-```
-
-#### Return Type
-
-[Nic](#nic)
+    var obj = NicProperties{Name: "GO SDK Test - RENAME", Lan: 1}
+	PatchNic(nic_dcid, nic_srvid, nicid, obj)	
 
 ---
 
 #### Delete a NIC
 
-This will delete a volume:
+Deletes the specified NIC.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
-| nicid | string | The ID of the NIC. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string| The ID of the server. |
+| nicId | **yes** | string| The ID of the NIC. |
 
-```
-DeleteNic(dcid, srvid, nicid string)
-```
+Pass the arguments to `DeleteNic`:
 
-#### Return Type
- 
-[Resp](#resp) 
+    DeleteNic(nic_dcid, nic_srvid, nicid)
 
 ---
 
-### Firewall Rule Functions
+### Firewall Rules
 
 #### List Firewall Rules
 
 Retrieves a list of firewall rules associated with a particular NIC.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcId | string | The ID of the data center. | Yes |
-| serverId | string | The ID of the server. | Yes |
-| nicId | string | The ID of the NIC. | Yes |
+The following table describes the request arguments:
 
-```
-ListFirewallRules(dcId string, serverid string, nicId string)
-```
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| nicId | **yes** | string | The ID of the NIC. |
 
-#### Return Type
- 
-[FirewallRules](#firewallrules) 
+Pass the arguments to `ListFirewallRules`:
+
+    ListFirewallRules(datacenterId, serverId, nicId)
 
 ---
 
@@ -1294,20 +1429,18 @@ ListFirewallRules(dcId string, serverid string, nicId string)
 
 Retrieves the attributes of a given firewall rule.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvid | string | The ID of the server. | Yes |
-| nicId | string | The ID of the NIC. | Yes |
-| fwId | string | The ID of the firewall rule. | Yes |
+The following table describes the request arguments:
 
-```
-GetFirewallRule(dcid string, srvid string, nicId string, fwId string)
-```
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| nicId | **yes** | string | The ID of the NIC. |
+| firewallRuleId | **yes** | string | The ID of the firewall rule. |
 
-#### Return Type
- 
-[FirewallRule](#firewallrule) 
+Pass the arguments to `get_firewall_rule`:
+
+    GetFirewallRule(datacenterId, serverId, nicId, firewallRuleId)
 
 ---
 
@@ -1317,208 +1450,89 @@ This will add a firewall rule to the NIC.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvId | string | The ID of the server. | Yes |
-| nicId | string | The ID of the NIC. | Yes |
-| fw | FirewallRule | See [FirewallRule)(#firewallrule) | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| nicId | **yes** | string | The ID of the NIC. |
+| firewallRule | **yes** | object | A [FirewallRule object](#firewall-rule-resource-object) describing the firewall rule to be created. |
 
-```
-CreateFirewallRule(dcid string, srvid string, nicId string, fw FirewallRule)
-```
+Create the `FirewallRule` resource object:
 
-#### Return Type
- 
-[FirewallRule](#firewallrule) 
+    var firewallRule FirewallRule{
+		Properties: FirewallruleProperties{
+			Name:           "SSH",
+			Protocol:       "TCP",
+			SourceMac:      "01:23:45:67:89:00",
+			PortRangeStart: 22,
+			PortRangeEnd:   22,
+		},
+	}
+
+Pass the object and arguments to `create_firewall_rule`:
+
+    CreateFirewallRule(datacenterId, serverId, nicId, firewallRule)
+
+##### Firewall Rule Resource Object
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Name | no | string | The name of the firewall rule. |
+| Protocol | **yes** | string | The protocol for the rule: TCP, UDP, ICMP, ANY. |
+| SourceMac | no | string | Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. A *nil* value allows all source MAC address. |
+| SourceIp | no | string | Only traffic originating from the respective IPv4 address is allowed. A *nil* value allows all source IPs. |
+| TargetIp | no | string | In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. A *nil* value allows all target IPs. |
+| PortRangeStart | no | string | Defines the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *nil* to allow all ports. |
+| PortRangeEnd | no | string | Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *nil* to allow all ports. |
+| IcmpType | no | string | Defines the allowed type (from 0 to 254) if the protocol ICMP is chosen. A *nil* value allows all types. |
+| IcmpCode | no | string | Defines the allowed code (from 0 to 254) if protocol ICMP is chosen. A *nil* value allows all codes. |
 
 ---
 
 #### Update a Firewall Rule
 
-Perform updates to attributes of a firewall rule.
+Perform updates to an existing firewall rule. You will notice that some arguments, such as `protocol` cannot be updated. If the `protocol` needs to be changed, you can [delete](#delete-a-firewall-rule) the firewall rule and then [create](#create-a-firewall-rule) new one to replace it.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvId | string | The ID of the server. | Yes |
-| nicId | string | The ID of the NIC. | Yes |
-| fwId | string | The ID of the firewall rule. | Yes |
-| obj | FirewallruleProperties | See [FirewallruleProperties](#firewallruleproperties) | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| nicId | **yes** | string | The ID of the NIC. |
+| firewallRuleId | **yes** | string | The ID of the firewall rule. |
+| Name | no | string | The name of the firewall rule. |
+| SourceMac | no | string | Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. A *nil* value allows all source MAC address. |
+| SourceIp | no | string | Only traffic originating from the respective IPv4 address is allowed. A *nil* value allows all source IPs. |
+| TargetIp | no | string | In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. A *nil* value allows all target IPs. |
+| PortRangeStart | no | string | Defines the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *nil* to allow all ports. |
+| PortRangeEnd | no | string | Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *nil* to allow all ports. |
+| IcmpType | no | string | Defines the allowed type (from 0 to 254) if the protocol ICMP is chosen. A *nil* value allows all types. |
+| IcmpCode | no | string | Defines the allowed code (from 0 to 254) if protocol ICMP is chosen. A *nil* value allows all codes. |
 
-```
-PatchFirewallRule(dcid string, srvid string, nicId string, fwId string, obj FirewallruleProperties)
-```
+Pass the arguments to `PatchFirewallRule`:
 
-#### Return Type
- 
-[FirewallRule](#firewallrule) 
+    props := FirewallruleProperties{
+		Name: "SSH - RENAME",
+	}
+	PatchFirewallRule(dcID, srv_srvid, nicid, fwId, props)
 
 ---
 
 #### Delete a Firewall Rule
 
-Removes the specific firewall rule.
+Removes a firewall rule.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| srvId | string | The ID of the server. | Yes |
-| nicId | string | The ID of the NIC. | Yes |
-| fwId | string | The ID of the firewall rule. | Yes |
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| serverId | **yes** | string | The ID of the server. |
+| nicId | **yes** | string | The ID of the NIC. |
+| firewallRuleId | **yes** | string | The ID of the firewall rule. |
 
-```
-DeleteFirewallRule(dcid string, srvid string, nicId string, fwId string)
-```
+Pass the arguments to `DeleteFirewallRule`:
 
-#### Return Type
- 
-[Resp](#resp) 
-
-
-### LAN functions
-
-#### List LANs
-
-Retrieve a list of LANs within the data center.
-
-The following table describes the request arguments:
-
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-
-```
-ListLans(dcid string)
-```
-
-#### Return Type
- 
-[Lans](#lans)
- 
----
-
-#### Create a LAN
-
-Creates a LAN within a data center.
-
-The following table describes the request arguments:
-
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dataCenterId | string | The ID of the data center. | Yes |
-| reques | Lan | See [Lan](#lan) | Yes |
-
-```
-CreateLan(dcid string, request Lan)
-```
-
-#### Return Type
- 
-[Lan](#lan)
-
----
-
-#### Get a LAN
-
-Retrieves the attributes of a given LAN.
-
-The following table describes the request arguments:
-
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| lanId | string | The ID of the LAN. | Yes |
-
-```
-GetLan(dcid, lanid string)
-```
-
-#### Return Type
- 
-[Lan](#lan)
-
----
-
-#### Update a LAN
-
-Perform updates to attributes of a LAN.
-
-The following table describes the request arguments:
-
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dataCenterId | string | The ID of the data center. | Yes |
-| lanId | string | The ID of the LAN. | Yes |
-| obj | LanProperties | See [LanProperties](#lanproperties) | Yes |
-
-```
-PatchLan(dcid string, lanid string, obj LanProperties)
-```
-
-#### Return Type
- 
-[Lan](#lan)
-
----
-
-#### Delete a LAN
-
-Deletes the specified LAN.
-
-The following table describes the request arguments:
-
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| lanId | string | The ID of the LAN. | Yes |
-
-
-```
-DeleteLan(dcid, lanid string)
-```
-
-#### Return Type
- 
-[Resp](#resp)
-
----
-
-### Images
-
-#### List Images
-
-Retrieve a list of images.
-
-```
-ListImages()
-```
-
-#### Return Type
- 
-[Images](#images)
-
----
-
-#### Get an Image
-
-Retrieves the attributes of a specific image.
-
-The following table describes the request arguments:
-
-| Name | Type | Description | Required |
-|---|---|---|---|
-| imageId | string | The ID of the image. | Yes |
-
-```
-GetImage(imageid string)
-```
-
-#### Return Type
- 
-[Image](#image)
+    DeleteFirewallRule(dcID, srv_srvid, nicid, fwId)
 
 ---
 
@@ -1528,13 +1542,16 @@ GetImage(imageid string)
 
 Retrieve a list of load balancers within the data center.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
+The following table describes the request arguments:
 
-```
-ListLoadbalancers(dcid string)
-```
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+
+
+Pass the arguments to `ListLoadbalancers`:
+
+    ListLoadbalancers(datacenterId)
 
 ---
 
@@ -1542,37 +1559,51 @@ ListLoadbalancers(dcid string)
 
 Retrieves the attributes of a given load balancer.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dataCenterId | string | The ID of the data center. | Yes |
-| loadBalancerId | string | The ID of the load balancer. | Yes |
+The following table describes the request arguments:
 
-```
-GetLoadbalancer(dcid, lbalid string)
-```
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| loadbalancerId | **yes** | string | The ID of the load balancer. |
 
-#### Return Type
- 
-[Loadbalancers](#loadbalancers)
+Pass the arguments to `GetLoadbalancer`:
+
+    GetLoadbalancer(datacenterId, loadbalancerId)
 
 ---
 
 #### Create a Load Balancer
 
-Creates a load balancer within the data center. Load balancers can be used for public or private IP traffic.
+Creates a load balancer within the VDC. Load balancers can be used for public or private IP traffic.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dataCenterId | string | The ID of the data center. | Yes |
-| request | Loadbalancer | See [Loadbalancer](#loadbalancer) | Yes |
+The following table describes the request arguments:
 
-```
-CreateLoadbalancer(dcid string, request Loadbalancer)
-```
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| loadbalancer | **yes** | object | A [LoadBalancer object](#load-balancer-resource-object) describing the load balancer to be created. |
 
-#### Return Type
- 
-[Loadbalancer](#loadbalancer)
+Create the `LoadBalancer` resource object:
+
+    var loadbalancer = Loadbalancer{
+		Properties: LoadbalancerProperties{
+			Name: "GO SDK Test",
+			Ip:   "10.0.0.1",
+			Dhcp: true,
+		}
+	}
+Pass the object and arguments to `CreateLoadbalancer`:
+
+    CreateLoadbalancer(datacenterId, loadbalancer)
+
+##### Load Balancer Resource Object
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Name | **yes** | string | The name of the load balancer. |
+| Ip | no | string | IPv4 address of the load balancer. All attached NICs will inherit this IP. |
+| Dhcp | no | bool | Indicates if the load balancer will reserve an IP using DHCP. |
+| Balancednics | no | list | List of NIC IDs taking part in load-balancing. All balanced NICs inherit the IP of the load balancer. |
 
 ---
 
@@ -1580,19 +1611,20 @@ CreateLoadbalancer(dcid string, request Loadbalancer)
 
 Perform updates to attributes of a load balancer.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dataCenterId | string | The ID of the data center. | Yes |
-| lbalid | string | The ID of the load balancer. | Yes |
-| obj | LoadbalancerProperties | See [LoadbalancerProperties](#loadbalancerproperties) | Yes |
+The following table describes the request arguments:
 
-```
-PatchLoadbalancer(dcid string, lbalid string, obj LoadbalancerProperties)
-```
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| loadbalancerId | **yes** | string | The ID of the load balancer. |
+| Name | no | string | The name of the load balancer. |
+| Ip | no | string | The IP of the load balancer. |
+| Dhcp | no | bool | Indicates if the load balancer will reserve an IP using DHCP. |
 
-#### Return Type
- 
-[Loadbalancer](#loadbalancer)
+Pass the arguments to `PatchLoadbalancer`:
+
+    var obj = LoadbalancerProperties{Name: "GO SDK Test - RENAME"}
+	PatchLoadbalancer(datacenterId, loadbalancerId, obj)
 
 ---
 
@@ -1600,38 +1632,33 @@ PatchLoadbalancer(dcid string, lbalid string, obj LoadbalancerProperties)
 
 Deletes the specified load balancer.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dataCenterId | string | The ID of the data center. | Yes |
-| lbalid | string | The ID of the load balancer. | Yes |
+The following table describes the request arguments:
 
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| loadbalancerId | **yes** | string | The ID of the load balancer. |
 
-```
-DeleteLoadbalancer(dcid, lbalid string)
-```
+Pass the arguments to `DeleteLoadbalancer`:
 
-#### Return Type
- 
-[Resp](#resp)
+    DeleteLoadbalancer(datacenterId, loadbalancerId)
 
+---
 
 #### List Load Balanced NICs
 
 This will retrieve a list of NICs associated with the load balancer.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| lbalid | string | The ID of the load balancer. | Yes |
+The following table describes the request arguments:
 
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| loadbalancerId | **yes** | string | The ID of the load balancer. |
 
-```
-ListBalancedNics(dcid, lbalid string)
-```
+Pass the arguments to `ListBalancedNics`:
 
-#### Return Type
- 
-[Nics](#nics)
+    ListBalancedNics(datacenterId, loadbalancerId)
 
 ---
 
@@ -1639,40 +1666,36 @@ ListBalancedNics(dcid, lbalid string)
 
 Retrieves the attributes of a given load balanced NIC.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| lbalid | string | The ID of the load balancer. | Yes |
-| balnicid | string | The ID of the Nic | Yes |
+The following table describes the request arguments:
 
-```
-GetBalancedNic(dcid, lbalid, balnicid string)
-```
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| loadbalancerId | **yes** | string | The ID of the load balancer. |
+| nicId | **yes** | string | The ID of the NIC. |
 
-#### Return Type
- 
-[Nic](#nic)
+
+Pass the arguments to `GetBalancedNic`:
+
+    GetBalancedNic(datacenterId, loadbalancerId, nicId)
 
 ---
 
 #### Associate NIC to a Load Balancer
 
-This will associate a NIC to a Load Balancer, enabling the NIC to participate in load-balancing.
+This will associate a NIC to a load balancer, enabling the NIC to participate in load-balancing.
 
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| lbalid | string | The ID of the load balancer. | Yes |
-| nicId | string | The ID of the load balancer. | Yes |
+The following table describes the request arguments:
 
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| loadbalancerId | **yes** | string | The ID of the load balancer. |
+| nicId | **yes** | string | The ID of the NIC. |
 
-```
-AssociateNic(dcid string, lbalid string, nicid string)
-```
+Pass the arguments to `add_loadbalanced_nics`:
 
-#### Return Type
- 
-[Nic](#nic)
+    AssociateNic(datacenterId, loadbalancerId, nicId)
 
 ---
 
@@ -1680,312 +1703,480 @@ AssociateNic(dcid string, lbalid string, nicid string)
 
 Removes the association of a NIC with a load balancer.
 
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| datacenterId | **yes** | string | The ID of the VDC. |
+| loadbalancerId | **yes** | string | The ID of the load balancer. |
+| nicId | **yes** | string | The ID of the NIC you are removing from the load balancer. |
+
+Pass the arguments to `DeleteBalancedNic`:
+
+    DeleteBalancedNic(datacenterId, loadbalancerId, nicId)
+
+---
+
+### Requests
+
+Each call to the ProfitBricks Cloud API is assigned a request ID. These operations can be used to get information about the requests that have been submitted and their current status.
+
+#### List Requests
+
+
+    ListRequests()
+
+---
+
+#### Get a Request
+
+Retrieves the attributes of a specific request. This operation shares the same `get_request` method used for getting request status, however the response it determined by the boolean value you pass for *status*. To get details about the request itself, you want to pass a *status* of *False*.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| request_id | **yes** | string | The ID of the request. |
+| status | **yes** | bool | Set to *False* to have the request details returned. |
+
+Pass the arguments to `get_request`:
+
+    response = client.get_request(
+        request_id='UUID',
+        status=False)
+
+---
+
+#### Get a Request Status
+
+Retrieves the status of a request. This operation shares the same `get_request` method used for getting the details of a request, however the response it determined by the boolean value you pass for *status*. To get the request status, you want to pass a *status* of *True*.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| path | **yes** | string | The ID of the request. Retrieved from response header location |
+
+
+Pass the arguments to `get_request`:
+
+   GetRequestStatus(path)
+
+---
+
+### Contract Resources
+
+#### List Contract Resources
+
+Returns information about the resource limits for a particular contract and the current resource usage.
+
+```
+GetContractResources()
+```
+
+---
+
+### Users Management
+These operations are designed to allow you to orchestrate users and resources via the Cloud API. Previously this functionality required use of the DCD (Data Center Designer) web application.
+
+#### List Groups
+This retrieves a full list of all groups.
+
+```
+ListGroups()
+```
+
+
+#### Retrieve a Group
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|---|---|---|
+| groupId | Yes | string | The ID of the specific group to retrieve. |
+
+```
+GetGroup(groupid)
+```
+
+#### Create a Group
+
+The following table describes the request arguments:
+
 | Name | Type | Description | Required |
 |---|---|---|---|
-| dcid | string | The ID of the data center. | Yes |
-| lbalid | string | The ID of the load balancer. | Yes |
-| balnicid | string | The ID of the load balancer. | Yes |
+| group | Group |See [Group Object](#group-resource-object) | Yes |
 
+Build the `Group` resource object:
 
-```
-DeleteBalancedNic(dcid, lbalid, balnicid string)
-```
+    var group = Group{
+		Properties: GroupProperties{
+			Name:              "GO SDK Test",
+			CreateDataCenter:  &TRUE,
+			CreateSnapshot:    &TRUE,
+			ReserveIp:         &TRUE,
+			AccessActivityLog: &TRUE,
+		},
+	}
 
-#### Return Type
- 
-[Resp](#resp)
-
----
-
-### Location Functions
-
-#### List Locations
-
-Locations represent regions where you can provision your Virtual Data Centers.
+Pass the object to `CreateGroup`:
 
 ```
-ListLocations()
+CreateGroup(group Group)
 ```
 
-#### Return Type 
+##### Group Resource Object
 
-[Locations](#locations)
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Name | **yes** | string | A name that was given to the group. |
+| CreateDataCenter | no | bool | The group has permission to create virtual data centers. |
+| CreateSnapshot | no | bool | The group has permission to create snapshots. |
+| ReserveIp  | no | bool | The group has permission to reserve IP addresses. |
+| AccessActivityLog  | no | bool | The group has permission to access the activity log. |
 
----
+#### Update a Group
 
-#### Get a Location
-
-Retrieves the attributes of a given location.
+Use this operation to update a group.
 
 The following table describes the request arguments:
 
 | Name | Type | Description | Required |
 | --- | --- | --- | --- |
-| locid | string | The unique identifier consisting of country/city. | Yes |
+| groupId |  **yes** | string | The ID of the specific group to retrieve. |
+| group | Group |See [Group Object](#group-resource-object) | Yes |
 
 ```
-GetLocation(locid string)
+UpdateGroup(groupId, group Group)
 ```
-
-#### Return Type 
-
-[Location](#location)
 
 ---
 
-### IP Blocks
+#### Delete a Group
 
-#### List IP Blocks
-
-Retrieve a list of IP Blocks.
-
-```
-ListIpBlocks()
-```
-
-#### Return Type 
-
-[IpBlocks](#ipblocks)
-
----
-
-#### Get an IP Block
-
-Retrieves the attributes of a specific IP Block.
+This will remove all objects within the data center and remove the data center object itself.
+Use this operation to delete a single group. Resources that are assigned to the group are NOT deleted, but are no longer accessible to the group members unless the member is a Contract Owner, Admin, or Resource Owner.
 
 The following table describes the request arguments:
 
 | Name | Type | Description | Required |
-|---|---|---|---|
-| ipblockid | string | The ID of the IP block. | Yes |
+| --- | --- | --- | --- |
+| groupId |  **yes** | string | The ID of the specific group to retrieve. |
 
 ```
-GetIpBlock(ipblockid string)
+DeleteGroup(groupId)
 ```
-
-#### Return Type 
-
-[IpBlock](#ipblock)
 
 ---
 
-#### Create an IP Block
+#### List Shares
+Retrieves a full list of all the resources that are shared through this group and lists the permissions granted to the group members for each shared resource.
 
-Creates an IP block.
+```
+ListShares()
+```
+
+#### Retrieve a Share
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|---|---|---|
+| groupid |  **yes** | string | The ID of the specific group to retrieve. |
+| resourceId |  **yes** | string | The ID of the specific resource to retrieve. |
+
+```
+GetShare(groupid, resourceId)
+```
+
+---
+
+#### Add a Share
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|---|---|---|
+| groupid |  **yes** | string | The ID of the specific group to add a resource too. |
+| resourceId |  **yes** | string | The ID of the specific resource to add. |
+| share |  **yes** | Share | See [Share Object](#share-resource-object) |
+
+Build the `Share` resource object:
+
+    var share = Share{
+		Properties: ShareProperties{
+			SharePrivilege: true,
+			EditPrivilege:  true,
+		},
+	}
+
+Pass the object to `AddShare`:
+
+```
+AddShare(share Share, groupid, resourceId)
+```
+
+##### Share Resource Object
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| EditPrivilege | no | bool | The group has permission to edit privileges on this resource.  |
+| SharePrivilege  | no | bool | The group has permission to share this resource. |
+
+---
+
+#### Update a Share
+
+Use this to update the permissions that a group has for a specific resource share.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|---|---|---|
+| groupid |  **yes** | string | The ID of the specific group to add a resource too. |
+| resourceId |  **yes** | string | The ID of the specific resource to add. |
+| share |  **yes** | Share | See [Share Object](#share-resource-object) |
+
+```
+UpdateShare(groupid, resourceId, obj)
+```
+
+
+#### Delete a Share
+
+This will remove all objects within the data center and remove the data center object itself.
+Use this operation to delete a single group. Resources that are assigned to the group are NOT deleted, but are no longer accessible to the group members unless the member is a Contract Owner, Admin, or Resource Owner.
 
 The following table describes the request arguments:
 
 | Name | Type | Description | Required |
-|---|---|---|---|
-| request | IpBlock | See [IpBlock](#ipblock) | Yes |
-
+| --- | --- | --- | --- |
+| groupid |  **yes** | string | The ID of the specific group containing the resource to delete. |
+| resourceId |  **yes** | string | The ID of the specific resource to delete. |
 
 ```
-ReserveIpBlock(request IpBlock)
+DeleteShare(groupid, resourceId)
 ```
-
-#### Return Type 
-
-[IpBlock](#ipblock)
 
 ---
 
-#### Delete an IP Block
-
-Deletes the specified IP Block.
+#### List Users in a Group
+Retrieves a full list of all the users that are members of a particular group.
 
 The following table describes the request arguments:
 
 | Name | Type | Description | Required |
-|---|---|---|---|
-| ipblockid | string | The ID of the IP block. | Yes |
+| --- | --- | --- | --- |
+| groupid |  **yes** | string | The ID of the specific group to retrieve a user list for. |
 
 ```
-ReleaseIpBlock(ipblockid string)
+ListGroupUsers(groupid)
 ```
-
-#### Return Type 
-
-[Resp](#resp)
 
 ---
 
 
-### Snapshot Functions
+#### Add User to Group
 
-#### List Snapshots
+The following table describes the request arguments:
 
-You can retrieve a list of all snapshots.
+| Name | Required | Type | Description |
+|---|---|---|---|
+| groupid |  **yes** | string | The ID of the specific group you want to add a user to. |
+| userid |  **yes** | string | The ID of the specific user to add to the group. |
+
 
 ```
-ListSnapshots()
+AddUserToGroup(groupid, userid)
 ```
-
-#### Return Type 
-
-[Snapshots](#snapshots)
 
 ---
 
-#### Get a Snapshot
+#### Remove User from a Group
 
-Retrieves the attributes of a specific snapshot.
+Use this operation to remove a user from a group.
 
 The following table describes the request arguments:
 
 | Name | Type | Description | Required |
-|---|---|---|---|
-| snapshotId | string | The ID of the snapshot. | Yes |
+| --- | --- | --- | --- |
+| groupid |  **yes** | string | The ID of the specific group you want to remove a user from. |
+| userid |  **yes** | string | The ID of the specific user to remove from the group. |
 
 ```
-GetSnapshot(snapshotId string)
+DeleteUserFromGroup(groupid, userid)
 ```
-
-#### Return Type 
-
-[Snapshot](#snapshot)
 
 ---
 
-#### Update a Snapshot
-
-Perform updates to attributes of a snapshot.
-
-The following table describes the request arguments:
-
-| Name | Type | Description | Required |
-|---|---|---|---|
-| dataCenterId | string | The ID of the snapshot. | Yes |
-| request | SnapshotProperties | See [SnapshotProperties](#snapshotproperties) | Yes |
+#### List Users
+Retrieve a list of all the users that have been created under a contract.
 
 ```
-UpdateSnapshot(snapshotId string, request SnapshotProperties)
+ListUsers()
 ```
-
-#### Return Type 
-
-[Snapshot](#snapshot)
 
 ---
 
-#### Create a Volume Snapshot
-
-Creates a snapshot of a volume within the data center. You can use a snapshot to create a new storage volume or to restore a storage volume.
+#### Retrieve a User
+Retrieve details about a specific user including what groups and resources the user is associated with.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
+| Name | Required | Type | Description |
 |---|---|---|---|
-| dataCenterId | string | The ID of the datacenter. | Yes |
-| volumeId | string | The ID of the volume. | Yes |
-| name | string | The name of the snapshot. | No |
+| userid |  **yes** | string | The ID of the specific user to retrieve information about. |
 
 ```
-CreateSnapshot(dcid string, volid string, name string)
+GetUser(userid)
 ```
-
-#### Return Type 
-
-[Snapshot](#snapshot)
 
 ---
 
+#### Create a User
+Creates a new user under a particular contract.
 
-#### Restore a Volume Snapshot
-
-This will restore a snapshot onto a volume. A snapshot is created as just another image that can be used to create new volumes or to restore an existing volume.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
+| Name | Required | Type | Description |
 |---|---|---|---|
-| dataCenterId | string | The ID of the datacenter. | Yes |
-| volumeId | string | The ID of the volume. | Yes |
-| snapshotId | string | The ID of the snapshot. | Yes |
+| user |  **yes** | User | See [User Object](#user-resource-object) |
 
+Build the `User` resource object:
+
+    var user = User{
+		Properties: &UserProperties{
+			Firstname:     "John",
+			Lastname:      "Doe",
+			Email:         email,
+			Password:      "abc123-321CBA",
+			Administrator: false,
+			ForceSecAuth:  false,
+			SecAuthActive: false,
+		},
+	}
+
+Pass the object to `CreateUser`:
 
 ```
-RestoreSnapshot(dcid string, volid string, snapshotId string)
+CreateUser(user User)
 ```
 
-#### Return Type 
+##### User Resource Object
 
-[Resp](#resp)
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| Firstname |  **yes** | bool | The first name of the user.  |
+| Lastname  |  **yes** | bool | The last name of the user. |
+| Email  |  **yes** | bool | The e-mail address of the user. |
+| Password  |  **yes** | bool | A password for the user.  |
+| Administrator  | no | bool | Indicates if the user has administrative rights. |
+| ForceSecAuth  | no | bool | Indicates if secure (two-factor) authentication was enabled for the user. |
+| SecAuthActive  | no | bool | Indicates if secure (two-factor) authentication is enabled for the user. |
 
 ---
 
-#### Delete a Snapshot
+#### Update a User
 
-Deletes the specified snapshot.
+Update details about a specific user including their privileges.
 
 The following table describes the request arguments:
 
-| Name | Type | Description | Required |
+| Name | Required | Type | Description |
 |---|---|---|---|
-| snapshotId | string | The ID of the snapshot. | Yes |
+| userid | **Yes** | string | The ID of the specific user to update. |
 
 
 ```
-DeleteSnapshot(snapshotId string)
+user := UserProperties{
+		Firstname:     "go sdk ",
+		Lastname:      newName,
+		Email:         "test@go.com",
+		Password:      "abc123-321CBA",
+		Administrator: false,
+		ForceSecAuth:  false,
+		SecAuthActive: false,
+	}
+UpdateUser(userid, user)
 ```
-
-#### Return Type 
-
-[Resp](#resp)
 
 ---
 
-### Request Functions
+#### Delete a User
 
-#### Get a Request status
-
-Retrieves the status of a specific request.
+Blacklists the user, disabling them. The user is not completely purged, therefore if you anticipate needing to create a user with the same name in the future, we suggest renaming the user before you delete it.
 
 The following table describes the request arguments:
 
 | Name | Type | Description | Required |
-|---|---|---|---|
-| path | string | The ID of the request. Retrieved from response header `location` | Yes |
+| --- | --- | --- | --- |
+| userid | **Yes** | string | The ID of the specific user to update. |
 
 ```
-GetRequestStatus(path string)
+DeleteUser(userid)
 ```
 
-#### Return Type
+---
 
-[RequestStatus](#requeststatus)
+#### List Resources
+Retrieves a list of all resources and optionally their group associations. 
 
-#### Get a Request
+*Note*: This API call can take a significant amount of time to return when there are a large number of provisioned resources. You may wish to consult the next section on how to list resources of a particular type.
 
-Retrieves the attributes of a specific request.
+```
+ListResources()
+```
+
+---
+
+#### List All Resources of a Type
+Lists all shareable resources of a specific type. Optionally include their association with groups, permissions that a group has for the resource, and users that are members of the group. Because you are scoping your request to a specific resource type, this API will likely return faster than querying `/um/resources`.
+
+
 
 The following table describes the request arguments:
 
 | Name | Type | Description | Required |
-|---|---|---|---|
-| requestId | string | The ID of the request. | Yes |
+| --- | --- | --- | --- |
+| resourcetype | **Yes** | string | The specific type of resources to retrieve information about. |
+
+The values available for resourcetype are listed in this table:
+
+| Resource Type | Description |
+|---|---|
+| datacenter | A virtual data center. |
+| image | A private image that has been uploaded to ProfitBricks. |
+| snapshot | A snapshot of a storage volume. |
+| ipblock |  	An IP block that has been reserved. |
 
 ```
-GetRequest(req_id string)
+ListResourcesByType(resourcetype)
 ```
 
-#### Return Type
+---
 
-[Request](#request)
+#### List a specific Resource Type
 
-#### List Requests
-
-Retrieves list of requests.
 
 The following table describes the request arguments:
 
-```
-ListRequests()
-```
+| Name | Type | Description | Required |
+| --- | --- | --- | --- |
+| resourcetype | **Yes** | string | The specific type of resources to retrieve information about. |
+| resourceId | **Yes** | string | The ID of the specific resource to retrieve information about. |
 
-#### Return Type
+The values available for resourcetype are listed in this table:
 
-[Requests](#requests)
+| Resource Type | Description |
+|---|---|
+| datacenter | A virtual data center. |
+| image | A private image that has been uploaded to ProfitBricks. |
+| snapshot | A snapshot of a storage volume. |
+| ipblock |  	An IP block that has been reserved. |
+
+```
+GetResourceByType(resourcetype, resourceId)
+```
 
 ---
 
@@ -2064,3 +2255,15 @@ func main() {
 
 # Support
 You are welcome to contact us with questions or comments at [ProfitBricks DevOps Central](https://devops.profitbricks.com/). Please report any issues via [GitHub's issue tracker](https://github.com/profitbricks/profitbricks-sdk-go/issues).
+
+## Testing
+
+You can run all test by using the command `go test` or run a single test by specifying the name of the test file `go test servers_test.go`
+
+## Contributing
+
+1. Fork it ( https://github.com/profitbricks/profitbricks-sdk-go/fork )
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create a new Pull Request

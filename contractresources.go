@@ -27,18 +27,18 @@ type ResourcesLimits struct {
 	CoresPerServer        int32       `json:"coresPerServer,omitempty"`
 	CoresPerContract      int32       `json:"coresPerContract,omitempty"`
 	CoresProvisioned      int32       `json:"coresProvisioned,omitempty"`
-	RamPerServer          int64       `json:"ramPerServer,omitempty"`
-	RamPerContract        int64       `json:"ramPerContract,omitempty"`
-	RamProvisioned        int64       `json:"ramProvisioned,omitempty"`
-	HddLimitPerVolume     int32       `json:"hddLimitPerVolume,omitempty"`
-	HddLimitPerContract   int32       `json:"hddLimitPerContract,omitempty"`
-	HddVolumeProvisioned  int32       `json:"hddVolumeProvisioned,omitempty"`
-	SsdLimitPerVolume     int32       `json:"ssdLimitPerVolume,omitempty"`
-	SsdLimitPerContract   int32       `json:"ssdLimitPerContract,omitempty"`
-	SsdVolumeProvisioned  int32       `json:"ssdVolumeProvisioned,omitempty"`
-	ReservableIps         int64       `json:"reservableIps,omitempty"`
-	ReservedIpsOnContract int64       `json:"reservedIpsOnContract,omitempty"`
-	ReservedIpsInUse      int64       `json:"reservedIpsInUse,omitempty"`
+	RamPerServer          int32       `json:"ramPerServer,omitempty"`
+	RamPerContract        int32       `json:"ramPerContract,omitempty"`
+	RamProvisioned        int32       `json:"ramProvisioned,omitempty"`
+	HddLimitPerVolume     int64       `json:"hddLimitPerVolume,omitempty"`
+	HddLimitPerContract   int64       `json:"hddLimitPerContract,omitempty"`
+	HddVolumeProvisioned  int64       `json:"hddVolumeProvisioned,omitempty"`
+	SsdLimitPerVolume     int64       `json:"ssdLimitPerVolume,omitempty"`
+	SsdLimitPerContract   int64       `json:"ssdLimitPerContract,omitempty"`
+	SsdVolumeProvisioned  int64       `json:"ssdVolumeProvisioned,omitempty"`
+	ReservableIps         int32       `json:"reservableIps,omitempty"`
+	ReservedIpsOnContract int32       `json:"reservedIpsOnContract,omitempty"`
+	ReservedIpsInUse      int32       `json:"reservedIpsInUse,omitempty"`
 }
 
 func GetContractResources() ContractResources {
