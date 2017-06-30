@@ -3,10 +3,10 @@ package profitbricks
 
 import (
 	"fmt"
-	"sync"
-	"testing"
 	"github.com/stretchr/testify/assert"
 	"strings"
+	"sync"
+	"testing"
 )
 
 var (
@@ -26,7 +26,6 @@ var portRangeEnd int = 22
 func setupDataCenter() {
 	setupTestEnv()
 	srv_dc_id = mkdcid("GO SDK SERVER DC 02")
-	fmt.Println("Datacenter id: ", srv_dc_id)
 	if len(srv_dc_id) == 0 {
 		fmt.Errorf("DataCenter not created %s", srv_dc_id)
 	}
@@ -34,7 +33,6 @@ func setupDataCenter() {
 
 func setupServer() {
 	srv_srvid = setupCreateServer(srv_dc_id)
-	fmt.Println("Server id: ", srv_srvid)
 	if len(srv_srvid) == 0 {
 		fmt.Errorf("Server not created %s", srv_srvid)
 	}
@@ -72,7 +70,6 @@ func setupCreateServer(srv_dc_id string) string {
 			CpuFamily:        "INTEL_XEON",
 		},
 	}
-	fmt.Println("Creating server....")
 	srv := CreateServer(srv_dc_id, req)
 	// wait for server to be running
 	waitTillProvisioned(srv.Headers.Get("Location"))
@@ -184,7 +181,6 @@ func TestPatchServer(t *testing.T) {
 	req := ServerProperties{
 		Name: "GO SDK Test RENAME",
 	}
-	fmt.Println("SERVER ID : ", srv_srvid)
 	resp := PatchServer(srv_dc_id, srv_srvid, req)
 	if resp.StatusCode != want {
 		t.Error("resp: ", resp.Response)
@@ -276,7 +272,6 @@ func TestGetAttachedVolume(t *testing.T) {
 	want := 200
 
 	resp := GetAttachedVolume(srv_dc_id, srv_srvid, srv_vol)
-	fmt.Println(resp)
 
 	if resp.StatusCode != want {
 		t.Error(string(resp.Response))
@@ -297,7 +292,6 @@ func TestDetachVolume(t *testing.T) {
 	once_volume.Do(setupVolume)
 
 	want := 202
-	fmt.Println(srv_dc_id, srv_srvid, srv_vol)
 	resp := DetachVolume(srv_dc_id, srv_srvid, srv_vol)
 	if resp.StatusCode != want {
 		t.Error(string(resp.Body))
@@ -385,7 +379,6 @@ func TestDeleteServer(t *testing.T) {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 
-	fmt.Println("Removed everything")
 }
 
 func TestCreateCompositeServer(t *testing.T) {

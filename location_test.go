@@ -1,8 +1,8 @@
 package profitbricks
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 var locid string
@@ -27,8 +27,8 @@ func TestGetLocation(t *testing.T) {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 
-	assert.Equal(t, resp.Id,"us/las")
-	assert.Equal(t, resp.Type_,"location")
+	assert.Equal(t, resp.Id, "us/las")
+	assert.Equal(t, resp.Type_, "location")
 }
 
 func TestGetRegionalLocations(t *testing.T) {

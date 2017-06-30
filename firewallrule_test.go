@@ -2,9 +2,9 @@ package profitbricks
 
 import (
 	"fmt"
-	"testing"
 	"github.com/stretchr/testify/assert"
 	"strings"
+	"testing"
 )
 
 var fwId string

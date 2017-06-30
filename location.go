@@ -6,14 +6,14 @@ import (
 )
 
 type Location struct {
-	Id         string                    `json:"id,omitempty"`
-	Type_      string                    `json:"type,omitempty"`
-	Href       string                    `json:"href,omitempty"`
-	Metadata   Metadata `json:"metadata,omitempty"`
-	Properties LocationProperties                `json:"properties,omitempty"`
-	Response   string                    `json:"Response,omitempty"`
-	Headers    *http.Header              `json:"headers,omitempty"`
-	StatusCode int                       `json:"headers,omitempty"`
+	Id         string             `json:"id,omitempty"`
+	Type_      string             `json:"type,omitempty"`
+	Href       string             `json:"href,omitempty"`
+	Metadata   Metadata           `json:"metadata,omitempty"`
+	Properties LocationProperties `json:"properties,omitempty"`
+	Response   string             `json:"Response,omitempty"`
+	Headers    *http.Header       `json:"headers,omitempty"`
+	StatusCode int                `json:"headers,omitempty"`
 }
 
 type Locations struct {
@@ -27,8 +27,8 @@ type Locations struct {
 }
 
 type LocationProperties struct {
-	Name     string `json:"name,omitempty"`
-	Features []string `json:"features,omitempty"`
+	Name         string   `json:"name,omitempty"`
+	Features     []string `json:"features,omitempty"`
 	ImageAliases []string `json:"imageAliases,omitempty"`
 }
 

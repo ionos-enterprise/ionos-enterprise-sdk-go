@@ -3,9 +3,9 @@ package profitbricks
 
 import (
 	"fmt"
-	"testing"
 	"github.com/stretchr/testify/assert"
 	"strings"
+	"testing"
 )
 
 var lbal_dcid string
@@ -28,7 +28,7 @@ func TestCreateLoadbalancer(t *testing.T) {
 		},
 	}
 	resp := ReserveIpBlock(obj)
-	ips=resp.Properties.Ips
+	ips = resp.Properties.Ips
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	lbal_ipid = resp.Id
 	var request = Loadbalancer{
@@ -44,7 +44,6 @@ func TestCreateLoadbalancer(t *testing.T) {
 						Id: lbal_nic,
 					},
 				},
-
 			},
 		},
 	}
@@ -52,7 +51,6 @@ func TestCreateLoadbalancer(t *testing.T) {
 	resp1 := CreateLoadbalancer(lbal_dcid, request)
 	waitTillProvisioned(resp1.Headers.Get("Location"))
 	lbalid = resp1.Id
-	fmt.Println("Loadbalancer ID", lbalid)
 	if resp1.StatusCode != want {
 		t.Errorf(bad_status(want, resp1.StatusCode))
 	}
@@ -64,22 +62,16 @@ func TestCreateLoadbalancer(t *testing.T) {
 }
 
 func TestCreateLoadbalancerFailure(t *testing.T) {
-	//loadbalancer gets created without name
-	//want := 422
-	//var request = Loadbalancer{
-	//	Properties: LoadbalancerProperties{
-	//		Dhcp: true,
-	//	},
-	//}
-	//
-	//resp := CreateLoadbalancer(lbal_dcid, request)
-	//
-	//if resp.StatusCode != want {
-	//	fmt.Println(string(resp.Response))
-	//	t.Errorf(bad_status(want, resp.StatusCode))
-	//}
-	//
-	//assert.True(t, strings.Contains(resp.Response, "Attribute 'name' is required"))
+	want := 404
+	var request = Loadbalancer{
+		Properties: LoadbalancerProperties{
+			Dhcp: true,
+		},
+	}
+
+	resp := CreateLoadbalancer("00000000-0000-0000-0000-000000000000", request)
+
+	assert.Equal(t, resp.StatusCode, want)
 }
 
 func TestListLoadbalancers(t *testing.T) {
@@ -95,8 +87,6 @@ func TestListLoadbalancers(t *testing.T) {
 
 func TestGetLoadbalancer(t *testing.T) {
 	want := 200
-	fmt.Println("TestGetLoadbalancer", lbalid)
-
 	resp := GetLoadbalancer(lbal_dcid, lbalid)
 
 	if resp.StatusCode != want {
@@ -112,8 +102,6 @@ func TestGetLoadbalancer(t *testing.T) {
 
 func TestGetLoadbalancerFailure(t *testing.T) {
 	want := 404
-	fmt.Println("TestGetLoadbalancer", "00000000-0000-0000-0000-000000000000")
-
 	resp := GetLoadbalancer(lbal_dcid, "00000000-0000-0000-0000-000000000000")
 
 	if resp.StatusCode != want {
@@ -144,7 +132,6 @@ func TestAssociateNic(t *testing.T) {
 	want := 202
 
 	nicid = mknic(lbal_dcid, lbal_srvid)
-	fmt.Println("AssociateNic params ", lbal_dcid, lbalid, nicid)
 	resp := AssociateNic(lbal_dcid, lbalid, nicid)
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	nicid = resp.Id

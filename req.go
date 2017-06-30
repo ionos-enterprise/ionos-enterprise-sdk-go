@@ -20,7 +20,7 @@ const PatchHeader = "application/json"
 const CommandHeader = "application/x-www-form-urlencoded"
 
 var Depth = "5"
-var Pretty =true
+var Pretty = true
 
 // SetDepth is used to set Depth
 func SetDepth(newdepth string) string {

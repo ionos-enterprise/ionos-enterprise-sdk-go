@@ -2,10 +2,10 @@ package profitbricks
 
 import (
 	"fmt"
-	"testing"
-	"time"
 	"github.com/stretchr/testify/assert"
 	"strings"
+	"testing"
+	"time"
 )
 
 var volumeId string
@@ -31,7 +31,6 @@ func TestCreateVolume(t *testing.T) {
 
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	volumeId = resp.Id
-	fmt.Println(resp.Properties.AvailabilityZone)
 	if resp.StatusCode != want {
 		fmt.Println(string(resp.Response))
 		t.Errorf(bad_status(want, resp.StatusCode))
@@ -60,13 +59,12 @@ func TestCreateVolumeFail(t *testing.T) {
 
 	resp := CreateVolume(dcID, request)
 
-	fmt.Println(resp.Properties.AvailabilityZone)
 	if resp.StatusCode != want {
 		fmt.Println(string(resp.Response))
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 
-	assert.True(t,strings.Contains(resp.Response, "Attribute 'size' is required"))
+	assert.True(t, strings.Contains(resp.Response, "Attribute 'size' is required"))
 }
 
 func TestListVolumes(t *testing.T) {
@@ -84,8 +82,6 @@ func TestGetVolume(t *testing.T) {
 
 	time.Sleep(5000)
 	resp := GetVolume(dcID, volumeId)
-	fmt.Println(dcID)
-	fmt.Println(volumeId)
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
@@ -103,13 +99,11 @@ func TestGetVolumeFailure(t *testing.T) {
 	want := 404
 
 	resp := GetVolume(dcID, "00000000-0000-0000-0000-000000000000")
-	fmt.Println(dcID)
-	fmt.Println(volumeId)
 	if resp.StatusCode != want {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 
-	assert.True(t,strings.Contains(resp.Response, "Resource does not exist"))
+	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
 }
 
 func TestPatchVolume(t *testing.T) {
@@ -134,7 +128,7 @@ func TestPatchVolume(t *testing.T) {
 func TestCreateSnapshot(t *testing.T) {
 	want := 202
 
-	resp := CreateSnapshot(dcID, volumeId, snapshotname,snapshotdescription)
+	resp := CreateSnapshot(dcID, volumeId, snapshotname, snapshotdescription)
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	if resp.StatusCode != want {
 		fmt.Println(string(resp.Response))
@@ -144,7 +138,7 @@ func TestCreateSnapshot(t *testing.T) {
 	snapshotId = resp.Id
 
 	assert.Equal(t, resp.Properties.Name, snapshotname)
-	assert.Equal(t, resp.Type_,"snapshot")
+	assert.Equal(t, resp.Type_, "snapshot")
 }
 
 func TestRestoreSnapshot(t *testing.T) {
@@ -160,12 +154,7 @@ func TestRestoreSnapshot(t *testing.T) {
 }
 
 func TestCleanup(t *testing.T) {
-	fmt.Println("CLEANING UP AFTER SNAPSHOTS")
-	resp := DeleteSnapshot(snapshotId)
-	fmt.Println(resp.StatusCode)
-	fmt.Println("CLEANING UP AFTER VOLUMES")
-	resp = DeleteVolume(dcID, volumeId)
-	fmt.Println(resp.StatusCode)
-	resp = DeleteDatacenter(dcID)
-	fmt.Println(resp.StatusCode)
+	DeleteSnapshot(snapshotId)
+	DeleteVolume(dcID, volumeId)
+	DeleteDatacenter(dcID)
 }

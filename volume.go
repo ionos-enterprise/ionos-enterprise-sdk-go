@@ -8,14 +8,14 @@ import (
 )
 
 type Volume struct {
-	Id         string                     `json:"id,omitempty"`
-	Type_      string                     `json:"type,omitempty"`
-	Href       string                     `json:"href,omitempty"`
-	Metadata   *Metadata `json:"metadata,omitempty"`
-	Properties VolumeProperties           `json:"properties,omitempty"`
-	Response   string                     `json:"Response,omitempty"`
-	Headers    *http.Header               `json:"headers,omitempty"`
-	StatusCode int                        `json:"headers,omitempty"`
+	Id         string           `json:"id,omitempty"`
+	Type_      string           `json:"type,omitempty"`
+	Href       string           `json:"href,omitempty"`
+	Metadata   *Metadata        `json:"metadata,omitempty"`
+	Properties VolumeProperties `json:"properties,omitempty"`
+	Response   string           `json:"Response,omitempty"`
+	Headers    *http.Header     `json:"headers,omitempty"`
+	StatusCode int              `json:"headers,omitempty"`
 }
 
 type VolumeProperties struct {

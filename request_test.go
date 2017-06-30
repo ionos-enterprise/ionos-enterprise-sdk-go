@@ -1,8 +1,8 @@
 package profitbricks
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 var reqId Request

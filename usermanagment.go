@@ -1,9 +1,9 @@
 package profitbricks
 
 import (
-	"net/http"
-	"encoding/json"
 	"bytes"
+	"encoding/json"
+	"net/http"
 	"strconv"
 )
 
@@ -11,33 +11,33 @@ type Groups struct {
 	Id         string       `json:"id,omitempty"`
 	Type_      string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
-	Items      []Group `json:"items,omitempty"`
+	Items      []Group      `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
 	StatusCode int          `json:"headers,omitempty"`
 }
 
 type Group struct {
-	Id         string                     `json:"id,omitempty"`
-	Type_      string                     `json:"type,omitempty"`
-	Href       string                     `json:"href,omitempty"`
-	Properties GroupProperties            `json:"properties,omitempty"`
-	Entities   *GroupEntities              `json:"entities,omitempty"`
-	Response   string                     `json:"Response,omitempty"`
-	Headers    *http.Header               `json:"headers,omitempty"`
-	StatusCode int                        `json:"headers,omitempty"`
+	Id         string          `json:"id,omitempty"`
+	Type_      string          `json:"type,omitempty"`
+	Href       string          `json:"href,omitempty"`
+	Properties GroupProperties `json:"properties,omitempty"`
+	Entities   *GroupEntities  `json:"entities,omitempty"`
+	Response   string          `json:"Response,omitempty"`
+	Headers    *http.Header    `json:"headers,omitempty"`
+	StatusCode int             `json:"headers,omitempty"`
 }
 
 type GroupProperties struct {
 	Name              string `json:"name,omitempty"`
-	CreateDataCenter  *bool `json:"createDataCenter,omitempty"`
-	CreateSnapshot    *bool `json:"createSnapshot,omitempty"`
+	CreateDataCenter  *bool  `json:"createDataCenter,omitempty"`
+	CreateSnapshot    *bool  `json:"createSnapshot,omitempty"`
 	ReserveIp         *bool  `json:"reserveIp,omitempty"`
 	AccessActivityLog *bool  `json:"accessActivityLog,omitempty"`
 }
 
 type GroupEntities struct {
-	Users     Users `json:"users,omitempty"`
+	Users     Users     `json:"users,omitempty"`
 	Resources Resources `json:"resources,omitempty"`
 }
 
@@ -45,22 +45,22 @@ type Users struct {
 	Id         string       `json:"id,omitempty"`
 	Type_      string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
-	Items      []User `json:"items,omitempty"`
+	Items      []User       `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
 	StatusCode int          `json:"headers,omitempty"`
 }
 
 type User struct {
-	Id         string                     `json:"id,omitempty"`
-	Type_      string                     `json:"type,omitempty"`
-	Href       string                     `json:"href,omitempty"`
-	Metadata   *Metadata `json:"metadata,omitempty"`
-	Properties *UserProperties       `json:"properties,omitempty"`
-	Entities   *UserEntities         `json:"entities,omitempty"`
-	Response   string                     `json:"Response,omitempty"`
-	Headers    *http.Header               `json:"headers,omitempty"`
-	StatusCode int                        `json:"headers,omitempty"`
+	Id         string          `json:"id,omitempty"`
+	Type_      string          `json:"type,omitempty"`
+	Href       string          `json:"href,omitempty"`
+	Metadata   *Metadata       `json:"metadata,omitempty"`
+	Properties *UserProperties `json:"properties,omitempty"`
+	Entities   *UserEntities   `json:"entities,omitempty"`
+	Response   string          `json:"Response,omitempty"`
+	Headers    *http.Header    `json:"headers,omitempty"`
+	StatusCode int             `json:"headers,omitempty"`
 }
 
 type UserProperties struct {
@@ -68,35 +68,35 @@ type UserProperties struct {
 	Lastname      string `json:"lastname,omitempty"`
 	Email         string `json:"email,omitempty"`
 	Password      string `json:"password,omitempty"`
-	Administrator bool `json:"administrator,omitempty"`
-	ForceSecAuth  bool  `json:"forceSecAuth,omitempty"`
-	SecAuthActive bool  `json:"secAuthActive,omitempty"`
+	Administrator bool   `json:"administrator,omitempty"`
+	ForceSecAuth  bool   `json:"forceSecAuth,omitempty"`
+	SecAuthActive bool   `json:"secAuthActive,omitempty"`
 }
 
 type UserEntities struct {
 	Groups Groups `json:"groups,omitempty"`
-	Owns   Owns `json:"owns,omitempty"`
+	Owns   Owns   `json:"owns,omitempty"`
 }
 
 type Resources struct {
 	Id         string       `json:"id,omitempty"`
 	Type_      string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
-	Items      []Resource `json:"items,omitempty"`
+	Items      []Resource   `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
 	StatusCode int          `json:"headers,omitempty"`
 }
 
 type Resource struct {
-	Id         string                     `json:"id,omitempty"`
-	Type_      string                     `json:"type,omitempty"`
-	Href       string                     `json:"href,omitempty"`
-	Metadata   *Metadata `json:"metadata,omitempty"`
-	Entities   *ResourceEntities         `json:"entities,omitempty"`
-	Response   string                     `json:"Response,omitempty"`
-	Headers    *http.Header               `json:"headers,omitempty"`
-	StatusCode int                        `json:"headers,omitempty"`
+	Id         string            `json:"id,omitempty"`
+	Type_      string            `json:"type,omitempty"`
+	Href       string            `json:"href,omitempty"`
+	Metadata   *Metadata         `json:"metadata,omitempty"`
+	Entities   *ResourceEntities `json:"entities,omitempty"`
+	Response   string            `json:"Response,omitempty"`
+	Headers    *http.Header      `json:"headers,omitempty"`
+	StatusCode int               `json:"headers,omitempty"`
 }
 
 type ResourceEntities struct {
@@ -114,33 +114,33 @@ type Owns struct {
 }
 
 type Entity struct {
-	Id         string                     `json:"id,omitempty"`
-	Type_      string                     `json:"type,omitempty"`
-	Href       string                     `json:"href,omitempty"`
-	Metadata   *Metadata                      `json:"metadata,omitempty"`
-	Response   string                     `json:"Response,omitempty"`
-	Headers    *http.Header               `json:"headers,omitempty"`
-	StatusCode int                        `json:"headers,omitempty"`
+	Id         string       `json:"id,omitempty"`
+	Type_      string       `json:"type,omitempty"`
+	Href       string       `json:"href,omitempty"`
+	Metadata   *Metadata    `json:"metadata,omitempty"`
+	Response   string       `json:"Response,omitempty"`
+	Headers    *http.Header `json:"headers,omitempty"`
+	StatusCode int          `json:"headers,omitempty"`
 }
 
 type Shares struct {
 	Id         string       `json:"id,omitempty"`
 	Type_      string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
-	Items      []Share `json:"items,omitempty"`
+	Items      []Share      `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
 	StatusCode int          `json:"headers,omitempty"`
 }
 
 type Share struct {
-	Id         string                     `json:"id,omitempty"`
-	Type_      string                     `json:"type,omitempty"`
-	Href       string                     `json:"href,omitempty"`
-	Properties ShareProperties            `json:"properties,omitempty"`
-	Response   string                     `json:"Response,omitempty"`
-	Headers    *http.Header               `json:"headers,omitempty"`
-	StatusCode int                        `json:"headers,omitempty"`
+	Id         string          `json:"id,omitempty"`
+	Type_      string          `json:"type,omitempty"`
+	Href       string          `json:"href,omitempty"`
+	Properties ShareProperties `json:"properties,omitempty"`
+	Response   string          `json:"Response,omitempty"`
+	Headers    *http.Header    `json:"headers,omitempty"`
+	StatusCode int             `json:"headers,omitempty"`
 }
 
 type ShareProperties struct {
@@ -341,11 +341,11 @@ func CreateUser(usr User) User {
 	return toUser(do(req))
 }
 
-func UpdateUser(userid string, obj UserProperties) User {
+func UpdateUser(userid string, obj User) User {
 	jason_patch := []byte(MkJson(obj))
 	path := um_users_path(userid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("PATCH", url, bytes.NewBuffer(jason_patch))
+	url := mk_url(path)
+	req, _ := http.NewRequest("PUT", url, bytes.NewBuffer(jason_patch))
 	req.Header.Add("Content-Type", PatchHeader)
 	return toUser(do(req))
 }

@@ -4,8 +4,8 @@ package profitbricks
 
 import (
 	"fmt"
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 var imgid string

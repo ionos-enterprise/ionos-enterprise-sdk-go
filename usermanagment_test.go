@@ -1,12 +1,12 @@
 package profitbricks
 
 import (
-	"testing"
+	"github.com/stretchr/testify/assert"
 	"math/rand"
 	"strconv"
-	"time"
-	"github.com/stretchr/testify/assert"
 	"strings"
+	"testing"
+	"time"
 )
 
 var groupid string
@@ -21,7 +21,7 @@ func setupTest() {
 	setupTestEnv()
 	s1 := rand.NewSource(time.Now().UnixNano())
 	r1 := rand.New(s1)
-	email = "test" + strconv.Itoa(r1.Intn(100)) + "@go.com"
+	email = "test" + strconv.Itoa(r1.Intn(1000)) + "@go.com"
 	resourceId = mkdcid("GO SDK TEST")
 	ipblockId = mkipid("GO SDK TEST")
 }
@@ -35,7 +35,7 @@ func TestCreateUser(t *testing.T) {
 			Lastname:      "Doe",
 			Email:         email,
 			Password:      "abc123-321CBA",
-			Administrator: false,
+			Administrator: true,
 			ForceSecAuth:  false,
 			SecAuthActive: false,
 		},
@@ -50,7 +50,7 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, resp.Properties.Firstname, "John")
 	assert.Equal(t, resp.Properties.Lastname, "Doe")
 	assert.Equal(t, resp.Properties.Email, email)
-	assert.Equal(t, resp.Properties.Administrator, false)
+	assert.Equal(t, resp.Properties.Administrator, true)
 }
 
 func TestCreateUserFailure(t *testing.T) {
@@ -96,22 +96,22 @@ func TestGetUser(t *testing.T) {
 	assert.Equal(t, resp.Properties.Firstname, "John")
 	assert.Equal(t, resp.Properties.Lastname, "Doe")
 	assert.Equal(t, resp.Properties.Email, email)
-	assert.Equal(t, resp.Properties.Administrator, false)
+	assert.Equal(t, resp.Properties.Administrator, true)
 	assert.Equal(t, resp.Type_, "user")
 }
 
 func TestUpdateUser(t *testing.T) {
 	want := 202
 	newName := "user updated"
-	obj := UserProperties{
-		Firstname:     "go sdk ",
-		Lastname:      newName,
-		Email:         "test@go.com",
-		Password:      "abc123-321CBA",
-		Administrator: false,
-		ForceSecAuth:  false,
-		SecAuthActive: false,
-	}
+	obj := User{
+		Properties: &UserProperties{
+			Firstname:     "John",
+			Lastname:      newName,
+			Email:         email,
+			Administrator: false,
+			ForceSecAuth:  false,
+			SecAuthActive: false,
+		}}
 
 	resp := UpdateUser(userid, obj)
 	if resp.StatusCode != want {
@@ -131,7 +131,6 @@ func TestCreateGroup(t *testing.T) {
 			CreateSnapshot:    &TRUE,
 			ReserveIp:         &TRUE,
 			AccessActivityLog: &TRUE,
-
 		},
 	}
 	resp := CreateGroup(obj)
@@ -156,7 +155,6 @@ func TestCreateGroupFaliure(t *testing.T) {
 			CreateSnapshot:    &TRUE,
 			ReserveIp:         &TRUE,
 			AccessActivityLog: &TRUE,
-
 		},
 	}
 	resp := CreateGroup(obj)
@@ -253,8 +251,7 @@ func TestAddShare(t *testing.T) {
 func TestAddShareFailure(t *testing.T) {
 	want := 422
 	var obj = Share{
-		Properties: ShareProperties{
-		},
+		Properties: ShareProperties{},
 	}
 	resp := AddShare(obj, groupid, resourceId)
 	if resp.StatusCode != want {

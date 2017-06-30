@@ -1,33 +1,12 @@
 package profitbricks
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
+	"testing"
 )
 
 var dcID string
 var compositedcId string
-
-func TestListDatacenters(t *testing.T) {
-	setupTestEnv()
-	want := 200
-
-	resp := ListDatacenters()
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.True(t, len(resp.Items) > 0)
-}
-
-func TestGetDatacenterFail(t *testing.T) {
-	want := 404
-	resp := GetDatacenter("231")
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-}
 
 func TestCreate(t *testing.T) {
 	want := 202
@@ -49,6 +28,27 @@ func TestCreate(t *testing.T) {
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
 	assert.Equal(t, resp.Properties.Description, "GO SDK test datacenter")
 	assert.Equal(t, resp.Properties.Location, location)
+}
+
+func TestListDatacenters(t *testing.T) {
+	setupTestEnv()
+	want := 200
+
+	resp := ListDatacenters()
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+
+	assert.True(t, len(resp.Items) > 0)
+}
+
+func TestGetDatacenterFail(t *testing.T) {
+	want := 404
+	resp := GetDatacenter("231")
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
 }
 
 func TestCreateFailure(t *testing.T) {

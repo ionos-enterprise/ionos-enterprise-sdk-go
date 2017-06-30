@@ -2,16 +2,17 @@ package profitbricks
 
 import (
 	"fmt"
-	"testing"
 	"github.com/stretchr/testify/assert"
 	"strings"
+	"testing"
+	"time"
 )
 
 var snapshotId string
 var volume Volume
 
-var snapshotname string="GO SDK TEST"
-var snapshotdescription string="GO SDK test snapshot"
+var snapshotname string = "GO SDK TEST"
+var snapshotdescription string = "GO SDK test snapshot"
 
 func createVolume() {
 	setupTestEnv()
@@ -23,7 +24,6 @@ func createVolume() {
 			Image:         image,
 			Type:          "HDD",
 			ImagePassword: "test1234",
-
 		},
 	}
 
@@ -40,8 +40,13 @@ func createVolume() {
 }
 
 func TestCreateSnapshots(t *testing.T) {
+	want := 202
 	createVolume()
+	time.Sleep(120 * time.Second)
 	resp := CreateSnapshot(dcID, volumeId, snapshotname, snapshotdescription)
+	if resp.StatusCode != want {
+		fmt.Println(string(resp.Response))
+	}
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	snapshotId = resp.Id
 
@@ -51,9 +56,9 @@ func TestCreateSnapshots(t *testing.T) {
 }
 
 func TestCreateSnapshotFailure(t *testing.T) {
-	//The snapshot gets created regardless of the paramters passed
-	//resp := CreateSnapshot(dcID, volumeId, "*&*&^*&^*&^*&^*", snapshotdescription)
-	//assert.True(t, strings.Contains(resp.Response, "Attribute 'name' is required"))
+	want := 404
+	resp := CreateSnapshot("00000000-0000-0000-0000-000000000000", volumeId, "fail", snapshotdescription)
+	assert.Equal(t, resp.StatusCode, want)
 }
 
 func TestGetSnapshot(t *testing.T) {
@@ -127,14 +132,14 @@ func TestDeleteSnapshot(t *testing.T) {
 	resp := DeleteSnapshot(snapshotId)
 
 	if resp.StatusCode != want {
-		fmt.Println(string(resp.Body))
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 
-	resp = DeleteDatacenter(dcID)
+	waitTillProvisioned(resp.Headers.Get("Location"))
 
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Body))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	respDc := DeleteDatacenter(dcID)
+
+	if respDc.StatusCode != want {
+		t.Errorf(bad_status(want, respDc.StatusCode))
 	}
 }

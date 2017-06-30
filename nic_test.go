@@ -1,10 +1,10 @@
 package profitbricks
 
 import (
-	"testing"
-	"github.com/stretchr/testify/assert"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"strings"
+	"testing"
 )
 
 var nic_dcid string

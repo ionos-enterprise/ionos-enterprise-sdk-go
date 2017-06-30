@@ -2,9 +2,9 @@
 package profitbricks
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
 	"strconv"
+	"testing"
 	"time"
 )
 
@@ -39,15 +39,14 @@ func TestCreateLan(t *testing.T) {
 }
 
 func TestCreateLanFailure(t *testing.T) {
-	//lan gets created even if no paramters are passed
-	//want := 422
-	//var request = Lan{
-	//	Properties: LanProperties{
-	//		Public: true,
-	//	},
-	//}
-	//lan := CreateLan(lan_dcid, request)
-	////assert.Equal(t, lan.StatusCode, want)
+	want := 404
+	var request = Lan{
+		Properties: LanProperties{
+			Public: true,
+		},
+	}
+	lan := CreateLan("00000000-0000-0000-0000-000000000000", request)
+	assert.Equal(t, lan.StatusCode, want)
 }
 
 func TestCreateCompositeLan(t *testing.T) {
@@ -157,7 +156,7 @@ func TestPatchLan(t *testing.T) {
 		IpFailover: []IpFailover{IpFailover{
 			Ip:      ip,
 			NicUuid: failover_nic,
-		}}, }
+		}}}
 
 	lan := PatchLan(lan_dcid, failoverLan.Id, obj)
 	if lan.StatusCode != want {
