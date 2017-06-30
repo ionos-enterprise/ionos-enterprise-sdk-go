@@ -362,6 +362,7 @@ The following table outlines the locations currently supported:
 | Value| Country | City |
 |---|---|---|
 | us/las | United States | Las Vegas |
+| us/ewr | United States | Newark |
 | de/fra | Germany | Frankfurt |
 | de/fkb | Germany | Karlsruhe |
 
@@ -1134,7 +1135,7 @@ Pass it to `ReserveIpBlock`:
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
-| Location | **yes** | string | This must be one of the available locations: us/las, de/fra, de/fkb. |
+| Location | **yes** | string | This must be one of the available locations: us/las, us/ewr, de/fra, de/fkb. |
 | Size | **yes** | int | The size of the IP block you want. |
 | Name | no | string | A descriptive name for the IP block |
 
@@ -1143,6 +1144,7 @@ The following table outlines the locations currently supported:
 | Value| Country | City |
 |---|---|---|
 | us/las | United States | Las Vegas |
+| us/ewr | United States | Newark |
 | de/fra | Germany | Frankfurt |
 | de/fkb | Germany | Karlsruhe |
 
