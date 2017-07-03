@@ -19,7 +19,7 @@ func createVolume() {
 	want := 202
 	var request = Volume{
 		Properties: VolumeProperties{
-			Size:          5,
+			Size:          2,
 			Name:          "Volume Test",
 			Image:         image,
 			Type:          "HDD",
@@ -129,6 +129,7 @@ func TestUpdateSnapshot(t *testing.T) {
 func TestDeleteSnapshot(t *testing.T) {
 	want := 202
 
+	time.Sleep(120 * time.Second)
 	resp := DeleteSnapshot(snapshotId)
 
 	if resp.StatusCode != want {

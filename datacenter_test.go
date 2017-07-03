@@ -149,8 +149,9 @@ func TestDeleteDatacenter(t *testing.T) {
 		t.Errorf(bad_status(want, resp.StatusCode))
 	}
 
+	waitTillProvisioned(resp.Headers.Get("Location"))
 	compositeResp := DeleteDatacenter(compositedcId)
-	if resp.StatusCode != want {
+	if compositeResp.StatusCode != want {
 		t.Errorf(bad_status(want, compositeResp.StatusCode))
 	}
 }
