@@ -2260,7 +2260,7 @@ You are welcome to contact us with questions or comments at [ProfitBricks DevOps
 
 ## Testing
 
-You can run all test by using the command `go test` or run a single test by specifying the name of the test file `go test servers_test.go`
+You can run all test by using the command `go test -timeout=120m` or run a single test by specifying the name of the test file `go test servers_test.go`
 
 ## Contributing
 
