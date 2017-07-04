@@ -36,12 +36,6 @@ func TestImage(t *testing.T) {
 	fmt.Println("Image ID is:", image)
 }
 
-func TestMain(m *testing.M) {
-	r := m.Run()
-	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
-	os.Exit(r)
-}
-
 // Setup creds for single running tests
 func setupTestEnv() {
 	SetAuth(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))

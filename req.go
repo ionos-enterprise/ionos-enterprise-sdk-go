@@ -20,11 +20,18 @@ const PatchHeader = "application/json"
 const CommandHeader = "application/x-www-form-urlencoded"
 
 var Depth = "5"
+var Pretty = true
 
 // SetDepth is used to set Depth
 func SetDepth(newdepth string) string {
 	Depth = newdepth
 	return Depth
+}
+
+// SetDepth is used to set Depth
+func SetPretty(pretty bool) bool {
+	Pretty = pretty
+	return Pretty
 }
 
 // mk_url  either:

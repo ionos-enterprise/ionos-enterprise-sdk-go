@@ -45,6 +45,11 @@ func location_path(locid string) string {
 	return location_col_path() + slash(locid)
 }
 
+// location_path returns the string   "/locations/<regid>"
+func location_reg_path(regid string) string {
+	return location_col_path() + slash(regid)
+}
+
 // snapshot_col_path returns the string "/snapshots"
 func snapshot_col_path() string {
 	return slash("snapshots")
@@ -144,4 +149,68 @@ func fwrule_col_path(dcid, srvid, nicid string) string {
 //  "/datacenters/<dcid>/servers/<srvid>/nics/<nicid>/firewallrules/<fwruleid>"
 func fwrule_path(dcid, srvid, nicid, fwruleid string) string {
 	return fwrule_col_path(dcid, srvid, nicid) + slash(fwruleid)
+}
+
+// contract_resource_path returns the string "/contracts"
+func contract_resource_path() string {
+	return slash("contracts")
+}
+
+func um() string {
+	return slash("um")
+}
+
+// um_groups	returns the string "/groups"
+func um_groups() string {
+	return um() + slash("groups")
+}
+
+// um_group_path	returns the string "/groups/groupid"
+func um_group_path(grpid string) string {
+	return um_groups() + slash(grpid)
+}
+
+// um_group_shares	returns the string "groups/{groupId}/shares"
+func um_group_shares(grpid string) string {
+	return um() + slash("groups") + slash(grpid) + slash("shares")
+}
+
+// um_group_share_path	returns the string "groups/{groupId}/shares/{resourceId}"
+func um_group_share_path(grpid string, resourceid string) string {
+	return um() + slash("groups") + slash(grpid) + slash("shares") + slash(resourceid)
+}
+
+// um_group_users	returns the string "/groups/groupid/users"
+func um_group_users(grpid string) string {
+	return um() + slash("groups") + slash(grpid) + slash("users")
+}
+
+// um_group_users_path	returns the string "/groups/groupid/users/userid"
+func um_group_users_path(grpid string, usrid string) string {
+	return um() + slash("groups") + slash(grpid) + slash("users") + slash(usrid)
+}
+
+// um_users returns the string "/users"
+func um_users() string {
+	return um() + slash("users")
+}
+
+// um_users returns the string "/users/usrid"
+func um_users_path(usrid string) string {
+	return um() + slash("users") + slash(usrid)
+}
+
+// um_resources returns the string "/resources"
+func um_resources() string {
+	return um() + slash("resources")
+}
+
+// um_resources_type returns the string "/resources/resourceType"
+func um_resources_type(restype string) string {
+	return um() + slash("resources") + slash(restype)
+}
+
+// um_resources_type_path returns the string "resources/{resourceType}/{resourceId}"
+func um_resources_type_path(restype string, resourceid string) string {
+	return um() + slash("resources") + slash(restype) + slash(resourceid)
 }
