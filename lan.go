@@ -7,24 +7,30 @@ import (
 )
 
 type Lan struct {
-	Id         string                     `json:"id,omitempty"`
-	Type_      string                     `json:"type,omitempty"`
-	Href       string                     `json:"href,omitempty"`
-	Metadata   *DatacenterElementMetadata `json:"metadata,omitempty"`
-	Properties LanProperties              `json:"properties,omitempty"`
-	Entities   *LanEntities               `json:"entities,omitempty"`
-	Response   string                     `json:"Response,omitempty"`
-	Headers    *http.Header               `json:"headers,omitempty"`
-	StatusCode int                        `json:"headers,omitempty"`
+	Id         string        `json:"id,omitempty"`
+	Type_      string        `json:"type,omitempty"`
+	Href       string        `json:"href,omitempty"`
+	Metadata   *Metadata     `json:"metadata,omitempty"`
+	Properties LanProperties `json:"properties,omitempty"`
+	Entities   *LanEntities  `json:"entities,omitempty"`
+	Response   string        `json:"Response,omitempty"`
+	Headers    *http.Header  `json:"headers,omitempty"`
+	StatusCode int           `json:"headers,omitempty"`
 }
 
 type LanProperties struct {
-	Name   string `json:"name,omitempty"`
-	Public interface{}   `json:"public,omitempty"`
+	Name       string       `json:"name,omitempty"`
+	Public     bool         `json:"public,omitempty"`
+	IpFailover []IpFailover `json:"ipFailover,omitempty"`
 }
 
 type LanEntities struct {
 	Nics *LanNics `json:"nics,omitempty"`
+}
+
+type IpFailover struct {
+	NicUuid string `json:"nicUuid,omitempty"`
+	Ip      string `json:"ip,omitempty"`
 }
 
 type LanNics struct {

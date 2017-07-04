@@ -1,7 +1,6 @@
 package profitbricks
 
 import (
-	"fmt"
 	"strconv"
 	"testing"
 	"time"
@@ -60,7 +59,7 @@ func TestCompositeCreate(t *testing.T) {
 			Nics: &Nics{
 				Items: []Nic{
 					Nic{
-						Properties: NicProperties{
+						Properties: &NicProperties{
 							Name: "nic",
 							Lan:  lan_id,
 						},
@@ -76,7 +75,6 @@ func TestCompositeCreate(t *testing.T) {
 	for i := 0; i < 10; i++ {
 		request := GetDatacenter(dcID)
 		if request.Metadata.State == "AVAILABLE" {
-			fmt.Println("DC operational")
 			break
 		}
 		time.Sleep(10 * time.Second)

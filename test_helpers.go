@@ -2,10 +2,47 @@ package profitbricks
 
 import (
 	"fmt"
-	"time"
-	"strings"
 	"os"
+	"strings"
+	"time"
 )
+
+func mkVolume(dcID string) string {
+
+	var request = Volume{
+		Properties: VolumeProperties{
+			Size:          5,
+			Name:          "Volume Test",
+			Type:          "HDD",
+			ImagePassword: "test1234",
+			ImageAlias:    "ubuntu:latest",
+		},
+	}
+
+	resp := CreateVolume(dcID, request)
+	waitTillProvisioned(resp.Headers.Get("Location"))
+	return resp.Id
+}
+
+func mkipid(name string) string {
+	var obj = IpBlock{
+		Properties: IpBlockProperties{
+			Name:     "GO SDK Test",
+			Size:     1,
+			Location: "us/las",
+		},
+	}
+
+	resp := ReserveIpBlock(obj)
+	return resp.Id
+}
+
+func mksnapshotId(name string, dcId string) string {
+	svolumeId := mkVolume(dcId)
+	resp := CreateSnapshot(dcId, svolumeId, name, "description")
+	waitTillProvisioned(resp.Headers.Get("Location"))
+	return resp.Id
+}
 
 func mkdcid(name string) string {
 	request := Datacenter{
@@ -16,11 +53,6 @@ func mkdcid(name string) string {
 		},
 	}
 	dc := CreateDatacenter(request)
-	fmt.Println("===========================")
-	fmt.Println("Created a DC " + name)
-	fmt.Println("Created a DC id " + dc.Id)
-	fmt.Println(dc.StatusCode)
-	fmt.Println("===========================")
 	return dc.Id
 }
 
@@ -33,37 +65,46 @@ func mksrvid(srv_dcid string) string {
 		},
 	}
 	srv := CreateServer(srv_dcid, req)
-	fmt.Println("===========================")
-	fmt.Println("Created a server " + srv.Id)
-	fmt.Println(srv.StatusCode)
-	fmt.Println("===========================")
-
 	waitTillProvisioned(srv.Headers.Get("Location"))
 	return srv.Id
 }
 
 func mknic(lbal_dcid, serverid string) string {
 	var request = Nic{
-		Properties: NicProperties{
-			Name: "GO SDK Original Nic",
-			Lan:  1,
+		Properties: &NicProperties{
+			Lan:            1,
+			Name:           "GO SDK Test",
+			Nat:            false,
+			Dhcp:           true,
+			FirewallActive: true,
+			Ips:            []string{"10.0.0.1"},
 		},
 	}
 
 	resp := CreateNic(lbal_dcid, serverid, request)
-	fmt.Println("===========================")
-	fmt.Println("created a nic at server " + serverid)
+	waitTillProvisioned(resp.Headers.Get("Location"))
+	return resp.Id
+}
 
-	fmt.Println("created a nic with id " + resp.Id)
-	fmt.Println(resp.StatusCode)
-	fmt.Println("===========================")
+func mknic_custom(lbal_dcid, serverid string, lanid int, ips []string) string {
+	var request = Nic{
+		Properties: &NicProperties{
+			Lan:            lanid,
+			Name:           "GO SDK Test",
+			Nat:            false,
+			Dhcp:           true,
+			FirewallActive: true,
+			Ips:            ips,
+		},
+	}
+
+	resp := CreateNic(lbal_dcid, serverid, request)
 	waitTillProvisioned(resp.Headers.Get("Location"))
 	return resp.Id
 }
 
 func waitTillProvisioned(path string) {
 	waitCount := 120
-	fmt.Println(path)
 	for i := 0; i < waitCount; i++ {
 		request := GetRequestStatus(path)
 		if request.Metadata.Status == "DONE" {
