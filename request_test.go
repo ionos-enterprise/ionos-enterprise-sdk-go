@@ -3,6 +3,7 @@ package profitbricks
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"strings"
 )
 
 var reqId Request
@@ -33,4 +34,14 @@ func TestGetRequestStatus(t *testing.T) {
 	}
 	assert.Equal(t, resp.Type_, "request-status")
 	assert.Equal(t, resp.Href, id)
+}
+
+func TestGetRequestFailure(t *testing.T) {
+	want := 404
+	req := GetRequest("00000000-0000-0000-0000-000000000000")
+	if req.StatusCode != want {
+		t.Errorf(bad_status(want, req.StatusCode))
+	}
+
+	assert.True(t, strings.Contains(req.Response, "Resource does not exist"))
 }

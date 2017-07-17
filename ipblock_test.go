@@ -4,6 +4,8 @@ package profitbricks
 import (
 	"github.com/stretchr/testify/assert"
 	"testing"
+	"fmt"
+	"strings"
 )
 
 var ipblkid string
@@ -31,6 +33,22 @@ func TestReserveIpBlock(t *testing.T) {
 
 }
 
+func TestReserveIpBlockFailure(t *testing.T) {
+	want := 422
+	var obj = IpBlock{
+		Properties: IpBlockProperties{
+			Name:     "GO SDK Test",
+			Size:     2,
+		},
+	}
+
+	fail := ReserveIpBlock(obj)
+	if fail.StatusCode != want {
+		t.Errorf(bad_status(want, fail.StatusCode))
+	}
+	assert.Equal(t, fail.StatusCode, want)
+}
+
 func TestListIpBlocks(t *testing.T) {
 	want := 200
 	resp := ListIpBlocks()
@@ -54,6 +72,16 @@ func TestGetIpBlock(t *testing.T) {
 	assert.Equal(t, resp.Properties.Size, 2)
 	assert.Equal(t, resp.Properties.Location, location)
 	assert.Equal(t, len(resp.Properties.Ips), 2)
+}
+
+func TestGetIpBlockFailure(t *testing.T) {
+	want := 404
+	resp := GetIpBlock("00000000-0000-0000-0000-000000000000")
+	if resp.StatusCode != want {
+		fmt.Println(string(resp.Response))
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
 }
 
 func TestReleaseIpBlock(t *testing.T) {
