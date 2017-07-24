@@ -365,13 +365,13 @@ func ListResources() Resources {
 	return toResources(resp)
 }
 
-func GetResourceByType(resourcetype string, resourceid string) Resources {
+func GetResourceByType(resourcetype string, resourceid string) Resource {
 	path := um_resources_type_path(resourcetype, resourceid)
 	url := mk_url(path) + `?depth=` + Depth + `&pretty=` + strconv.FormatBool(Pretty)
 	req, _ := http.NewRequest("GET", url, nil)
 	req.Header.Add("Content-Type", FullHeader)
 	resp := do(req)
-	return toResources(resp)
+	return toResource(resp)
 }
 
 func ListResourcesByType(resourcetype string) Resources {
@@ -391,3 +391,13 @@ func toResources(resp Resp) Resources {
 	col.StatusCode = resp.StatusCode
 	return col
 }
+
+func toResource(resp Resp) Resource {
+	var col Resource
+	json.Unmarshal(resp.Body, &col)
+	col.Response = string(resp.Body)
+	col.Headers = &resp.Headers
+	col.StatusCode = resp.StatusCode
+	return col
+}
+
