@@ -14,6 +14,8 @@ var resourceId string
 var userid string
 var email string
 var ipblockId string
+var snapshotResourceId string
+var imageResourceId string
 var TRUE bool = true
 var FALSE bool = false
 
@@ -23,7 +25,9 @@ func setupTest() {
 	r1 := rand.New(s1)
 	email = "test" + strconv.Itoa(r1.Intn(1000)) + "@go.com"
 	resourceId = mkdcid("GO SDK TEST")
+	snapshotResourceId=mksnapshotId("GO SDK TEST",resourceId)
 	ipblockId = mkipid("GO SDK TEST")
+	imageResourceId=getImageId(location,"ubuntu","HDD")
 }
 
 func TestCreateUser(t *testing.T) {
@@ -367,6 +371,36 @@ func TestListDatacenterResources(t *testing.T) {
 	assert.True(t, len(resp.Items) > 0)
 }
 
+func TestListImagesResources(t *testing.T) {
+	want := 200
+	resp := ListResourcesByType("image")
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+	assert.True(t, len(resp.Items) > 0)
+}
+
+func TestListSnapshotResources(t *testing.T) {
+	want := 200
+	resp := ListResourcesByType("snapshot")
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+	assert.True(t, len(resp.Items) > 0)
+}
+
+func TestListResourceFailure(t *testing.T) {
+	want := 404
+	resp := ListResourcesByType("unknown")
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+	assert.Equal(t, resp.StatusCode, want)
+}
+
 func TestGetDatacenterResource(t *testing.T) {
 	want := 200
 	resp := GetResourceByType("datacenter", resourceId)
@@ -388,6 +422,40 @@ func TestGetIPBlockResource(t *testing.T) {
 
 	assert.Equal(t, resp.Id, ipblockId)
 	assert.Equal(t, resp.Type_, "ipblock")
+}
+
+func TestGetImageResource(t *testing.T) {
+	want := 200
+	resp := GetResourceByType("image", imageResourceId)
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+
+	assert.Equal(t, resp.Id, imageResourceId)
+	assert.Equal(t, resp.Type_, "image")
+}
+
+func TestGetSnapshotResource(t *testing.T) {
+	want := 200
+	resp := GetResourceByType("snapshot", snapshotResourceId)
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+
+	assert.Equal(t, resp.Id, snapshotResourceId)
+	assert.Equal(t, resp.Type_, "snapshot")
+}
+
+func TestGetResourceFailure(t *testing.T) {
+	want := 404
+	resp := GetResourceByType("snapshot", "00000000-0000-0000-0000-000000000000")
+
+	if resp.StatusCode != want {
+		t.Errorf(bad_status(want, resp.StatusCode))
+	}
+	assert.Equal(t, resp.StatusCode, want)
 }
 
 func TestDeleteUserFromGroup(t *testing.T) {
@@ -429,6 +497,11 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func CleanUpResources() {
-	DeleteDatacenter(resourceId)
+	dcDeleted:=DeleteDatacenter(resourceId)
+	waitTillProvisioned(dcDeleted.Headers.Get("Location"))
+
+	snapshotDeleted:=DeleteSnapshot(snapshotResourceId)
+	waitTillProvisioned(snapshotDeleted.Headers.Get("Location"))
+
 	ReleaseIpBlock(ipblockId)
 }

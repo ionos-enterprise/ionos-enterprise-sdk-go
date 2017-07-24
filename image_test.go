@@ -38,3 +38,12 @@ func TestGetImage(t *testing.T) {
 	assert.Equal(t, resp.Id, imgid)
 	assert.Equal(t, resp.Type, "image")
 }
+
+func TestGetImageFailure(t *testing.T) {
+	want := 404
+	resp := GetImage("00000000-0000-0000-0000-000000000000")
+
+	if resp.StatusCode != want {
+		fmt.Println(bad_status(want, resp.StatusCode))
+	}
+}

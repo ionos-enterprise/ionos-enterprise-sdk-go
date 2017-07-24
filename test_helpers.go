@@ -11,7 +11,7 @@ func mkVolume(dcID string) string {
 
 	var request = Volume{
 		Properties: VolumeProperties{
-			Size:          5,
+			Size:          2,
 			Name:          "Volume Test",
 			Type:          "HDD",
 			ImagePassword: "test1234",
