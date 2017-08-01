@@ -25,9 +25,9 @@ func setupTest() {
 	r1 := rand.New(s1)
 	email = "test" + strconv.Itoa(r1.Intn(1000)) + "@go.com"
 	resourceId = mkdcid("GO SDK TEST")
-	snapshotResourceId=mksnapshotId("GO SDK TEST",resourceId)
+	snapshotResourceId = mksnapshotId("GO SDK TEST", resourceId)
 	ipblockId = mkipid("GO SDK TEST")
-	imageResourceId=getImageId(location,"ubuntu","HDD")
+	imageResourceId = getImageId(location, "ubuntu", "HDD")
 }
 
 func TestCreateUser(t *testing.T) {
@@ -497,10 +497,10 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func CleanUpResources() {
-	dcDeleted:=DeleteDatacenter(resourceId)
+	dcDeleted := DeleteDatacenter(resourceId)
 	waitTillProvisioned(dcDeleted.Headers.Get("Location"))
 
-	snapshotDeleted:=DeleteSnapshot(snapshotResourceId)
+	snapshotDeleted := DeleteSnapshot(snapshotResourceId)
 	waitTillProvisioned(snapshotDeleted.Headers.Get("Location"))
 
 	ReleaseIpBlock(ipblockId)
