@@ -2,10 +2,10 @@
 package profitbricks
 
 import (
-	"github.com/stretchr/testify/assert"
-	"testing"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"strings"
+	"testing"
 )
 
 var ipblkid string
@@ -37,8 +37,8 @@ func TestReserveIpBlockFailure(t *testing.T) {
 	want := 422
 	var obj = IpBlock{
 		Properties: IpBlockProperties{
-			Name:     "GO SDK Test",
-			Size:     2,
+			Name: "GO SDK Test",
+			Size: 2,
 		},
 	}
 

@@ -20,8 +20,8 @@ func TestCreateLan(t *testing.T) {
 	setupTestEnv()
 	lan_dcid = mkdcid("GO SDK Test")
 	want := 202
-	var request = Lan{
-		Properties: LanProperties{
+	var request = CreateLanRequest{
+		Properties: CreateLanProperties{
 			Public: true,
 			Name:   "GO SDK Test",
 		},
@@ -40,8 +40,8 @@ func TestCreateLan(t *testing.T) {
 
 func TestCreateLanFailure(t *testing.T) {
 	want := 404
-	var request = Lan{
-		Properties: LanProperties{
+	var request = CreateLanRequest{
+		Properties: CreateLanProperties{
 			Public: true,
 		},
 	}
@@ -81,8 +81,8 @@ func TestCreateCompositeLan(t *testing.T) {
 	}
 
 	want := 202
-	var request = Lan{
-		Properties: LanProperties{
+	var request = CreateLanRequest{
+		Properties: CreateLanProperties{
 			Public: true,
 			Name:   "GO SDK Test with failover",
 		},
@@ -133,8 +133,8 @@ func TestPatchLan(t *testing.T) {
 	ip := reservedIp[0]
 	//pareparing to add the ipfailover feature
 	//creating a lan
-	var request = Lan{
-		Properties: LanProperties{
+	var request = CreateLanRequest{
+		Properties: CreateLanProperties{
 			Public: true,
 			Name:   "GO SDK Test with failover",
 		},
