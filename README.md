@@ -1,6 +1,6 @@
 # Go SDK
 
-Version: profitbricks-sdk-go **4.0.0**
+Version: profitbricks-sdk-go **4.0.2**
 
 The ProfitBricks Client Library for [Go](https://www.golang.org/) provides you with access to the ProfitBricks REST API. It is designed for developers who are building applications in Go.
 
