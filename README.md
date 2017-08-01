@@ -67,7 +67,6 @@ This guide will walk you through getting setup with the library and performing v
         * [List LANs](#list-lans)
         * [Create a LAN](#create-a-lan)
         * [Get a LAN](#get-a-lan)
-        * [Get LAN Members](#get-lan-members)
         * [Update a LAN](#update-a-lan)
         * [Delete a LAN](#delete-a-lan)
     * [Network Interfaces (NICs)](#network-interfaces-nics)
@@ -1198,8 +1197,8 @@ The following table describes the request arguments:
 
 Create the `LAN` resource object:
 
-    var request = Lan{
-		Properties: LanProperties{
+    var request = CreateLanRequest{
+		Properties: CreateLanProperties{
 			Public: true,
 			Name:   "GO SDK Test with failover",
 		},
