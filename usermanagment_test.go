@@ -26,7 +26,7 @@ func setupTest() {
 	email = "test" + strconv.Itoa(r1.Intn(1000)) + "@go.com"
 	resourceId = mkdcid("GO SDK TEST")
 	snapshotResourceId=mksnapshotId("GO SDK TEST",resourceId)
-	ipblockId = mkipid("GO SDK TEST")
+	ipblockId = mkipid()
 	imageResourceId=getImageId(location,"ubuntu","HDD")
 }
 

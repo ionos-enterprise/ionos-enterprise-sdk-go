@@ -24,7 +24,7 @@ func mkVolume(dcID string) string {
 	return resp.Id
 }
 
-func mkipid(name string) string {
+func mkipid() string {
 	var obj = IpBlock{
 		Properties: IpBlockProperties{
 			Name:     "GO SDK Test",
@@ -75,7 +75,6 @@ func mknic(lbal_dcid, serverid string) string {
 			Lan:            1,
 			Name:           "GO SDK Test",
 			Nat:            false,
-			Dhcp:           true,
 			FirewallActive: true,
 			Ips:            []string{"10.0.0.1"},
 		},
@@ -92,7 +91,6 @@ func mknic_custom(lbal_dcid, serverid string, lanid int, ips []string) string {
 			Lan:            lanid,
 			Name:           "GO SDK Test",
 			Nat:            false,
-			Dhcp:           true,
 			FirewallActive: true,
 			Ips:            ips,
 		},
