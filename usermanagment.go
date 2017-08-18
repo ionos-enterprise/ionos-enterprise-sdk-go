@@ -400,4 +400,3 @@ func toResource(resp Resp) Resource {
 	col.StatusCode = resp.StatusCode
 	return col
 }
-
