@@ -39,7 +39,7 @@ func TestCreateUser(t *testing.T) {
 			Lastname:      "Doe",
 			Email:         email,
 			Password:      "abc123-321CBA",
-			Administrator: true,
+			Administrator: false,
 			ForceSecAuth:  false,
 			SecAuthActive: false,
 		},
@@ -54,7 +54,7 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, resp.Properties.Firstname, "John")
 	assert.Equal(t, resp.Properties.Lastname, "Doe")
 	assert.Equal(t, resp.Properties.Email, email)
-	assert.Equal(t, resp.Properties.Administrator, true)
+	assert.Equal(t, resp.Properties.Administrator, false)
 }
 
 func TestCreateUserFailure(t *testing.T) {
@@ -100,7 +100,7 @@ func TestGetUser(t *testing.T) {
 	assert.Equal(t, resp.Properties.Firstname, "John")
 	assert.Equal(t, resp.Properties.Lastname, "Doe")
 	assert.Equal(t, resp.Properties.Email, email)
-	assert.Equal(t, resp.Properties.Administrator, true)
+	assert.Equal(t, resp.Properties.Administrator, false)
 	assert.Equal(t, resp.Type_, "user")
 }
 

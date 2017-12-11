@@ -167,7 +167,7 @@ func TestGetBalancedNic(t *testing.T) {
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
 	assert.Equal(t, resp.Properties.Lan, 2)
 	assert.Equal(t, resp.Properties.Nat, false)
-	assert.Equal(t, resp.Properties.Dhcp, true)
+	assert.Equal(t, *resp.Properties.Dhcp, true)
 	assert.Equal(t, resp.Properties.FirewallActive, true)
 }
 
