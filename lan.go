@@ -38,7 +38,7 @@ type Lan struct {
 type LanProperties struct {
 	Name       string       `json:"name,omitempty"`
 	Public     bool         `json:"public,omitempty"`
-	IpFailover []IpFailover `json:"ipFailover"`
+	IpFailover *[]IpFailover `json:"ipFailover,omitempty"`
 }
 
 type LanEntities struct {

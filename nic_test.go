@@ -88,7 +88,7 @@ func TestGetNic(t *testing.T) {
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
 	assert.Equal(t, resp.Properties.Lan, 1)
 	assert.Equal(t, resp.Properties.Nat, false)
-	assert.Equal(t, resp.Properties.Dhcp, true)
+	assert.Equal(t, *resp.Properties.Dhcp, true)
 	assert.Equal(t, resp.Properties.FirewallActive, true)
 	assert.Equal(t, resp.Properties.Ips, []string{"10.0.0.1"})
 }
