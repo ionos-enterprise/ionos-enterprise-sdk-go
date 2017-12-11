@@ -153,7 +153,7 @@ func TestPatchLan(t *testing.T) {
 	failover_nic := mknic_custom(lan_dcid, failover_server, failoverlanid, []string{ip})
 
 	obj := LanProperties{
-		IpFailover: []IpFailover{IpFailover{
+		IpFailover: &[]IpFailover{IpFailover{
 			Ip:      ip,
 			NicUuid: failover_nic,
 		}}}
@@ -166,7 +166,7 @@ func TestPatchLan(t *testing.T) {
 	assert.Equal(t, lan.Id, failoverLan.Id)
 	assert.Equal(t, lan.Type_, "lan")
 	assert.Equal(t, lan.Properties.Name, "GO SDK Test with failover")
-	assert.True(t, len(lan.Properties.IpFailover) > 0)
+	assert.True(t, len(*lan.Properties.IpFailover) > 0)
 }
 
 func TestDeleteLan(t *testing.T) {
