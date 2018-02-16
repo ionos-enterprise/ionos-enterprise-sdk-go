@@ -1,24 +1,25 @@
 package profitbricks
 
 import (
-	"bytes"
-	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 )
 
+//Datacenter represents Virtual Data Center
 type Datacenter struct {
-	Id         string               `json:"id,omitempty"`
-	Type_      string               `json:"type,omitempty"`
+	ID         string               `json:"id,omitempty"`
+	PBType     string               `json:"type,omitempty"`
 	Href       string               `json:"href,omitempty"`
 	Metadata   *Metadata            `json:"metadata,omitempty"`
 	Properties DatacenterProperties `json:"properties,omitempty"`
 	Entities   DatacenterEntities   `json:"entities,omitempty"`
 	Response   string               `json:"Response,omitempty"`
 	Headers    *http.Header         `json:"headers,omitempty"`
-	StatusCode int                  `json:"headers,omitempty"`
 }
 
+//Metadata represents metadata recieved from Cloud API
 type Metadata struct {
 	CreatedDate      time.Time `json:"createdDate,omitempty"`
 	CreatedBy        string    `json:"createdBy,omitempty"`
@@ -28,6 +29,7 @@ type Metadata struct {
 	State            string    `json:"state,omitempty"`
 }
 
+//DatacenterProperties represents Virtual Data Center properties
 type DatacenterProperties struct {
 	Name        string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
@@ -35,6 +37,7 @@ type DatacenterProperties struct {
 	Version     int32  `json:"version,omitempty"`
 }
 
+//DatacenterEntities represents Virtual Data Center entities
 type DatacenterEntities struct {
 	Servers       *Servers       `json:"servers,omitempty"`
 	Volumes       *Volumes       `json:"volumes,omitempty"`
@@ -42,80 +45,68 @@ type DatacenterEntities struct {
 	Lans          *Lans          `json:"lans,omitempty"`
 }
 
+//Datacenters is a list of Virtual Data Centers
 type Datacenters struct {
-	Id         string       `json:"id,omitempty"`
-	Type_      string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Items      []Datacenter `json:"items,omitempty"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"headers,omitempty"`
+	ID       string       `json:"id,omitempty"`
+	PBType   string       `json:"type,omitempty"`
+	Href     string       `json:"href,omitempty"`
+	Items    []Datacenter `json:"items,omitempty"`
+	Response string       `json:"Response,omitempty"`
+	Headers  *http.Header `json:"headers,omitempty"`
 }
 
-func ListDatacenters() Datacenters {
-	path := dc_col_path()
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	resp := do(req)
-	return toDataCenters(resp)
+//ListDatacenters lists all data centers
+func (c *Client) ListDatacenters() (*Datacenters, error) {
+	url := dcColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Datacenters{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func CreateDatacenter(dc Datacenter) Datacenter {
-	obj, _ := json.Marshal(dc)
-	path := dc_col_path()
-	url := mk_url(path)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))
-	req.Header.Add("Content-Type", FullHeader)
-
-	return toDataCenter(do(req))
+//CreateDatacenter creates a data center
+func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
+	url := dcColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Datacenter{}
+	err := c.client.Post(url, dc, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func CompositeCreateDatacenter(datacenter Datacenter) Datacenter {
-	obj, _ := json.Marshal(datacenter)
-	path := dc_col_path()
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))
-	req.Header.Add("Content-Type", FullHeader)
-	return toDataCenter(do(req))
+//GetDatacenter gets a datacenter
+func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
+	url := dcPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Datacenter{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func GetDatacenter(dcid string) Datacenter {
-	path := dc_path(dcid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toDataCenter(do(req))
+//UpdateDataCenter updates a data center
+func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datacenter, error) {
+	url := dcPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Datacenter{}
+	err := c.client.Patch(url, obj, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func PatchDatacenter(dcid string, obj DatacenterProperties) Datacenter {
-	jason_patch := []byte(MkJson(obj))
-	path := dc_path(dcid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("PATCH", url, bytes.NewBuffer(jason_patch))
-	req.Header.Add("Content-Type", PatchHeader)
-	return toDataCenter(do(req))
+//DeleteDatacenter deletes a data center
+func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
+	url := dcPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &http.Header{}
+	return ret, c.client.Delete(url, ret, http.StatusAccepted)
 }
 
-func DeleteDatacenter(dcid string) Resp {
-	path := dc_path(dcid)
-	return is_delete(path)
-}
-
-func toDataCenter(resp Resp) Datacenter {
-	var dc Datacenter
-	json.Unmarshal(resp.Body, &dc)
-	dc.Response = string(resp.Body)
-	dc.Headers = &resp.Headers
-	dc.StatusCode = resp.StatusCode
-	return dc
-}
-
-func toDataCenters(resp Resp) Datacenters {
-	var col Datacenters
-	json.Unmarshal(resp.Body, &col)
-	col.Response = string(resp.Body)
-	col.Headers = &resp.Headers
-	col.StatusCode = resp.StatusCode
-	return col
+//WaitTillProvisioned helper function
+func (c *Client) WaitTillProvisioned(path string) error {
+	waitCount := 300
+	for i := 0; i < waitCount; i++ {
+		request, err := c.GetRequestStatus(path)
+		if err != nil {
+			return err
+		}
+		if request.Metadata.Status == "DONE" {
+			return nil
+		}
+		time.Sleep(1 * time.Second)
+		i++
+	}
+	return fmt.Errorf("timeout expired while waiting for request to complete")
 }

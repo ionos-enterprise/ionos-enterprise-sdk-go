@@ -1,49 +1,42 @@
-// image_test.go
-
 package profitbricks
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var imgid string
-
 func TestListImages(t *testing.T) {
-	setupTestEnv()
-	want := 200
-	resp := ListImages()
+	fmt.Println("Image tests")
+	c := setupTestEnv()
+	resp, err := c.ListImages()
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-		t.Errorf(resp.Response)
+	if err != nil {
+		t.Error(err)
 	}
 
-	imgid = resp.Items[0].Id
+	image = &resp.Items[0]
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetImage(t *testing.T) {
-	want := 200
-	resp := GetImage(imgid)
+	c := setupTestEnv()
+	resp, err := c.GetImage(image.ID)
 
-	if resp.StatusCode != want {
-		if resp.StatusCode == 403 {
-			fmt.Println(bad_status(want, resp.StatusCode))
-			fmt.Println("This error might be due to user's permission level ")
-		}
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, imgid)
-	assert.Equal(t, resp.Type, "image")
+	assert.Equal(t, resp.ID, image.ID)
+	assert.Equal(t, resp.PBType, "image")
 }
 
 func TestGetImageFailure(t *testing.T) {
-	want := 404
-	resp := GetImage("00000000-0000-0000-0000-000000000000")
+	c := setupTestEnv()
+	_, err := c.GetImage("00000000-0000-0000-0000-000000000000")
 
-	if resp.StatusCode != want {
-		fmt.Println(bad_status(want, resp.StatusCode))
+	if err == nil {
+		t.Fail()
 	}
 }

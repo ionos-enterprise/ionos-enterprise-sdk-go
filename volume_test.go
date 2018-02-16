@@ -2,51 +2,33 @@ package profitbricks
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"strings"
+	"sync"
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var volumeId string
+var (
+	onceVolume         sync.Once
+	onceVolumeDC       sync.Once
+	onceVolumeSnapshot sync.Once
+	snapshotID         string
+)
 
 func TestCreateVolume(t *testing.T) {
-	setupTestEnv()
-	want := 202
-	var request = Volume{
-		Properties: VolumeProperties{
-			Size:             2,
-			Name:             "GO SDK Test",
-			ImageAlias:       "ubuntu:latest",
-			Bus:              "VIRTIO",
-			SshKeys:          []string{"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoLVLHON4BSK3D8L4H79aFo..."},
-			Type:             "HDD",
-			ImagePassword:    "test1234",
-			AvailabilityZone: "ZONE_3",
-		},
-	}
-
-	dcID = mkdcid("GO SDK VOLUME DC")
-	resp := CreateVolume(dcID, request)
-
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	volumeId = resp.Id
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.Equal(t, resp.Type_, "volume")
-	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
-	assert.Equal(t, resp.Properties.Size, 2)
-	assert.Equal(t, resp.Properties.Bus, "VIRTIO")
-	assert.Equal(t, resp.Properties.AvailabilityZone, "ZONE_3")
-	assert.Equal(t, resp.Properties.Type, "HDD")
-	assert.Equal(t, resp.Properties.SshKeys, []string{"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoLVLHON4BSK3D8L4H79aFo..."})
+	fmt.Println("Volume tests")
+	onceVolumeDC.Do(createDataCenter)
+	onceVolume.Do(createVolume)
+	assert.Equal(t, volume.PBType, "volume")
+	assert.Equal(t, volume.Properties.Name, "GO SDK Test")
+	assert.Equal(t, volume.Properties.Size, 2)
+	assert.Equal(t, volume.Properties.Type, "HDD")
+	assert.Equal(t, volume.Properties.LicenceType, "OTHER")
 }
 
 func TestCreateVolumeFail(t *testing.T) {
-	want := 422
+	c := setupTestEnv()
+	onceVolumeDC.Do(createDataCenter)
 	var request = Volume{
 		Properties: VolumeProperties{
 			Name:             "Volume Test",
@@ -57,104 +39,102 @@ func TestCreateVolumeFail(t *testing.T) {
 		},
 	}
 
-	resp := CreateVolume(dcID, request)
+	_, err := c.CreateVolume(dataCenter.ID, request)
 
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.True(t, strings.Contains(resp.Response, "Attribute 'size' is required"))
+	assert.NotNil(t, err)
 }
 
 func TestListVolumes(t *testing.T) {
-	want := 200
-	resp := ListVolumes(dcID)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceVolumeDC.Do(createDataCenter)
+	onceVolume.Do(createVolume)
+	resp, err := c.ListVolumes(dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
+
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetVolume(t *testing.T) {
-	want := 200
+	c := setupTestEnv()
+	onceVolumeDC.Do(createDataCenter)
+	onceVolume.Do(createVolume)
 
-	time.Sleep(5000)
-	resp := GetVolume(dcID, volumeId)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.GetVolume(dataCenter.ID, volume.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, volumeId)
-	assert.Equal(t, resp.Type_, "volume")
+	assert.Equal(t, resp.PBType, "volume")
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
 	assert.Equal(t, resp.Properties.Size, 2)
-	//assert.Equal(t, resp.Properties.Bus, "VIRTIO")
-	assert.Equal(t, resp.Properties.AvailabilityZone, "ZONE_3")
 	assert.Equal(t, resp.Properties.Type, "HDD")
+	assert.Equal(t, resp.Properties.LicenceType, "OTHER")
 }
 
 func TestGetVolumeFailure(t *testing.T) {
-	want := 404
+	c := setupTestEnv()
+	onceVolumeDC.Do(createDataCenter)
+	onceVolume.Do(createVolume)
+	_, err := c.GetVolume(dataCenter.ID, "00000000-0000-0000-0000-000000000000")
 
-	resp := GetVolume(dcID, "00000000-0000-0000-0000-000000000000")
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
+	assert.NotNil(t, err)
 }
 
-func TestPatchVolume(t *testing.T) {
-	want := 202
+func TestUpdateVolume(t *testing.T) {
+	c := setupTestEnv()
+	onceVolumeDC.Do(createDataCenter)
+	onceVolume.Do(createVolume)
+	newName := "GO SDK Test - RENAME"
 	obj := VolumeProperties{
-		Name: "GO SDK Test - RENAME",
+		Name: newName,
 		Size: 5,
 	}
 
-	resp := PatchVolume(dcID, volumeId, obj)
-
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.UpdateVolume(dataCenter.ID, volume.ID, obj)
+	if err != nil {
+		t.Error(err)
 	}
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	assert.Equal(t, resp.Id, volumeId)
+
+	err = c.WaitTillProvisioned(resp.Headers.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
+	assert.Equal(t, resp.ID, volume.ID)
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test - RENAME")
 	assert.Equal(t, resp.Properties.Size, 5)
 }
 
 func TestCreateSnapshot(t *testing.T) {
-	want := 202
+	onceVolumeDC.Do(createDataCenter)
+	onceVolume.Do(createVolume)
+	onceVolumeSnapshot.Do(createSnapshot)
 
-	resp := CreateSnapshot(dcID, volumeId, snapshotname, snapshotdescription)
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-	time.Sleep(30 * time.Second)
-	snapshotId = resp.Id
-
-	assert.Equal(t, resp.Properties.Name, snapshotname)
-	assert.Equal(t, resp.Type_, "snapshot")
+	assert.Equal(t, snapshot.Properties.Name, snapshotname)
+	assert.Equal(t, snapshot.PBType, "snapshot")
 }
 
 func TestRestoreSnapshot(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceVolumeDC.Do(createDataCenter)
+	onceVolume.Do(createVolume)
+	onceVolumeSnapshot.Do(createSnapshot)
 
-	resp := RestoreSnapshot(dcID, volumeId, snapshotId)
+	resp, err := c.RestoreSnapshot(dataCenter.ID, volume.ID, snapshot.ID)
+	if err != nil {
+		t.Error(err)
+	}
 
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Body))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
 	}
 }
 
 func TestCleanup(t *testing.T) {
-	DeleteSnapshot(snapshotId)
-	DeleteVolume(dcID, volumeId)
-	DeleteDatacenter(dcID)
+	c := setupTestEnv()
+	c.DeleteSnapshot(snapshot.ID)
+	c.DeleteVolume(dataCenter.ID, volume.ID)
+	c.DeleteDatacenter(dataCenter.ID)
 }

@@ -2,92 +2,54 @@ package profitbricks
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var fwId string
-
-func setup() {
-	datacenter := Datacenter{
-		Properties: DatacenterProperties{
-			Name:     "composite test",
-			Location: location,
-		},
-		Entities: DatacenterEntities{
-			Servers: &Servers{
-				Items: []Server{
-					Server{
-						Properties: ServerProperties{
-							Name:  "server1",
-							Ram:   2048,
-							Cores: 1,
-						},
-						Entities: &ServerEntities{
-							Nics: &Nics{
-								Items: []Nic{
-									Nic{
-										Properties: &NicProperties{
-											Name: "SSH",
-											Lan:  1,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
-
-	datacenter = CompositeCreateDatacenter(datacenter)
-	waitTillProvisioned(datacenter.Headers.Get("Location"))
-
-	dcID = datacenter.Id
-	srv_srvid = datacenter.Entities.Servers.Items[0].Id
-	nicid = datacenter.Entities.Servers.Items[0].Entities.Nics.Items[0].Id
-}
 func TestCreateFirewallRule(t *testing.T) {
-	setupTestEnv()
-	want := 202
-	setup()
-
-	fw := FirewallRule{
+	fmt.Println("FirewallRule tests")
+	c := setupTestEnv()
+	onceDC.Do(createDataCenter)
+	onceFw.Do(createCompositeServerFW)
+	sm := "01:23:45:67:89:11"
+	start := 23
+	end := 23
+	fw := &FirewallRule{
 		Properties: FirewallruleProperties{
 			Name:           "SSH",
 			Protocol:       "TCP",
-			SourceMac:      &sourceMac,
-			PortRangeStart: &portRangeStart,
-			PortRangeEnd:   &portRangeEnd,
+			SourceMac:      &sm,
+			PortRangeStart: &start,
+			PortRangeEnd:   &end,
 		},
 	}
 
-	fw = CreateFirewallRule(dcID, srv_srvid, nicid, fw)
-
-	waitTillProvisioned(fw.Headers.Get("Location"))
-
-	if fw.StatusCode != want {
-		t.Error(fw.Response)
-		t.Errorf(bad_status(want, fw.StatusCode))
+	fw, err := c.CreateFirewallRule(dataCenter.ID, server.ID, nic.ID, *fw)
+	if err != nil {
+		t.Error(err)
 	}
-	fwId = fw.Id
+
+	err = c.WaitTillProvisioned(fw.Headers.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
 
 	assert.Equal(t, fw.Properties.Name, "SSH")
 	assert.Equal(t, fw.Properties.Protocol, "TCP")
-	assert.Equal(t, *fw.Properties.SourceMac, sourceMac)
-	assert.Equal(t, *fw.Properties.PortRangeStart, portRangeStart)
-	assert.Equal(t, *fw.Properties.PortRangeEnd, portRangeEnd)
-	assert.Nil(t, fw.Properties.SourceIp)
+	assert.Equal(t, *fw.Properties.SourceMac, sm)
+	assert.Equal(t, *fw.Properties.PortRangeStart, start)
+	assert.Equal(t, *fw.Properties.PortRangeEnd, end)
+	assert.Nil(t, fw.Properties.SourceIP)
 	assert.Nil(t, fw.Properties.IcmpCode)
 	assert.Nil(t, fw.Properties.IcmpType)
 
 }
 
 func TestCreateFirewallRuleFailure(t *testing.T) {
-	want := 422
-
+	c := setupTestEnv()
+	onceDC.Do(createDataCenter)
+	onceFw.Do(createCompositeServerFW)
 	fw := FirewallRule{
 		Properties: FirewallruleProperties{
 			Name:           "SSH",
@@ -97,82 +59,83 @@ func TestCreateFirewallRuleFailure(t *testing.T) {
 		},
 	}
 
-	fw = CreateFirewallRule(dcID, srv_srvid, nicid, fw)
+	_, err := c.CreateFirewallRule(dataCenter.ID, server.ID, nic.ID, fw)
 
-	if fw.StatusCode != want {
-		fmt.Println(string(fw.Response))
-		t.Errorf(bad_status(want, fw.StatusCode))
-	}
-
-	assert.True(t, strings.Contains(fw.Response, "Attribute 'protocol' is required"))
+	assert.NotNil(t, err)
 }
 
 func TestGetFirewallRule(t *testing.T) {
-	want := 200
+	c := setupTestEnv()
+	onceDC.Do(createDataCenter)
+	onceFw.Do(createCompositeServerFW)
 
-	fw := GetFirewallRule(dcID, srv_srvid, nicid, fwId)
-	if fw.StatusCode != want {
-		t.Error(fw.Response)
-		t.Errorf(bad_status(want, fw.StatusCode))
+	resp, err := c.GetFirewallRule(dataCenter.ID, server.ID, nic.ID, fw.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, fw.Id, fwId)
-	assert.Equal(t, fw.Properties.Name, "SSH")
-	assert.Equal(t, fw.Properties.Protocol, "TCP")
-	assert.Equal(t, *fw.Properties.SourceMac, sourceMac)
-	assert.Equal(t, *fw.Properties.PortRangeStart, portRangeStart)
-	assert.Equal(t, *fw.Properties.PortRangeEnd, portRangeEnd)
-	assert.Nil(t, fw.Properties.SourceIp)
-	assert.Nil(t, fw.Properties.IcmpCode)
-	assert.Nil(t, fw.Properties.IcmpType)
+	assert.Equal(t, resp.ID, fw.ID)
+	assert.Equal(t, resp.Properties.Name, "SSH")
+	assert.Equal(t, resp.Properties.Protocol, "TCP")
+	assert.Equal(t, *resp.Properties.SourceMac, sourceMac)
+	assert.Equal(t, *resp.Properties.PortRangeStart, portRangeStart)
+	assert.Equal(t, *resp.Properties.PortRangeEnd, portRangeEnd)
+	assert.Nil(t, resp.Properties.SourceIP)
+	assert.Nil(t, resp.Properties.IcmpCode)
+	assert.Nil(t, resp.Properties.IcmpType)
 }
 
 func TestGetFirewallRuleFailure(t *testing.T) {
-	want := 404
+	c := setupTestEnv()
 
-	fw := GetFirewallRule(dcID, srv_srvid, nicid, "00000000-0000-0000-0000-000000000000")
-	if fw.StatusCode != want {
-		t.Errorf(bad_status(want, fw.StatusCode))
-	}
+	_, err := c.GetFirewallRule("00000000-0000-0000-0000-000000000000", "00000000-0000-0000-0000-000000000000", "00000000-0000-0000-0000-000000000000", "00000000-0000-0000-0000-000000000000")
 
-	assert.True(t, strings.Contains(fw.Response, "Resource does not exist"))
+	assert.NotNil(t, err)
 }
 
 func TestListFirewallRules(t *testing.T) {
-	want := 200
-	fws := ListFirewallRules(dcID, srv_srvid, nicid)
-	if fws.StatusCode != want {
-		t.Error(fws.Response)
-		t.Errorf(bad_status(want, fws.StatusCode))
+	c := setupTestEnv()
+	onceDC.Do(createDataCenter)
+	onceFw.Do(createCompositeServerFW)
+	fws, err := c.ListFirewallRules(dataCenter.ID, server.ID, nic.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(fws.Items) > 0)
 }
 
-func TestPatchFirewallRule(t *testing.T) {
-	want := 202
+func TestUpdateFirewallRule(t *testing.T) {
+	c := setupTestEnv()
+	onceDC.Do(createDataCenter)
+	onceFw.Do(createCompositeServerFW)
+
 	props := FirewallruleProperties{
 		Name: "SSH - RENAME",
 	}
-	fw := PatchFirewallRule(dcID, srv_srvid, nicid, fwId, props)
-	if fw.StatusCode != want {
-		t.Error(fw.Response)
-		t.Errorf(bad_status(want, fw.StatusCode))
+	resp, err := c.UpdateFirewallRule(dataCenter.ID, server.ID, nic.ID, fw.ID, props)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, fw.Id, fwId)
-	assert.Equal(t, fw.Properties.Name, "SSH - RENAME")
-	assert.Equal(t, fw.Type_, "firewall-rule")
+	assert.Equal(t, resp.ID, fw.ID)
+	assert.Equal(t, resp.Properties.Name, "SSH - RENAME")
 }
 
 func TestDeleteFirewallRule(t *testing.T) {
-	want := 202
-	resp := DeleteFirewallRule(dcID, srv_srvid, nicid, fwId)
+	c := setupTestEnv()
+	onceDC.Do(createDataCenter)
+	onceFw.Do(createCompositeServerFW)
 
-	if resp.StatusCode != want {
-		t.Error(string(resp.Body))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.DeleteFirewallRule(dataCenter.ID, server.ID, nic.ID, fw.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	DeleteDatacenter(dcID)
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
+
+	c.DeleteDatacenter(dataCenter.ID)
 }

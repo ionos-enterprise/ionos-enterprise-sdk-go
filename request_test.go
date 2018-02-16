@@ -1,47 +1,41 @@
 package profitbricks
 
 import (
-	"github.com/stretchr/testify/assert"
-	"strings"
+	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var reqId Request
+var reqID Request
 
 func TestListRequests(t *testing.T) {
-	setupTestEnv()
-	want := 200
-	resp := ListRequests()
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	fmt.Println("Request tests")
+	c := setupTestEnv()
+	resp, err := c.ListRequests()
+	if err != nil {
+		t.Error(err)
 	}
 
-	reqId = resp.Items[0]
-	req := GetRequest(reqId.ID)
-	if req.StatusCode != want {
-		t.Errorf(bad_status(want, req.StatusCode))
-	}
 	assert.True(t, len(resp.Items) > 0)
+	reqID = resp.Items[0]
 }
 
 func TestGetRequestStatus(t *testing.T) {
-	want := 200
-	id := reqId.Href + "/status"
-	resp := GetRequestStatus(id)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	path := reqID.Href + "/status"
+	resp, err := c.GetRequestStatus(path)
+	if err != nil {
+		t.Error(err)
 	}
-	assert.Equal(t, resp.Type_, "request-status")
-	assert.Equal(t, resp.Href, id)
+
+	assert.Equal(t, resp.PBType, "request-status")
+	assert.Equal(t, resp.Href, path)
 }
 
 func TestGetRequestFailure(t *testing.T) {
-	want := 404
-	req := GetRequest("00000000-0000-0000-0000-000000000000")
-	if req.StatusCode != want {
-		t.Errorf(bad_status(want, req.StatusCode))
-	}
+	c := setupTestEnv()
+	_, err := c.GetRequest("00000000-0000-0000-0000-000000000000")
 
-	assert.True(t, strings.Contains(req.Response, "Resource does not exist"))
+	assert.NotNil(t, err)
 }

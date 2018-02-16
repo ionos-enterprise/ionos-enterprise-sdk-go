@@ -1,21 +1,22 @@
 package profitbricks
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 )
 
+//ContractResources object
 type ContractResources struct {
-	Id         string                      `json:"id,omitempty"`
-	Type_      string                      `json:"type,omitempty"`
+	ID         string                      `json:"id,omitempty"`
+	PBType     string                      `json:"type,omitempty"`
 	Href       string                      `json:"href,omitempty"`
 	Properties ContractResourcesProperties `json:"properties,omitempty"`
 	Response   string                      `json:"Response,omitempty"`
 	Headers    *http.Header                `json:"headers,omitempty"`
-	StatusCode int                         `json:"headers,omitempty"`
+	StatusCode int                         `json:"statuscode,omitempty"`
 }
 
+//ContractResourcesProperties object
 type ContractResourcesProperties struct {
 	PBContractNumber string           `json:"PB-Contract-Number,omitempty"`
 	Owner            string           `json:"owner,omitempty"`
@@ -23,13 +24,14 @@ type ContractResourcesProperties struct {
 	ResourceLimits   *ResourcesLimits `json:"resourceLimits,omitempty"`
 }
 
+//ResourcesLimits object
 type ResourcesLimits struct {
 	CoresPerServer        int32 `json:"coresPerServer,omitempty"`
 	CoresPerContract      int32 `json:"coresPerContract,omitempty"`
 	CoresProvisioned      int32 `json:"coresProvisioned,omitempty"`
-	RamPerServer          int32 `json:"ramPerServer,omitempty"`
-	RamPerContract        int32 `json:"ramPerContract,omitempty"`
-	RamProvisioned        int32 `json:"ramProvisioned,omitempty"`
+	RAMPerServer          int32 `json:"ramPerServer,omitempty"`
+	RAMPerContract        int32 `json:"ramPerContract,omitempty"`
+	RAMProvisioned        int32 `json:"ramProvisioned,omitempty"`
 	HddLimitPerVolume     int64 `json:"hddLimitPerVolume,omitempty"`
 	HddLimitPerContract   int64 `json:"hddLimitPerContract,omitempty"`
 	HddVolumeProvisioned  int64 `json:"hddVolumeProvisioned,omitempty"`
@@ -41,20 +43,11 @@ type ResourcesLimits struct {
 	ReservedIpsInUse      int32 `json:"reservedIpsInUse,omitempty"`
 }
 
-func GetContractResources() ContractResources {
-	path := contract_resource_path()
-	url := mk_url(path) + `?depth=` + Depth + `&pretty=` + strconv.FormatBool(Pretty)
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	resp := do(req)
-	return toContractResources(resp)
-}
+// GetContractResources returns list of contract resources
+func (c *Client) GetContractResources() (*ContractResources, error) {
+	url := contractResourcePath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &ContractResources{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 
-func toContractResources(resp Resp) ContractResources {
-	var col ContractResources
-	json.Unmarshal(resp.Body, &col)
-	col.Response = string(resp.Body)
-	col.Headers = &resp.Headers
-	col.StatusCode = resp.StatusCode
-	return col
 }

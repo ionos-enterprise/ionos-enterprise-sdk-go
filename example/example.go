@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"os"
 
 	"github.com/profitbricks/profitbricks-sdk-go"
 )
@@ -10,28 +10,41 @@ import (
 func main() {
 
 	//Sets username and password
-	profitbricks.SetAuth("username", "password")
-	//Sets depth.
-	profitbricks.SetDepth("5")
+	client := profitbricks.NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 
 	dcrequest := profitbricks.Datacenter{
 		Properties: profitbricks.DatacenterProperties{
-			Name:        "example.go3",
+			Name:        "Eexample",
 			Description: "description",
-			Location:    "us/lasdev",
+			Location:    "us/las",
 		},
 	}
 
-	datacenter := profitbricks.CreateDatacenter(dcrequest)
+	datacenter, err := client.CreateDatacenter(dcrequest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
 	serverrequest := profitbricks.Server{
 		Properties: profitbricks.ServerProperties{
 			Name:  "go01",
-			Ram:   1024,
+			RAM:   1024,
 			Cores: 2,
 		},
 	}
-	server := profitbricks.CreateServer(datacenter.Id, serverrequest)
+
+	server, err := client.CreateServer(datacenter.ID, serverrequest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	err = client.WaitTillProvisioned(server.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
 	volumerequest := profitbricks.Volume{
 		Properties: profitbricks.VolumeProperties{
@@ -42,27 +55,70 @@ func main() {
 		},
 	}
 
-	storage := profitbricks.CreateVolume(datacenter.Id, volumerequest)
+	volume, err := client.CreateVolume(datacenter.ID, volumerequest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	err = client.WaitTillProvisioned(volume.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
 	serverupdaterequest := profitbricks.ServerProperties{
 		Name:  "go01renamed",
 		Cores: 1,
-		Ram:   256,
+		RAM:   256,
 	}
 
-	profitbricks.PatchServer(datacenter.Id, server.Id, serverupdaterequest)
-	//It takes a moment for a volume to be provisioned so we wait.
-	time.Sleep(60 * time.Second)
+	server, err = client.UpdateServer(datacenter.ID, server.ID, serverupdaterequest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
-	profitbricks.AttachVolume(datacenter.Id, server.Id, storage.Id)
+	err = client.WaitTillProvisioned(server.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
-	volumes := profitbricks.ListVolumes(datacenter.Id)
+	volume, err = client.AttachVolume(datacenter.ID, server.ID, volume.ID)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	err = client.WaitTillProvisioned(volume.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	volumes, err := client.ListVolumes(datacenter.ID)
 	fmt.Println(volumes.Items)
-	servers := profitbricks.ListServers(datacenter.Id)
+	servers, err := client.ListServers(datacenter.ID)
 	fmt.Println(servers.Items)
-	datacenters := profitbricks.ListDatacenters()
+	datacenters, err := client.ListDatacenters()
 	fmt.Println(datacenters.Items)
 
-	profitbricks.DeleteServer(datacenter.Id, server.Id)
-	profitbricks.DeleteDatacenter(datacenter.Id)
+	resp, err := client.DeleteServer(datacenter.ID, server.ID)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	err = client.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	_, err = client.DeleteDatacenter(datacenter.ID)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 }

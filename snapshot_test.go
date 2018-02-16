@@ -2,81 +2,52 @@ package profitbricks
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"strings"
+	"sync"
 	"testing"
-	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var snapshotId string
-var volume Volume
-
-var snapshotname string = "GO SDK TEST"
-var snapshotdescription string = "GO SDK test snapshot"
-
-func createVolume() {
-	setupTestEnv()
-	want := 202
-	var request = Volume{
-		Properties: VolumeProperties{
-			Size:          2,
-			Name:          "Volume Test",
-			Image:         image,
-			Type:          "HDD",
-			ImagePassword: "test1234",
-		},
-	}
-
-	dcID = mkdcid("GO SDK snapshot DC")
-	resp := CreateVolume(dcID, request)
-
-	volume = resp
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	volumeId = resp.Id
-
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-	}
-}
+var (
+	onceSnapshotVolume sync.Once
+	onceSnapshotDC     sync.Once
+	onceSnapshot       sync.Once
+)
 
 func TestCreateSnapshots(t *testing.T) {
-	want := 202
-	createVolume()
-	time.Sleep(120 * time.Second)
-	resp := CreateSnapshot(dcID, volumeId, snapshotname, snapshotdescription)
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-	}
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	snapshotId = resp.Id
+	fmt.Println("Snapshot test")
+	onceSnapshotDC.Do(createDataCenter)
+	onceSnapshotVolume.Do(createVolume)
+	onceSnapshot.Do(createSnapshot)
 
-	assert.Equal(t, resp.Type_, "snapshot")
-	assert.Equal(t, resp.Properties.Name, snapshotname)
-	assert.Equal(t, resp.Properties.Description, snapshotdescription)
+	assert.Equal(t, snapshot.PBType, "snapshot")
+	assert.Equal(t, snapshot.Properties.Name, snapshotname)
+	assert.Equal(t, snapshot.Properties.Description, snapshotdescription)
 }
 
 func TestCreateSnapshotFailure(t *testing.T) {
-	want := 404
-	resp := CreateSnapshot("00000000-0000-0000-0000-000000000000", volumeId, "fail", snapshotdescription)
-	assert.Equal(t, resp.StatusCode, want)
+	c := setupTestEnv()
+	_, err := c.CreateSnapshot("00000000-0000-0000-0000-000000000000", "volumeId", "fail", snapshotdescription)
+	assert.NotNil(t, err)
 }
 
 func TestGetSnapshot(t *testing.T) {
-	want := 200
+	c := setupTestEnv()
+	onceSnapshotDC.Do(createDataCenter)
+	onceSnapshotVolume.Do(createVolume)
+	onceSnapshot.Do(createSnapshot)
 
-	resp := GetSnapshot(snapshotId)
-	volume = GetVolume(dcID, volumeId)
+	resp, err := c.GetSnapshot(snapshot.ID)
 
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	if err != nil {
+		t.Error(err)
 	}
-	assert.Equal(t, resp.Id, snapshotId)
+	assert.Equal(t, resp.ID, snapshot.ID)
 	assert.Equal(t, resp.Properties.Size, volume.Properties.Size)
-	assert.Equal(t, resp.Properties.CpuHotPlug, volume.Properties.CpuHotPlug)
-	assert.Equal(t, resp.Properties.CpuHotUnplug, volume.Properties.CpuHotUnplug)
-	assert.Equal(t, resp.Properties.RamHotPlug, volume.Properties.RamHotPlug)
-	assert.Equal(t, resp.Properties.RamHotUnplug, volume.Properties.RamHotUnplug)
+	assert.Equal(t, resp.Properties.CPUHotPlug, volume.Properties.CPUHotPlug)
+	assert.Equal(t, resp.Properties.CPUHotUnplug, volume.Properties.CPUHotUnplug)
+	assert.Equal(t, resp.Properties.RAMHotPlug, volume.Properties.RAMHotPlug)
+	assert.Equal(t, resp.Properties.RAMHotUnplug, volume.Properties.RAMHotUnplug)
 	assert.Equal(t, resp.Properties.NicHotPlug, volume.Properties.NicHotPlug)
 	assert.Equal(t, resp.Properties.NicHotUnplug, volume.Properties.NicHotUnplug)
 	assert.Equal(t, resp.Properties.DiscScsiHotPlug, volume.Properties.DiscScsiHotPlug)
@@ -87,60 +58,62 @@ func TestGetSnapshot(t *testing.T) {
 }
 
 func TestGetSnapshotFailure(t *testing.T) {
-	want := 404
+	c := setupTestEnv()
 
-	resp := GetSnapshot("00000000-0000-0000-0000-000000000000")
+	_, err := c.GetSnapshot("00000000-0000-0000-0000-000000000000")
 
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
+	assert.NotNil(t, err)
 }
 
 func TestListSnapshot(t *testing.T) {
-	want := 200
+	c := setupTestEnv()
 
-	resp := ListSnapshots()
-
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.ListSnapshots()
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestUpdateSnapshot(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceSnapshotDC.Do(createDataCenter)
+	onceSnapshotVolume.Do(createVolume)
+	onceSnapshot.Do(createSnapshot)
+
 	newValue := "GO SDK Test - RENAME"
-	resp := UpdateSnapshot(snapshotId, SnapshotProperties{Name: newValue})
-
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.UpdateSnapshot(snapshot.ID, SnapshotProperties{Name: newValue})
+	if err != nil {
+		t.Error(err)
 	}
 
-	if newValue != resp.Properties.Name {
-		t.Errorf("Snapshot wasn't updated.")
+	err = c.WaitTillProvisioned(resp.Headers.Get("Location"))
+	if err != nil {
+		t.Error(err)
 	}
+
+	assert.Equal(t, newValue, resp.Properties.Name)
 }
 
 func TestDeleteSnapshot(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceSnapshotDC.Do(createDataCenter)
+	onceSnapshotVolume.Do(createVolume)
+	onceSnapshot.Do(createSnapshot)
 
-	time.Sleep(120 * time.Second)
-	resp := DeleteSnapshot(snapshotId)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.DeleteSnapshot(snapshot.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	waitTillProvisioned(resp.Headers.Get("Location"))
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
 
-	respDc := DeleteDatacenter(dcID)
-
-	if respDc.StatusCode != want {
-		t.Errorf(bad_status(want, respDc.StatusCode))
+	_, err = c.DeleteDatacenter(dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 }
