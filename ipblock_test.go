@@ -1,93 +1,92 @@
-// ipblock_test.go
 package profitbricks
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var ipblkid string
 
 func TestReserveIpBlock(t *testing.T) {
-	setupTestEnv()
-	want := 202
-	var obj = IpBlock{
-		Properties: IpBlockProperties{
+	fmt.Println("IP block tests")
+	c := setupTestEnv()
+	var obj = IPBlock{
+		Properties: IPBlockProperties{
 			Name:     "GO SDK Test",
-			Size:     2,
+			Size:     1,
 			Location: location,
 		},
 	}
 
-	resp := ReserveIpBlock(obj)
-	ipblkid = resp.Id
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.ReserveIPBlock(obj)
+	ipblkid = resp.ID
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
-	assert.Equal(t, resp.Properties.Size, 2)
+	assert.Equal(t, resp.Properties.Size, 1)
 	assert.Equal(t, resp.Properties.Location, location)
 
 }
 
 func TestReserveIpBlockFailure(t *testing.T) {
-	want := 422
-	var obj = IpBlock{
-		Properties: IpBlockProperties{
+	c := setupTestEnv()
+	var obj = IPBlock{
+		Properties: IPBlockProperties{
 			Name: "GO SDK Test",
 			Size: 2,
 		},
 	}
 
-	fail := ReserveIpBlock(obj)
-	if fail.StatusCode != want {
-		t.Errorf(bad_status(want, fail.StatusCode))
+	_, err := c.ReserveIPBlock(obj)
+	if err == nil {
+		t.Errorf("reserve IP block did not fail.")
 	}
-	assert.Equal(t, fail.StatusCode, want)
+	assert.True(t, strings.Contains(err.Error(), "422"))
 }
 
 func TestListIpBlocks(t *testing.T) {
-	want := 200
-	resp := ListIpBlocks()
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	resp, err := c.ListIPBlocks()
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetIpBlock(t *testing.T) {
-	want := 200
-	resp := GetIpBlock(ipblkid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	resp, err := c.GetIPBlock(ipblkid)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, ipblkid)
-	assert.Equal(t, resp.Type_, "ipblock")
+	assert.Equal(t, resp.ID, ipblkid)
+	assert.Equal(t, resp.PBType, "ipblock")
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
-	assert.Equal(t, resp.Properties.Size, 2)
+	assert.Equal(t, resp.Properties.Size, 1)
 	assert.Equal(t, resp.Properties.Location, location)
-	assert.Equal(t, len(resp.Properties.Ips), 2)
+	assert.Equal(t, len(resp.Properties.IPs), 1)
 }
 
 func TestGetIpBlockFailure(t *testing.T) {
-	want := 404
-	resp := GetIpBlock("00000000-0000-0000-0000-000000000000")
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	_, err := c.GetIPBlock("00000000-0000-0000-0000-000000000000")
+	if err == nil {
+		t.Errorf("get ip block did not fail")
 	}
-	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
+	assert.True(t, strings.Contains(err.Error(), "404"))
 }
 
 func TestReleaseIpBlock(t *testing.T) {
-	want := 202
-	resp := ReleaseIpBlock(ipblkid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	_, err := c.ReleaseIPBlock(ipblkid)
+	if err != nil {
+		t.Error(err)
 	}
 }

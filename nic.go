@@ -1,111 +1,91 @@
 package profitbricks
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
+//Nic object
 type Nic struct {
-	Id         string         `json:"id,omitempty"`
-	Type_      string         `json:"type,omitempty"`
+	ID         string         `json:"id,omitempty"`
+	PBType     string         `json:"type,omitempty"`
 	Href       string         `json:"href,omitempty"`
 	Metadata   *Metadata      `json:"metadata,omitempty"`
 	Properties *NicProperties `json:"properties,omitempty"`
 	Entities   *NicEntities   `json:"entities,omitempty"`
 	Response   string         `json:"Response,omitempty"`
 	Headers    *http.Header   `json:"headers,omitempty"`
-	StatusCode int            `json:"headers,omitempty"`
+	StatusCode int            `json:"statuscode,omitempty"`
 }
 
+//NicProperties object
 type NicProperties struct {
 	Name           string   `json:"name,omitempty"`
 	Mac            string   `json:"mac,omitempty"`
 	Ips            []string `json:"ips,omitempty"`
-	Dhcp           *bool     `json:"dhcp,omitempty"`
+	Dhcp           *bool    `json:"dhcp,omitempty"`
 	Lan            int      `json:"lan,omitempty"`
 	FirewallActive bool     `json:"firewallActive,omitempty"`
 	Nat            bool     `json:"nat,omitempty"`
 }
 
+//NicEntities object
 type NicEntities struct {
-	Firewallrules *FirewallRules `json:"firewallrules,omitempty"`
+	FirewallRules *FirewallRules `json:"firewallrules,omitempty"`
 }
 
+//Nics object
 type Nics struct {
-	Id         string       `json:"id,omitempty"`
-	Type_      string       `json:"type,omitempty"`
+	ID         string       `json:"id,omitempty"`
+	PBType     string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
 	Items      []Nic        `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"headers,omitempty"`
-}
-
-type NicCreateRequest struct {
-	NicProperties `json:"properties"`
+	StatusCode int          `json:"statuscode,omitempty"`
 }
 
 // ListNics returns a Nics struct collection
-func ListNics(dcid, srvid string) Nics {
-	path := nic_col_path(dcid, srvid) + `?depth=` + Depth
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toNics(do(req))
+func (c *Client) ListNics(dcid, srvid string) (*Nics, error) {
+	url := nicColPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Nics{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
 // CreateNic creates a nic on a server
-// from a jason []byte and returns a Instance struct
-func CreateNic(dcid string, srvid string, nic Nic) Nic {
-	obj, _ := json.Marshal(nic)
-	path := nic_col_path(dcid, srvid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))
-	req.Header.Add("Content-Type", FullHeader)
-	return toNic(do(req))
+func (c *Client) CreateNic(dcid string, srvid string, nic Nic) (*Nic, error) {
+
+	url := nicColPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Nic{}
+	err := c.client.Post(url, nic, ret, http.StatusAccepted)
+
+	return ret, err
 }
 
 // GetNic pulls data for the nic where id = srvid returns a Instance struct
-func GetNic(dcid, srvid, nicid string) Nic {
-	path := nic_path(dcid, srvid, nicid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toNic(do(req))
+func (c *Client) GetNic(dcid, srvid, nicid string) (*Nic, error) {
+
+	url := nicPath(dcid, srvid, nicid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Nic{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-// PatchNic partial update of nic properties passed in as jason []byte
-// Returns Instance struct
-func PatchNic(dcid string, srvid string, nicid string, obj NicProperties) Nic {
-	jason := []byte(MkJson(obj))
-	path := nic_path(dcid, srvid, nicid)
-	url := mk_url(path)
-	req, _ := http.NewRequest("PATCH", url, bytes.NewBuffer(jason))
-	req.Header.Add("Content-Type", PatchHeader)
-	return toNic(do(req))
+// UpdateNic partial update of nic properties
+func (c *Client) UpdateNic(dcid string, srvid string, nicid string, obj NicProperties) (*Nic, error) {
+
+	url := nicPath(dcid, srvid, nicid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Nic{}
+	err := c.client.Patch(url, obj, ret, http.StatusAccepted)
+	return ret, err
+
 }
 
 // DeleteNic deletes the nic where id=nicid and returns a Resp struct
-func DeleteNic(dcid, srvid, nicid string) Resp {
-	path := nic_path(dcid, srvid, nicid)
-	return is_delete(path)
-}
-
-func toNic(resp Resp) Nic {
-	var obj Nic
-	json.Unmarshal(resp.Body, &obj)
-	obj.Response = string(resp.Body)
-	obj.Headers = &resp.Headers
-	obj.StatusCode = resp.StatusCode
-	return obj
-}
-
-func toNics(resp Resp) Nics {
-	var col Nics
-	json.Unmarshal(resp.Body, &col)
-	col.Response = string(resp.Body)
-	col.Headers = &resp.Headers
-	col.StatusCode = resp.StatusCode
-	return col
+func (c *Client) DeleteNic(dcid, srvid, nicid string) (*http.Header, error) {
+	url := nicPath(dcid, srvid, nicid)
+	ret := &http.Header{}
+	err := c.client.Delete(url, ret, http.StatusAccepted)
+	return ret, err
 }

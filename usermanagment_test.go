@@ -1,38 +1,35 @@
 package profitbricks
 
 import (
-	"github.com/stretchr/testify/assert"
+	"fmt"
 	"math/rand"
 	"strconv"
-	"strings"
+	"sync"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var groupid string
-var resourceId string
-var userid string
-var email string
-var ipblockId string
-var snapshotResourceId string
-var imageResourceId string
-var TRUE bool = true
-var FALSE bool = false
+var (
+	groupid     string
+	user        *User
+	group       *Group
+	email       string
+	TRUE        = true
+	FALSE       = false
+	onceUmDC    sync.Once
+	onceUmUser  sync.Once
+	onceUmGroup sync.Once
+	onceUmIP    sync.Once
+	onceUmShare sync.Once
+)
 
-func setupTest() {
-	setupTestEnv()
+func createUser() {
 	s1 := rand.NewSource(time.Now().UnixNano())
 	r1 := rand.New(s1)
 	email = "test" + strconv.Itoa(r1.Intn(1000)) + "@go.com"
-	resourceId = mkdcid("GO SDK TEST")
-	snapshotResourceId=mksnapshotId("GO SDK TEST",resourceId)
-	ipblockId = mkipid()
-	imageResourceId=getImageId(location,"ubuntu","HDD")
-}
-
-func TestCreateUser(t *testing.T) {
-	setupTest()
-	want := 202
+	c := setupTestEnv()
 	var obj = User{
 		Properties: &UserProperties{
 			Firstname:     "John",
@@ -44,21 +41,47 @@ func TestCreateUser(t *testing.T) {
 			SecAuthActive: false,
 		},
 	}
-	resp := CreateUser(obj)
-	userid = resp.Id
+	resp, _ := c.CreateUser(obj)
+	user = resp
+}
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+func createGroup() {
+	c := setupTestEnv()
+	var obj = Group{
+		Properties: GroupProperties{
+			Name:              "GO SDK Test",
+			CreateDataCenter:  &TRUE,
+			CreateSnapshot:    &TRUE,
+			ReserveIP:         &TRUE,
+			AccessActivityLog: &TRUE,
+		},
 	}
+	resp, _ := c.CreateGroup(obj)
+	group = resp
+}
 
-	assert.Equal(t, resp.Properties.Firstname, "John")
-	assert.Equal(t, resp.Properties.Lastname, "Doe")
-	assert.Equal(t, resp.Properties.Email, email)
-	assert.Equal(t, resp.Properties.Administrator, false)
+func addShare() {
+	c := setupTestEnv()
+	var obj = Share{
+		Properties: ShareProperties{
+			SharePrivilege: &TRUE,
+			EditPrivilege:  &TRUE,
+		},
+	}
+	c.AddShare(group.ID, dataCenter.ID, obj)
+}
+func TestCreateUser(t *testing.T) {
+	fmt.Println("User management tests")
+	onceUmUser.Do(createUser)
+
+	assert.Equal(t, user.Properties.Firstname, "John")
+	assert.Equal(t, user.Properties.Lastname, "Doe")
+	assert.Equal(t, user.Properties.Email, email)
+	assert.Equal(t, user.Properties.Administrator, false)
 }
 
 func TestCreateUserFailure(t *testing.T) {
-	want := 422
+	c := setupTestEnv()
 	var obj = User{
 		Properties: &UserProperties{
 			Firstname:     "John",
@@ -69,43 +92,40 @@ func TestCreateUserFailure(t *testing.T) {
 			SecAuthActive: false,
 		},
 	}
-	resp := CreateUser(obj)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.True(t, strings.Contains(resp.Response, "Attribute 'email' is required"))
+	_, err := c.CreateUser(obj)
+	assert.NotNil(t, err)
 }
 
 func TestListUsers(t *testing.T) {
-	SetDepth("5")
-	want := 200
-	resp := ListUsers()
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceUmUser.Do(createUser)
+	resp, err := c.ListUsers()
+	if err != nil {
+		t.Error(err)
 	}
+
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetUser(t *testing.T) {
-	want := 200
-	resp := GetUser(userid)
+	c := setupTestEnv()
+	onceUmUser.Do(createUser)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.GetUser(user.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, userid)
+	assert.Equal(t, resp.ID, user.ID)
 	assert.Equal(t, resp.Properties.Firstname, "John")
 	assert.Equal(t, resp.Properties.Lastname, "Doe")
 	assert.Equal(t, resp.Properties.Email, email)
 	assert.Equal(t, resp.Properties.Administrator, false)
-	assert.Equal(t, resp.Type_, "user")
+	assert.Equal(t, resp.PBType, "user")
 }
 
 func TestUpdateUser(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
 	newName := "user updated"
 	obj := User{
 		Properties: &UserProperties{
@@ -117,135 +137,108 @@ func TestUpdateUser(t *testing.T) {
 			SecAuthActive: false,
 		}}
 
-	resp := UpdateUser(userid, obj)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.UpdateUser(user.ID, obj)
+	if err != nil {
+		t.Error(err)
 	}
-	if resp.Properties.Lastname != newName {
-		t.Errorf("Not updated")
-	}
+	assert.Equal(t, resp.Properties.Lastname, newName)
 }
 
 func TestCreateGroup(t *testing.T) {
-	want := 202
-	var obj = Group{
-		Properties: GroupProperties{
-			Name:              "GO SDK Test",
-			CreateDataCenter:  &TRUE,
-			CreateSnapshot:    &TRUE,
-			ReserveIp:         &TRUE,
-			AccessActivityLog: &TRUE,
-		},
-	}
-	resp := CreateGroup(obj)
-	groupid = resp.Id
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
-	assert.Equal(t, *resp.Properties.CreateDataCenter, true)
-	assert.Equal(t, *resp.Properties.CreateSnapshot, true)
-	assert.Equal(t, *resp.Properties.AccessActivityLog, true)
-	assert.Equal(t, *resp.Properties.ReserveIp, true)
+	onceUmGroup.Do(createGroup)
+	assert.Equal(t, group.Properties.Name, "GO SDK Test")
+	assert.Equal(t, *group.Properties.CreateDataCenter, true)
+	assert.Equal(t, *group.Properties.CreateSnapshot, true)
+	assert.Equal(t, *group.Properties.AccessActivityLog, true)
+	assert.Equal(t, *group.Properties.ReserveIP, true)
 }
 
 func TestCreateGroupFaliure(t *testing.T) {
-	want := 422
+	c := setupTestEnv()
 	var obj = Group{
 		Properties: GroupProperties{
 			CreateDataCenter:  &TRUE,
 			CreateSnapshot:    &TRUE,
-			ReserveIp:         &TRUE,
+			ReserveIP:         &TRUE,
 			AccessActivityLog: &TRUE,
 		},
 	}
-	resp := CreateGroup(obj)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
+	_, err := c.CreateGroup(obj)
 
-	assert.True(t, strings.Contains(resp.Response, "Attribute 'name' is required"))
+	assert.NotNil(t, err)
 }
 
 func TestListGroups(t *testing.T) {
-	SetDepth("5")
-	want := 200
-	resp := ListGroups()
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	resp, err := c.ListGroups()
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetGroup(t *testing.T) {
-	want := 200
-	resp := GetGroup(groupid)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	resp, err := c.GetGroup(group.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, groupid)
+	assert.Equal(t, resp.ID, group.ID)
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
 	assert.Equal(t, *resp.Properties.CreateDataCenter, true)
 	assert.Equal(t, *resp.Properties.CreateSnapshot, true)
 	assert.Equal(t, *resp.Properties.AccessActivityLog, true)
-	assert.Equal(t, *resp.Properties.ReserveIp, true)
+	assert.Equal(t, *resp.Properties.ReserveIP, true)
 }
 
 func TestGetGroupFailure(t *testing.T) {
-	want := 404
-	resp := GetGroup("00000000-0000-0000-0000-000000000000")
+	c := setupTestEnv()
+	_, err := c.GetGroup("00000000-0000-0000-0000-000000000000")
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
+	assert.NotNil(t, err)
 }
 
 func TestUpdateGroup(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+
 	newName := "GO SDK Test - RENAME"
 	obj := Group{
 		Properties: GroupProperties{
 			Name:              newName,
 			CreateDataCenter:  &FALSE,
 			CreateSnapshot:    &TRUE,
-			ReserveIp:         &TRUE,
+			ReserveIP:         &TRUE,
 			AccessActivityLog: &TRUE,
 		},
 	}
 
-	resp := UpdateGroup(groupid, obj)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-	if resp.Properties.Name != newName {
-		t.Errorf("Not updated")
+	resp, err := c.UpdateGroup(group.ID, obj)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, groupid)
 	assert.Equal(t, resp.Properties.Name, newName)
-	assert.Equal(t, *resp.Properties.CreateDataCenter, false)
-	assert.Equal(t, resp.Type_, "group")
 }
 
 func TestAddShare(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	onceUmDC.Do(createDataCenter)
+
 	var obj = Share{
 		Properties: ShareProperties{
 			SharePrivilege: &TRUE,
 			EditPrivilege:  &TRUE,
 		},
 	}
-	resp := AddShare(obj, groupid, resourceId)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.AddShare(group.ID, dataCenter.ID, obj)
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.Equal(t, *resp.Properties.EditPrivilege, true)
@@ -253,53 +246,58 @@ func TestAddShare(t *testing.T) {
 }
 
 func TestAddShareFailure(t *testing.T) {
-	want := 422
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	onceUmDC.Do(createDataCenter)
+
 	var obj = Share{
 		Properties: ShareProperties{},
 	}
-	resp := AddShare(obj, groupid, resourceId)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
+	_, err := c.AddShare(groupid, dataCenter.ID, obj)
+	assert.NotNil(t, err)
 }
 
 func TestListShares(t *testing.T) {
-	SetDepth("5")
-	want := 200
-	resp := ListShares(groupid)
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.ListShares(group.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetShare(t *testing.T) {
-	want := 200
-	resp := GetShare(groupid, resourceId)
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	onceUmDC.Do(createDataCenter)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.GetShare(group.ID, dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, resourceId)
+	assert.Equal(t, resp.ID, dataCenter.ID)
 	assert.Equal(t, *resp.Properties.EditPrivilege, true)
 	assert.Equal(t, *resp.Properties.SharePrivilege, true)
 }
 
 func TestGetShareFailure(t *testing.T) {
-	want := 404
-	resp := GetShare(groupid, "00000000-0000-0000-0000-000000000000")
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	onceUmDC.Do(createDataCenter)
+	_, err := c.GetShare(group.ID, "00000000-0000-0000-0000-000000000000")
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
+	assert.NotNil(t, err)
 }
 
 func TestUpdateShare(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	onceUmDC.Do(createDataCenter)
+
 	obj := Share{
 		Properties: ShareProperties{
 			SharePrivilege: &TRUE,
@@ -307,201 +305,168 @@ func TestUpdateShare(t *testing.T) {
 		},
 	}
 
-	resp := UpdateShare(groupid, resourceId, obj)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.UpdateShare(group.ID, dataCenter.ID, obj)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, resourceId)
+	assert.Equal(t, resp.ID, dataCenter.ID)
 	assert.Equal(t, *resp.Properties.EditPrivilege, false)
 	assert.Equal(t, *resp.Properties.SharePrivilege, true)
 }
 
 func TestAddUserToGroup(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	onceUmUser.Do(createUser)
 
-	resp := AddUserToGroup(groupid, userid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.AddUserToGroup(group.ID, user.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, userid)
-	assert.Equal(t, resp.Type_, "user")
+	assert.Equal(t, resp.ID, user.ID)
+	assert.Equal(t, resp.PBType, "user")
 }
 
 func TestListGroupUsers(t *testing.T) {
-	want := 200
-	resp := ListGroupUsers(groupid)
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	onceUmUser.Do(createUser)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.ListGroupUsers(group.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestListResources(t *testing.T) {
-	want := 200
-	resp := ListResources()
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	resp, err := c.ListResources()
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestListIPBlockResources(t *testing.T) {
-	want := 200
-	resp := ListResourcesByType("ipblock")
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	resp, err := c.ListResourcesByType("ipblock")
+	if err != nil {
+		t.Error(err)
 	}
+
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestListDatacenterResources(t *testing.T) {
-	want := 200
-	resp := ListResourcesByType("datacenter")
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	resp, err := c.ListResourcesByType("datacenter")
+	if err != nil {
+		t.Error(err)
 	}
+
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestListImagesResources(t *testing.T) {
-	want := 200
-	resp := ListResourcesByType("image")
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	resp, err := c.ListResourcesByType("image")
+	if err != nil {
+		t.Error(err)
 	}
+
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestListSnapshotResources(t *testing.T) {
-	want := 200
-	resp := ListResourcesByType("snapshot")
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	resp, err := c.ListResourcesByType("snapshot")
+	if err != nil {
+		t.Error(err)
 	}
+
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestListResourceFailure(t *testing.T) {
-	want := 404
-	resp := ListResourcesByType("unknown")
+	c := setupTestEnv()
+	_, err := c.ListResourcesByType("unknown")
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-	assert.Equal(t, resp.StatusCode, want)
+	assert.NotNil(t, err)
 }
 
 func TestGetDatacenterResource(t *testing.T) {
-	want := 200
-	resp := GetResourceByType("datacenter", resourceId)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-	assert.Equal(t, resp.Id, resourceId)
-	assert.Equal(t, resp.Type_, "datacenter")
-}
-
-func TestGetIPBlockResource(t *testing.T) {
-	want := 200
-	resp := GetResourceByType("ipblock", ipblockId)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	resp, err := c.GetResourceByType("datacenter", dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, ipblockId)
-	assert.Equal(t, resp.Type_, "ipblock")
+	assert.Equal(t, resp.ID, dataCenter.ID)
+	assert.Equal(t, resp.PBType, "datacenter")
 }
 
 func TestGetImageResource(t *testing.T) {
-	want := 200
-	resp := GetResourceByType("image", imageResourceId)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	imageResourceID := getImageID("us/las", "ubuntu", "hdd")
+	_, err := c.GetResourceByType("image", imageResourceID)
+	if err != nil {
+		t.Error(err)
 	}
-
-	assert.Equal(t, resp.Id, imageResourceId)
-	assert.Equal(t, resp.Type_, "image")
-}
-
-func TestGetSnapshotResource(t *testing.T) {
-	want := 200
-	resp := GetResourceByType("snapshot", snapshotResourceId)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.Equal(t, resp.Id, snapshotResourceId)
-	assert.Equal(t, resp.Type_, "snapshot")
 }
 
 func TestGetResourceFailure(t *testing.T) {
-	want := 404
-	resp := GetResourceByType("snapshot", "00000000-0000-0000-0000-000000000000")
+	c := setupTestEnv()
+	_, err := c.GetResourceByType("snapshot", "00000000-0000-0000-0000-000000000000")
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-	assert.Equal(t, resp.StatusCode, want)
+	assert.NotNil(t, err)
 }
 
 func TestDeleteUserFromGroup(t *testing.T) {
-	want := 202
-	resp := DeleteUserFromGroup(groupid, userid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	onceUmUser.Do(createUser)
+	_, err := c.DeleteUserFromGroup(group.ID, user.ID)
+	if err != nil {
+		t.Error(err)
 	}
 }
 
 func TestDeleteShare(t *testing.T) {
-	want := 202
-	resp := DeleteShare(groupid, resourceId)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceUmGroup.Do(createGroup)
+	onceUmDC.Do(createDataCenter)
+	onceUmShare.Do(addShare)
+	_, err := c.DeleteShare(group.ID, dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 }
 
 func TestDeleteGroup(t *testing.T) {
-	want := 202
-	resp := DeleteGroup(groupid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceUmDC.Do(createDataCenter)
+	onceUmGroup.Do(createGroup)
+	_, err := c.DeleteGroup(group.ID)
+	if err != nil {
+		t.Error(err)
 	}
 	//clean resources
-	resp1 := DeleteDatacenter(resourceId)
-	if resp1.StatusCode != want {
-		t.Errorf(bad_status(want, resp1.StatusCode))
+	_, err = c.DeleteDatacenter(dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 }
 
 func TestDeleteUser(t *testing.T) {
-	want := 202
-	resp := DeleteUser(userid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceUmUser.Do(createUser)
+	_, err := c.DeleteUser(user.ID)
+	if err != nil {
+		t.Error(err)
 	}
-	CleanUpResources()
-}
-
-func CleanUpResources() {
-	dcDeleted:=DeleteDatacenter(resourceId)
-	waitTillProvisioned(dcDeleted.Headers.Get("Location"))
-
-	snapshotDeleted:=DeleteSnapshot(snapshotResourceId)
-	waitTillProvisioned(snapshotDeleted.Headers.Get("Location"))
-
-	ReleaseIpBlock(ipblockId)
 }

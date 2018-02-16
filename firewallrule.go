@@ -1,99 +1,82 @@
 package profitbricks
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
+//FirewallRule object
 type FirewallRule struct {
-	Id         string                 `json:"id,omitempty"`
-	Type_      string                 `json:"type,omitempty"`
+	ID         string                 `json:"id,omitempty"`
+	PBType     string                 `json:"type,omitempty"`
 	Href       string                 `json:"href,omitempty"`
 	Metadata   *Metadata              `json:"metadata,omitempty"`
 	Properties FirewallruleProperties `json:"properties,omitempty"`
 	Response   string                 `json:"Response,omitempty"`
 	Headers    *http.Header           `json:"headers,omitempty"`
-	StatusCode int                    `json:"headers,omitempty"`
+	StatusCode int                    `json:"statuscode,omitempty"`
 }
 
+//FirewallruleProperties object
 type FirewallruleProperties struct {
 	Name           string  `json:"name,omitempty"`
 	Protocol       string  `json:"protocol,omitempty"`
 	SourceMac      *string `json:"sourceMac,omitempty"`
-	SourceIp       *string `json:"sourceIp,omitempty"`
-	TargetIp       *string `json:"targetIp,omitempty"`
+	SourceIP       *string `json:"sourceIp,omitempty"`
+	TargetIP       *string `json:"targetIp,omitempty"`
 	IcmpCode       *int    `json:"icmpCode,omitempty"`
 	IcmpType       *int    `json:"icmpType,omitempty"`
 	PortRangeStart *int    `json:"portRangeStart,omitempty"`
 	PortRangeEnd   *int    `json:"portRangeEnd,omitempty"`
 }
 
+//FirewallRules object
 type FirewallRules struct {
-	Id         string         `json:"id,omitempty"`
-	Type_      string         `json:"type,omitempty"`
+	ID         string         `json:"id,omitempty"`
+	PBType     string         `json:"type,omitempty"`
 	Href       string         `json:"href,omitempty"`
 	Items      []FirewallRule `json:"items,omitempty"`
 	Response   string         `json:"Response,omitempty"`
 	Headers    *http.Header   `json:"headers,omitempty"`
-	StatusCode int            `json:"headers,omitempty"`
+	StatusCode int            `json:"statuscode,omitempty"`
 }
 
-func ListFirewallRules(dcId string, serverid string, nicId string) FirewallRules {
-	path := fwrule_col_path(dcId, serverid, nicId)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	resp := do(req)
-	return toFirewallRules(resp)
+//ListFirewallRules lists all firewall rules
+func (c *Client) ListFirewallRules(dcID string, serverID string, nicID string) (*FirewallRules, error) {
+	url := fwruleColPath(dcID, serverID, nicID) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &FirewallRules{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func GetFirewallRule(dcid string, srvid string, nicId string, fwId string) FirewallRule {
-	path := fwrule_path(dcid, srvid, nicId, fwId)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	resp := do(req)
-	return toFirewallRule(resp)
+//GetFirewallRule gets a firewall rule
+func (c *Client) GetFirewallRule(dcID string, serverID string, nicID string, fwID string) (*FirewallRule, error) {
+	url := fwrulePath(dcID, serverID, nicID, fwID) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &FirewallRule{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func CreateFirewallRule(dcid string, srvid string, nicId string, fw FirewallRule) FirewallRule {
-	path := fwrule_col_path(dcid, srvid, nicId)
-	url := mk_url(path) + `?depth=` + Depth
-	obj, _ := json.Marshal(fw)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))
-	req.Header.Add("Content-Type", FullHeader)
-	return toFirewallRule(do(req))
+//CreateFirewallRule creates a firewall rule
+func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, fw FirewallRule) (*FirewallRule, error) {
+	url := fwruleColPath(dcID, serverID, nicID) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &FirewallRule{}
+	err := c.client.Post(url, fw, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func PatchFirewallRule(dcid string, srvid string, nicId string, fwId string, obj FirewallruleProperties) FirewallRule {
-	jason_patch := []byte(MkJson(obj))
-	path := fwrule_path(dcid, srvid, nicId, fwId)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("PATCH", url, bytes.NewBuffer(jason_patch))
-	req.Header.Add("Content-Type", PatchHeader)
-	return toFirewallRule(do(req))
+//UpdateFirewallRule updates a firewall rule
+func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, fwID string, obj FirewallruleProperties) (*FirewallRule, error) {
+	url := fwrulePath(dcID, serverID, nicID, fwID) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &FirewallRule{}
+	err := c.client.Patch(url, obj, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func DeleteFirewallRule(dcid string, srvid string, nicId string, fwId string) Resp {
-	path := fwrule_path(dcid, srvid, nicId, fwId)
-	return is_delete(path)
-}
-
-func toFirewallRule(resp Resp) FirewallRule {
-	var dc FirewallRule
-	json.Unmarshal(resp.Body, &dc)
-	dc.Response = string(resp.Body)
-	dc.Headers = &resp.Headers
-	dc.StatusCode = resp.StatusCode
-	return dc
-}
-
-func toFirewallRules(resp Resp) FirewallRules {
-	var col FirewallRules
-	json.Unmarshal(resp.Body, &col)
-	col.Response = string(resp.Body)
-	col.Headers = &resp.Headers
-	col.StatusCode = resp.StatusCode
-	return col
+//DeleteFirewallRule deletes a firewall rule
+func (c *Client) DeleteFirewallRule(dcID string, serverID string, nicID string, fwID string) (*http.Header, error) {
+	url := fwrulePath(dcID, serverID, nicID, fwID) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &http.Header{}
+	err := c.client.Delete(url, ret, http.StatusAccepted)
+	return ret, err
 }

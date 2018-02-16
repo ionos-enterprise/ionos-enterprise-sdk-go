@@ -1,201 +1,189 @@
-// loadbalancer_test.go
 package profitbricks
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var lbal_dcid string
-var lbalid string
-var lbal_srvid string
-var lbal_ipid string
-var lbal_nic string
-var ips []string
-
 func TestCreateLoadbalancer(t *testing.T) {
-	setupTestEnv()
-	want := 202
-	lbal_dcid = mkdcid("GO SDK Test")
-	lbal_srvid = mksrvid(lbal_dcid)
-	lbal_nic = mknic(lbal_dcid, lbal_srvid)
-	var obj = IpBlock{
-		Properties: IpBlockProperties{
-			Size:     1,
-			Location: "us/las",
-		},
-	}
-	resp := ReserveIpBlock(obj)
-	ips = resp.Properties.Ips
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	lbal_ipid = resp.Id
-	var request = Loadbalancer{
-		Properties: LoadbalancerProperties{
-			Name: "GO SDK Test",
-			Ip:   resp.Properties.Ips[0],
-			Dhcp: true,
-		},
-		Entities: LoadbalancerEntities{
-			Balancednics: &BalancedNics{
-				Items: []Nic{
-					{
-						Id: lbal_nic,
-					},
-				},
-			},
-		},
-	}
+	fmt.Println("Load balancer tests")
+	onceLBDC.Do(createDataCenter)
+	onceLBServer.Do(createServer)
+	onceLBNic.Do(createNic)
+	onceLB.Do(createLoadBalancerWithIP)
 
-	resp1 := CreateLoadbalancer(lbal_dcid, request)
-	waitTillProvisioned(resp1.Headers.Get("Location"))
-	lbalid = resp1.Id
-	if resp1.StatusCode != want {
-		t.Errorf(bad_status(want, resp1.StatusCode))
-	}
-
-	assert.Equal(t, resp1.Properties.Name, "GO SDK Test")
-	assert.Equal(t, resp1.Properties.Dhcp, true)
-	resp1 = GetLoadbalancer(lbal_dcid, lbalid)
-	assert.True(t, len(resp1.Entities.Balancednics.Items) > 0)
+	assert.Equal(t, loadBalancer.Properties.Name, "GO SDK Test")
+	assert.Equal(t, loadBalancer.Properties.Dhcp, true)
 }
 
 func TestCreateLoadbalancerFailure(t *testing.T) {
-	want := 404
+	c := setupTestEnv()
 	var request = Loadbalancer{
 		Properties: LoadbalancerProperties{
 			Dhcp: true,
 		},
 	}
 
-	resp := CreateLoadbalancer("00000000-0000-0000-0000-000000000000", request)
+	_, err := c.CreateLoadbalancer("00000000-0000-0000-0000-000000000000", request)
 
-	assert.Equal(t, resp.StatusCode, want)
+	assert.NotNil(t, err)
 }
 
 func TestListLoadbalancers(t *testing.T) {
-	want := 200
-	resp := ListLoadbalancers(lbal_dcid)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	resp, err := c.ListLoadbalancers(dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetLoadbalancer(t *testing.T) {
-	want := 200
-	resp := GetLoadbalancer(lbal_dcid, lbalid)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceLBDC.Do(createDataCenter)
+	onceLBServer.Do(createServer)
+	onceLBNic.Do(createNic)
+	onceLB.Do(createLoadBalancerWithIP)
+	resp, err := c.GetLoadbalancer(dataCenter.ID, loadBalancer.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, lbalid)
-	assert.Equal(t, resp.Type_, "loadbalancer")
-	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
+	assert.Equal(t, resp.ID, loadBalancer.ID)
+	assert.Equal(t, resp.PBType, "loadbalancer")
+	assert.Equal(t, resp.Properties.Name, loadBalancer.Properties.Name)
 	assert.Equal(t, resp.Properties.Dhcp, true)
 	assert.True(t, len(resp.Entities.Balancednics.Items) > 0)
 }
 
 func TestGetLoadbalancerFailure(t *testing.T) {
-	want := 404
-	resp := GetLoadbalancer(lbal_dcid, "00000000-0000-0000-0000-000000000000")
+	c := setupTestEnv()
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
+	_, err := c.GetLoadbalancer("00000000-0000-0000-0000-000000000000", "00000000-0000-0000-0000-000000000000")
 
-	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
+	assert.NotNil(t, err)
 }
 
 func TestPatchLoadbalancer(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceLBDC.Do(createDataCenter)
+	onceLBServer.Do(createServer)
+	onceLBNic.Do(createNic)
+	onceLB.Do(createLoadBalancerWithIP)
 
 	obj := LoadbalancerProperties{Name: "GO SDK Test - RENAME"}
 
-	resp := PatchLoadbalancer(lbal_dcid, lbalid, obj)
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.UpdateLoadbalancer(dataCenter.ID, loadBalancer.ID, obj)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, lbalid)
-	assert.Equal(t, resp.Type_, "loadbalancer")
+	err = c.WaitTillProvisioned(resp.Headers.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.Equal(t, resp.ID, loadBalancer.ID)
+	assert.Equal(t, resp.PBType, "loadbalancer")
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test - RENAME")
 }
 
 func TestAssociateNic(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceLBDC.Do(createDataCenter)
+	onceLBServer.Do(createServer)
+	onceLBNic.Do(createNic)
 
-	nicid = mknic(lbal_dcid, lbal_srvid)
-	resp := AssociateNic(lbal_dcid, lbalid, nicid)
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	nicid = resp.Id
-	if resp.StatusCode != want {
-		t.Error(resp.Response)
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.AssociateNic(dataCenter.ID, loadBalancer.ID, nic.ID)
+	if err != nil {
+		t.Error(err)
+	}
+	err = c.WaitTillProvisioned(resp.Headers.Get("Location"))
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
+	assert.Equal(t, resp.Properties.Name, loadBalancer.Properties.Name)
 }
 
 func TestGetBalancedNics(t *testing.T) {
-	want := 200
-	resp := ListBalancedNics(lbal_dcid, lbalid)
+	c := setupTestEnv()
+	onceLBDC.Do(createDataCenter)
+	onceLBServer.Do(createServer)
+	onceLBNic.Do(createNic)
+	onceLB.Do(createLoadBalancerWithIP)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.ListBalancedNics(dataCenter.ID, loadBalancer.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetBalancedNic(t *testing.T) {
-	want := 200
-	resp := GetBalancedNic(lbal_dcid, lbalid, lbal_nic)
+	c := setupTestEnv()
+	onceLBDC.Do(createDataCenter)
+	onceLBServer.Do(createServer)
+	onceLBNic.Do(createNic)
+	onceLB.Do(createLoadBalancerWithIP)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.GetBalancedNic(dataCenter.ID, loadBalancer.ID, nic.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, lbal_nic)
-	assert.Equal(t, resp.Type_, "nic")
-	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
+	assert.Equal(t, resp.ID, nic.ID)
+	assert.Equal(t, resp.PBType, "nic")
 	assert.Equal(t, resp.Properties.Lan, 2)
 	assert.Equal(t, resp.Properties.Nat, false)
 	assert.Equal(t, *resp.Properties.Dhcp, true)
-	assert.Equal(t, resp.Properties.FirewallActive, true)
 }
 
 func TestDeleteBalancedNic(t *testing.T) {
-	want := 202
+	c := setupTestEnv()
+	onceLBDC.Do(createDataCenter)
+	onceLBServer.Do(createServer)
+	onceLBNic.Do(createNic)
+	onceLB.Do(createLoadBalancerWithIP)
 
-	resp := DeleteBalancedNic(lbal_dcid, lbalid, lbal_nic)
-	waitTillProvisioned(resp.Headers.Get("Location"))
-
-	if resp.StatusCode != want {
-		t.Error(string(resp.Body))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.DeleteBalancedNic(dataCenter.ID, loadBalancer.ID, nic.ID)
+	if err != nil {
+		t.Error(err)
+	}
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
 	}
 }
 
 func TestDeleteLoadbalancer(t *testing.T) {
-	want := 202
-	resp := DeleteLoadbalancer(lbal_dcid, lbalid)
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	onceLBDC.Do(createDataCenter)
+	onceLBServer.Do(createServer)
+	onceLBNic.Do(createNic)
+	onceLB.Do(createLoadBalancerWithIP)
+	c := setupTestEnv()
+	resp, err := c.DeleteLoadbalancer(dataCenter.ID, loadBalancer.ID)
+	if err != nil {
+		t.Error(err)
 	}
-}
 
-func TestLoadBalancerCleanup(t *testing.T) {
-	resp := DeleteDatacenter(lbal_dcid)
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	DeleteDatacenter(dcID)
-	ReleaseIpBlock(lbal_ipid)
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
+
+	resp, err = c.ReleaseIPBlock(ipBlock.ID)
+	if err != nil {
+		t.Error(err)
+	}
+
+	resp, err = c.DeleteDatacenter(dataCenter.ID)
+	if err != nil {
+		t.Error(err)
+	}
 
 }

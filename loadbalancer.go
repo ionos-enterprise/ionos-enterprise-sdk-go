@@ -1,145 +1,126 @@
 package profitbricks
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
+//Loadbalancer object
 type Loadbalancer struct {
-	Id         string                 `json:"id,omitempty"`
-	Type_      string                 `json:"type,omitempty"`
+	ID         string                 `json:"id,omitempty"`
+	PBType     string                 `json:"type,omitempty"`
 	Href       string                 `json:"href,omitempty"`
 	Metadata   *Metadata              `json:"metadata,omitempty"`
 	Properties LoadbalancerProperties `json:"properties,omitempty"`
 	Entities   LoadbalancerEntities   `json:"entities,omitempty"`
 	Response   string                 `json:"Response,omitempty"`
 	Headers    *http.Header           `json:"headers,omitempty"`
-	StatusCode int                    `json:"headers,omitempty"`
+	StatusCode int                    `json:"statuscode,omitempty"`
 }
 
+//LoadbalancerProperties object
 type LoadbalancerProperties struct {
 	Name string `json:"name,omitempty"`
-	Ip   string `json:"ip,omitempty"`
+	IP   string `json:"ip,omitempty"`
 	Dhcp bool   `json:"dhcp,omitempty"`
 }
 
+//LoadbalancerEntities object
 type LoadbalancerEntities struct {
 	Balancednics *BalancedNics `json:"balancednics,omitempty"`
 }
 
+//BalancedNics object
 type BalancedNics struct {
-	Id    string `json:"id,omitempty"`
-	Type_ string `json:"type,omitempty"`
-	Href  string `json:"href,omitempty"`
-	Items []Nic  `json:"items,omitempty"`
+	ID     string `json:"id,omitempty"`
+	PBType string `json:"type,omitempty"`
+	Href   string `json:"href,omitempty"`
+	Items  []Nic  `json:"items,omitempty"`
 }
 
+//Loadbalancers object
 type Loadbalancers struct {
-	Id    string         `json:"id,omitempty"`
-	Type_ string         `json:"type,omitempty"`
-	Href  string         `json:"href,omitempty"`
-	Items []Loadbalancer `json:"items,omitempty"`
+	ID     string         `json:"id,omitempty"`
+	PBType string         `json:"type,omitempty"`
+	Href   string         `json:"href,omitempty"`
+	Items  []Loadbalancer `json:"items,omitempty"`
 
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"headers,omitempty"`
+	StatusCode int          `json:"statuscode,omitempty"`
 }
 
-type LoablanacerCreateRequest struct {
-	LoadbalancerProperties `json:"properties"`
+//ListLoadbalancers returns a Collection struct for loadbalancers in the Datacenter
+func (c *Client) ListLoadbalancers(dcid string) (*Loadbalancers, error) {
+
+	url := lbalColPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Loadbalancers{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-// Listloadbalancers returns a Collection struct
-// for loadbalancers in the Datacenter
-func ListLoadbalancers(dcid string) Loadbalancers {
-	path := lbal_col_path(dcid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toLoadbalancers(do(req))
+//CreateLoadbalancer creates a loadbalancer in the datacenter from a jason []byte and returns a Instance struct
+func (c *Client) CreateLoadbalancer(dcid string, request Loadbalancer) (*Loadbalancer, error) {
+	url := lbalColPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Loadbalancer{}
+	err := c.client.Post(url, request, ret, http.StatusAccepted)
+
+	return ret, err
 }
 
-// Createloadbalancer creates a loadbalancer in the datacenter
-//from a jason []byte and returns a Instance struct
-func CreateLoadbalancer(dcid string, request Loadbalancer) Loadbalancer {
-	obj, _ := json.Marshal(request)
-	path := lbal_col_path(dcid)
-	url := mk_url(path)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))
-	req.Header.Add("Content-Type", FullHeader)
-	return toLoadbalancer(do(req))
+//GetLoadbalancer pulls data for the Loadbalancer  where id = lbalid returns a Instance struct
+func (c *Client) GetLoadbalancer(dcid, lbalid string) (*Loadbalancer, error) {
+	url := lbalPath(dcid, lbalid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Loadbalancer{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-// GetLoadbalancer pulls data for the Loadbalancer
-// where id = lbalid returns a Instance struct
-func GetLoadbalancer(dcid, lbalid string) Loadbalancer {
-	path := lbal_path(dcid, lbalid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toLoadbalancer(do(req))
+//UpdateLoadbalancer updates a load balancer
+func (c *Client) UpdateLoadbalancer(dcid string, lbalid string, obj LoadbalancerProperties) (*Loadbalancer, error) {
+	url := lbalPath(dcid, lbalid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Loadbalancer{}
+	err := c.client.Patch(url, obj, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func PatchLoadbalancer(dcid string, lbalid string, obj LoadbalancerProperties) Loadbalancer {
-	jason := []byte(MkJson(obj))
-	path := lbal_path(dcid, lbalid)
-	url := mk_url(path)
-	req, _ := http.NewRequest("PATCH", url, bytes.NewBuffer(jason))
-	req.Header.Add("Content-Type", PatchHeader)
-	return toLoadbalancer(do(req))
+//DeleteLoadbalancer deletes a load balancer
+func (c *Client) DeleteLoadbalancer(dcid, lbalid string) (*http.Header, error) {
+	url := lbalPath(dcid, lbalid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &http.Header{}
+	err := c.client.Delete(url, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func DeleteLoadbalancer(dcid, lbalid string) Resp {
-	path := lbal_path(dcid, lbalid)
-	return is_delete(path)
+//ListBalancedNics lists balanced nics
+func (c *Client) ListBalancedNics(dcid, lbalid string) (*Nics, error) {
+	url := balnicColPath(dcid, lbalid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Nics{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func ListBalancedNics(dcid, lbalid string) Nics {
-	path := balnic_col_path(dcid, lbalid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toNics(do(req))
-}
-
-func AssociateNic(dcid string, lbalid string, nicid string) Nic {
+//AssociateNic attach a nic to load balancer
+func (c *Client) AssociateNic(dcid string, lbalid string, nicid string) (*Nic, error) {
 	sm := map[string]string{"id": nicid}
-	jason := []byte(MkJson(sm))
-	path := balnic_col_path(dcid, lbalid)
-	url := mk_url(path)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(jason))
-	req.Header.Add("Content-Type", FullHeader)
-	return toNic(do(req))
+	url := balnicColPath(dcid, lbalid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Nic{}
+	err := c.client.Post(url, sm, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func GetBalancedNic(dcid, lbalid, balnicid string) Nic {
-	path := balnic_path(dcid, lbalid, balnicid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toNic(do(req))
+//GetBalancedNic gets a balanced nic
+func (c *Client) GetBalancedNic(dcid, lbalid, balnicid string) (*Nic, error) {
+	url := balnicPath(dcid, lbalid, balnicid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Nic{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func DeleteBalancedNic(dcid, lbalid, balnicid string) Resp {
-	path := balnic_path(dcid, lbalid, balnicid)
-	return is_delete(path)
-}
-
-func toLoadbalancer(resp Resp) Loadbalancer {
-	var server Loadbalancer
-	json.Unmarshal(resp.Body, &server)
-	server.Response = string(resp.Body)
-	server.Headers = &resp.Headers
-	server.StatusCode = resp.StatusCode
-	return server
-}
-
-func toLoadbalancers(resp Resp) Loadbalancers {
-	var col Loadbalancers
-	json.Unmarshal(resp.Body, &col)
-	col.Response = string(resp.Body)
-	col.Headers = &resp.Headers
-	col.StatusCode = resp.StatusCode
-	return col
+//DeleteBalancedNic removes a balanced nic
+func (c *Client) DeleteBalancedNic(dcid, lbalid, balnicid string) (*http.Header, error) {
+	url := balnicPath(dcid, lbalid, balnicid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &http.Header{}
+	err := c.client.Delete(url, ret, http.StatusAccepted)
+	return ret, err
 }
