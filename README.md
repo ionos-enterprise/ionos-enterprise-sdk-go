@@ -169,7 +169,7 @@ func main() {
 }
 ```
 
-Import GO SDK:
+Import Go SDK:
 
 ```go
 import(
@@ -195,13 +195,13 @@ client.SetDepth(5)
 Set Cloud API URL
 
 ```go
-client.SetURL([url])
+client.SetURL("https://api.profitbricks.com/cloudapi/v4")
 ```
 
 Set "User-Agent" header for all API calls
 
 ```go
-client.SetAgentHeader([agent-header])
+client.SetUserAgent("myproject/1.0.0")
 ```
 
 
@@ -215,9 +215,10 @@ The SDK will raise custom exceptions when the Cloud API returns an error. There 
 
 | HTTP Code | Description |
 |---|---|
+| 400 | Bad request. |
 | 401 | The supplied user credentials are invalid. |
 | 404 | The requested resource cannot be found. |
-| 422 | The request body includes invalid JSON. |
+| 422 | Invalid parameters have been passed onto Cloud API. |
 | 429 | The Cloud API rate limit has been exceeded. |
 
 Therefore each client function returns two parameters expected response and an error. For example:
