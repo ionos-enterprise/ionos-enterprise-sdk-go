@@ -202,7 +202,7 @@ func main() {
 		os.Getenv("PROFITBRICKS_USERNAME"),
 		os.Getenv("PROFITBRICKS_PASSWORD"),
 	)
-    ...
+...
 ```
 
 **Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
