@@ -1,132 +1,97 @@
 package profitbricks
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
-type CreateLanRequest struct {
-	Id         string              `json:"id,omitempty"`
-	Type_      string              `json:"type,omitempty"`
-	Href       string              `json:"href,omitempty"`
-	Metadata   *Metadata           `json:"metadata,omitempty"`
-	Properties CreateLanProperties `json:"properties,omitempty"`
-	Entities   *LanEntities        `json:"entities,omitempty"`
-	Response   string              `json:"Response,omitempty"`
-	Headers    *http.Header        `json:"headers,omitempty"`
-	StatusCode int                 `json:"headers,omitempty"`
-}
-
-type CreateLanProperties struct {
-	Name   string `json:"name,omitempty"`
-	Public bool   `json:"public,omitempty"`
-}
-
+//Lan object
 type Lan struct {
-	Id         string        `json:"id,omitempty"`
-	Type_      string        `json:"type,omitempty"`
+	ID         string        `json:"id,omitempty"`
+	PBType     string        `json:"type,omitempty"`
 	Href       string        `json:"href,omitempty"`
 	Metadata   *Metadata     `json:"metadata,omitempty"`
 	Properties LanProperties `json:"properties,omitempty"`
 	Entities   *LanEntities  `json:"entities,omitempty"`
 	Response   string        `json:"Response,omitempty"`
 	Headers    *http.Header  `json:"headers,omitempty"`
-	StatusCode int           `json:"headers,omitempty"`
+	StatusCode int           `json:"statuscode,omitempty"`
 }
 
+//LanProperties object
 type LanProperties struct {
-	Name       string       `json:"name,omitempty"`
-	Public     bool         `json:"public,omitempty"`
-	IpFailover *[]IpFailover `json:"ipFailover,omitempty"`
+	Name       string        `json:"name,omitempty"`
+	Public     bool          `json:"public,omitempty"`
+	IPFailover *[]IPFailover `json:"ipFailover,omitempty"`
 }
 
+//LanEntities object
 type LanEntities struct {
 	Nics *LanNics `json:"nics,omitempty"`
 }
 
-type IpFailover struct {
-	NicUuid string `json:"nicUuid,omitempty"`
-	Ip      string `json:"ip,omitempty"`
+//IPFailover object
+type IPFailover struct {
+	NicUUID string `json:"nicUuid,omitempty"`
+	IP      string `json:"ip,omitempty"`
 }
 
+//LanNics object
 type LanNics struct {
-	Id    string `json:"id,omitempty"`
-	Type_ string `json:"type,omitempty"`
-	Href  string `json:"href,omitempty"`
-	Items []Nic  `json:"items,omitempty"`
+	ID     string `json:"id,omitempty"`
+	PBType string `json:"type,omitempty"`
+	Href   string `json:"href,omitempty"`
+	Items  []Nic  `json:"items,omitempty"`
 }
 
+//Lans object
 type Lans struct {
-	Id         string       `json:"id,omitempty"`
-	Type_      string       `json:"type,omitempty"`
+	ID         string       `json:"id,omitempty"`
+	PBType     string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
 	Items      []Lan        `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"headers,omitempty"`
+	StatusCode int          `json:"statuscode,omitempty"`
 }
 
-// ListLan returns a Collection for lans in the Datacenter
-func ListLans(dcid string) Lans {
-	path := lan_col_path(dcid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toLans(do(req))
+// ListLans returns a Collection for lans in the Datacenter
+func (c *Client) ListLans(dcid string) (*Lans, error) {
+	url := lanColPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Lans{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
 // CreateLan creates a lan in the datacenter
 // from a jason []byte and returns a Instance struct
-func CreateLan(dcid string, request CreateLanRequest) Lan {
-	obj, _ := json.Marshal(request)
-	path := lan_col_path(dcid)
-	url := mk_url(path)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))
-	req.Header.Add("Content-Type", FullHeader)
-	return toLan(do(req))
+func (c *Client) CreateLan(dcid string, request Lan) (*Lan, error) {
+	url := lanColPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Lan{}
+	err := c.client.Post(url, request, ret, http.StatusAccepted)
+	return ret, err
 }
 
 // GetLan pulls data for the lan where id = lanid returns an Instance struct
-func GetLan(dcid, lanid string) Lan {
-	path := lan_path(dcid, lanid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toLan(do(req))
+func (c *Client) GetLan(dcid, lanid string) (*Lan, error) {
+	url := lanPath(dcid, lanid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Lan{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-// PatchLan does a partial update to a lan using json from []byte jason
-// returns a Instance struct
-func PatchLan(dcid string, lanid string, obj LanProperties) Lan {
-	jason := []byte(MkJson(obj))
-	path := lan_path(dcid, lanid)
-	url := mk_url(path)
-	req, _ := http.NewRequest("PATCH", url, bytes.NewBuffer(jason))
-	req.Header.Add("Content-Type", PatchHeader)
-	return toLan(do(req))
+// UpdateLan does a partial update to a lan using json from []byte json returns a Instance struct
+func (c *Client) UpdateLan(dcid string, lanid string, obj LanProperties) (*Lan, error) {
+	url := lanPath(dcid, lanid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Lan{}
+	err := c.client.Patch(url, obj, ret, http.StatusAccepted)
+	return ret, err
 }
 
 // DeleteLan deletes a lan where id == lanid
-func DeleteLan(dcid, lanid string) Resp {
-	path := lan_path(dcid, lanid)
-	return is_delete(path)
-}
-
-func toLan(resp Resp) Lan {
-	var lan Lan
-	json.Unmarshal(resp.Body, &lan)
-	lan.Response = string(resp.Body)
-	lan.Headers = &resp.Headers
-	lan.StatusCode = resp.StatusCode
-	return lan
-}
-
-func toLans(resp Resp) Lans {
-	var col Lans
-	json.Unmarshal(resp.Body, &col)
-	col.Response = string(resp.Body)
-	col.Headers = &resp.Headers
-	col.StatusCode = resp.StatusCode
-	return col
+func (c *Client) DeleteLan(dcid, lanid string) (*http.Header, error) {
+	url := lanPath(dcid, lanid)
+	ret := &http.Header{}
+	err := c.client.Delete(url, ret, http.StatusAccepted)
+	return ret, err
 }

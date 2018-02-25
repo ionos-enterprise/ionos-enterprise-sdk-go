@@ -1,83 +1,69 @@
 package profitbricks
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
-type IpBlock struct {
-	Id         string            `json:"id,omitempty"`
-	Type_      string            `json:"type,omitempty"`
+//IPBlock object
+type IPBlock struct {
+	ID         string            `json:"id,omitempty"`
+	PBType     string            `json:"type,omitempty"`
 	Href       string            `json:"href,omitempty"`
 	Metadata   *Metadata         `json:"metadata,omitempty"`
-	Properties IpBlockProperties `json:"properties,omitempty"`
+	Properties IPBlockProperties `json:"properties,omitempty"`
 	Response   string            `json:"Response,omitempty"`
 	Headers    *http.Header      `json:"headers,omitempty"`
-	StatusCode int               `json:"headers,omitempty"`
+	StatusCode int               `json:"statuscode,omitempty"`
 }
 
-type IpBlockProperties struct {
+//IPBlockProperties object
+type IPBlockProperties struct {
 	Name     string   `json:"name,omitempty"`
-	Ips      []string `json:"ips,omitempty"`
+	IPs      []string `json:"ips,omitempty"`
 	Location string   `json:"location,omitempty"`
 	Size     int      `json:"size,omitempty"`
 }
 
-type IpBlocks struct {
-	Id         string       `json:"id,omitempty"`
-	Type_      string       `json:"type,omitempty"`
+//IPBlocks object
+type IPBlocks struct {
+	ID         string       `json:"id,omitempty"`
+	PBType     string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
-	Items      []IpBlock    `json:"items,omitempty"`
+	Items      []IPBlock    `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"headers,omitempty"`
+	StatusCode int          `json:"statuscode,omitempty"`
 }
 
-// ListIpBlocks
-func ListIpBlocks() IpBlocks {
-	path := ipblock_col_path()
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toIpBlocks(do(req))
+//ListIPBlocks lists all IP blocks
+func (c *Client) ListIPBlocks() (*IPBlocks, error) {
+	url := ipblockColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &IPBlocks{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func ReserveIpBlock(request IpBlock) IpBlock {
-	obj, _ := json.Marshal(request)
-	path := ipblock_col_path()
-	url := mk_url(path)
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))
-	req.Header.Add("Content-Type", FullHeader)
-	return toIpBlock(do(req))
-}
-func GetIpBlock(ipblockid string) IpBlock {
-	path := ipblock_path(ipblockid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toIpBlock(do(req))
+//ReserveIPBlock creates an IP block
+func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
+	url := ipblockColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &IPBlock{}
+	err := c.client.Post(url, request, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func ReleaseIpBlock(ipblockid string) Resp {
-	path := ipblock_path(ipblockid)
-	return is_delete(path)
+//GetIPBlock gets an IP blocks
+func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
+	url := ipblockPath(ipblockid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &IPBlock{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func toIpBlock(resp Resp) IpBlock {
-	var obj IpBlock
-	json.Unmarshal(resp.Body, &obj)
-	obj.Response = string(resp.Body)
-	obj.Headers = &resp.Headers
-	obj.StatusCode = resp.StatusCode
-	return obj
-}
-
-func toIpBlocks(resp Resp) IpBlocks {
-	var col IpBlocks
-	json.Unmarshal(resp.Body, &col)
-	col.Response = string(resp.Body)
-	col.Headers = &resp.Headers
-	col.StatusCode = resp.StatusCode
-	return col
+//ReleaseIPBlock deletes an IP block
+func (c *Client) ReleaseIPBlock(ipblockid string) (*http.Header, error) {
+	url := ipblockPath(ipblockid)
+	ret := &http.Header{}
+	err := c.client.Delete(url, ret, http.StatusAccepted)
+	return ret, err
 }

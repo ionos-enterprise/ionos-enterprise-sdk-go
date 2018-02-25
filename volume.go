@@ -1,23 +1,24 @@
 package profitbricks
 
 import (
-	"bytes"
-	"encoding/json"
 	"net/http"
 	"net/url"
+	"strconv"
 )
 
+//Volume object
 type Volume struct {
-	Id         string           `json:"id,omitempty"`
-	Type_      string           `json:"type,omitempty"`
+	ID         string           `json:"id,omitempty"`
+	PBType     string           `json:"type,omitempty"`
 	Href       string           `json:"href,omitempty"`
 	Metadata   *Metadata        `json:"metadata,omitempty"`
 	Properties VolumeProperties `json:"properties,omitempty"`
 	Response   string           `json:"Response,omitempty"`
 	Headers    *http.Header     `json:"headers,omitempty"`
-	StatusCode int              `json:"headers,omitempty"`
+	StatusCode int              `json:"statuscode,omitempty"`
 }
 
+//VolumeProperties object
 type VolumeProperties struct {
 	Name                string   `json:"name,omitempty"`
 	Type                string   `json:"type,omitempty"`
@@ -26,13 +27,13 @@ type VolumeProperties struct {
 	Image               string   `json:"image,omitempty"`
 	ImageAlias          string   `json:"imageAlias,omitempty"`
 	ImagePassword       string   `json:"imagePassword,omitempty"`
-	SshKeys             []string `json:"sshKeys,omitempty"`
+	SSHKeys             []string `json:"sshKeys,omitempty"`
 	Bus                 string   `json:"bus,omitempty"`
 	LicenceType         string   `json:"licenceType,omitempty"`
-	CpuHotPlug          bool     `json:"cpuHotPlug,omitempty"`
-	CpuHotUnplug        bool     `json:"cpuHotUnplug,omitempty"`
-	RamHotPlug          bool     `json:"ramHotPlug,omitempty"`
-	RamHotUnplug        bool     `json:"ramHotUnplug,omitempty"`
+	CPUHotPlug          bool     `json:"cpuHotPlug,omitempty"`
+	CPUHotUnplug        bool     `json:"cpuHotUnplug,omitempty"`
+	RAMHotPlug          bool     `json:"ramHotPlug,omitempty"`
+	RAMHotUnplug        bool     `json:"ramHotUnplug,omitempty"`
 	NicHotPlug          bool     `json:"nicHotPlug,omitempty"`
 	NicHotUnplug        bool     `json:"nicHotUnplug,omitempty"`
 	DiscVirtioHotPlug   bool     `json:"discVirtioHotPlug,omitempty"`
@@ -42,95 +43,75 @@ type VolumeProperties struct {
 	DeviceNumber        int64    `json:"deviceNumber,omitempty"`
 }
 
+//Volumes object
 type Volumes struct {
-	Id         string       `json:"id,omitempty"`
-	Type_      string       `json:"type,omitempty"`
+	ID         string       `json:"id,omitempty"`
+	PBType     string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
 	Items      []Volume     `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"headers,omitempty"`
-}
-
-type CreateVolumeRequest struct {
-	VolumeProperties `json:"properties"`
+	StatusCode int          `json:"statuscode,omitempty"`
 }
 
 // ListVolumes returns a Collection struct for volumes in the Datacenter
-func ListVolumes(dcid string) Volumes {
-	path := volume_col_path(dcid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	resp := do(req)
-	return toVolumes(resp)
+func (c *Client) ListVolumes(dcid string) (*Volumes, error) {
+	url := volumeColPath(dcid) + `?depth=` + c.client.depth
+	ret := &Volumes{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func GetVolume(dcid string, volumeId string) Volume {
-	path := volume_path(dcid, volumeId)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	resp := do(req)
-	return toVolume(resp)
+//GetVolume gets a volume
+func (c *Client) GetVolume(dcid string, volumeID string) (*Volume, error) {
+	url := volumePath(dcid, volumeID) + `?depth=` + c.client.depth
+	ret := &Volume{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func PatchVolume(dcid string, volid string, request VolumeProperties) Volume {
-	obj, _ := json.Marshal(request)
-	path := volume_path(dcid, volid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("PATCH", url, bytes.NewBuffer(obj))
-	req.Header.Add("Content-Type", PatchHeader)
-	return toVolume(do(req))
+//UpdateVolume updates a volume
+func (c *Client) UpdateVolume(dcid string, volid string, request VolumeProperties) (*Volume, error) {
+	url := volumePath(dcid, volid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Volume{}
+	err := c.client.Patch(url, request, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func CreateVolume(dcid string, request Volume) Volume {
-	obj, _ := json.Marshal(request)
-	path := volume_col_path(dcid)
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("POST", url, bytes.NewBuffer(obj))
-	req.Header.Add("Content-Type", FullHeader)
-	return toVolume(do(req))
+//CreateVolume creates a volume
+func (c *Client) CreateVolume(dcid string, request Volume) (*Volume, error) {
+	url := volumeColPath(dcid) + `?depth=` + c.client.depth
+	ret := &Volume{}
+	err := c.client.Post(url, request, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func DeleteVolume(dcid, volid string) Resp {
-	path := volume_path(dcid, volid)
-	return is_delete(path)
+// DeleteVolume deletes a volume
+func (c *Client) DeleteVolume(dcid, volid string) (*http.Header, error) {
+	url := volumePath(dcid, volid)
+	ret := &http.Header{}
+	err := c.client.Delete(url, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func CreateSnapshot(dcid string, volid string, name string, description string) Snapshot {
-	var path = volume_path(dcid, volid)
-	path = path + "/create-snapshot"
-	req_url := mk_url(path)
+//CreateSnapshot creates a volume snapshot
+func (c *Client) CreateSnapshot(dcid string, volid string, name string, description string) (*Snapshot, error) {
+	path := volumePath(dcid, volid) + "/create-snapshot"
 	data := url.Values{}
 	data.Set("name", name)
 	data.Add("description", description)
-	req, _ := http.NewRequest("POST", req_url, bytes.NewBufferString(data.Encode()))
-	req.Header.Add("Content-Type", CommandHeader)
-	return toSnapshot(do(req))
+
+	ret := &Snapshot{}
+	err := c.client.Post(path, data, ret, http.StatusAccepted)
+	return ret, err
 }
 
-func RestoreSnapshot(dcid string, volid string, snapshotId string) Resp {
-	var path = volume_path(dcid, volid)
-	path = path + "/restore-snapshot"
-
-	return is_command(path, "snapshotId="+snapshotId)
-}
-
-func toVolume(resp Resp) Volume {
-	var server Volume
-	json.Unmarshal(resp.Body, &server)
-	server.Response = string(resp.Body)
-	server.Headers = &resp.Headers
-	server.StatusCode = resp.StatusCode
-	return server
-}
-
-func toVolumes(resp Resp) Volumes {
-	var col Volumes
-	json.Unmarshal(resp.Body, &col)
-	col.Response = string(resp.Body)
-	col.Headers = &resp.Headers
-	col.StatusCode = resp.StatusCode
-	return col
+// RestoreSnapshot restores a volume with provided snapshot
+func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (*http.Header, error) {
+	path := volumePath(dcid, volid) + "/restore-snapshot"
+	data := url.Values{}
+	data.Set("snapshotId", snapshotID)
+	ret := &http.Header{}
+	err := c.client.Post(path, data, ret, http.StatusAccepted)
+	return ret, err
 }

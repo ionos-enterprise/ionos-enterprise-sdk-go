@@ -1,16 +1,18 @@
 package profitbricks
 
 import (
-	"github.com/stretchr/testify/assert"
+	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetContractResources(t *testing.T) {
-	want := 200
-	resp := GetContractResources()
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	fmt.Println("ContractResources tests")
+	c := setupTestEnv()
+	resp, err := c.GetContractResources()
+	if err != nil {
+		t.Error(err)
 	}
-
-	assert.Equal(t, resp.Type_, "contract")
+	assert.Equal(t, resp.PBType, "contract")
 }

@@ -1,157 +1,110 @@
 package profitbricks
 
 import (
-	"github.com/stretchr/testify/assert"
+	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var dcID string
-var compositedcId string
+func TestCreateDataCenter(t *testing.T) {
+	fmt.Println("DataCenter tests")
+	syncDC.Do(createDataCenter)
 
-func TestCreate(t *testing.T) {
-	want := 202
-	var obj = Datacenter{
-		Properties: DatacenterProperties{
-			Name:        "GO SDK Test",
-			Description: "GO SDK test datacenter",
-			Location:    location,
-		},
-	}
-	resp := CreateDatacenter(obj)
-	dcID = resp.Id
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.Equal(t, resp.Type_, "datacenter")
-	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
-	assert.Equal(t, resp.Properties.Description, "GO SDK test datacenter")
-	assert.Equal(t, resp.Properties.Location, location)
+	assert.Equal(t, dataCenter.PBType, "datacenter")
+	assert.Equal(t, dataCenter.Properties.Name, "GO SDK Test")
+	assert.Equal(t, dataCenter.Properties.Description, "GO SDK test datacenter")
+	assert.Equal(t, dataCenter.Properties.Location, location)
 }
 
 func TestListDatacenters(t *testing.T) {
-	setupTestEnv()
-	want := 200
+	c := setupTestEnv()
 
-	resp := ListDatacenters()
+	resp, err := c.ListDatacenters()
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	if err != nil {
+		t.Error(err)
+		t.Fail()
 	}
-
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetDatacenterFail(t *testing.T) {
-	want := 404
-	resp := GetDatacenter("231")
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	_, err := c.GetDatacenter("231")
+	if err == nil {
+		t.Error(err)
+		t.Fail()
 	}
 }
 
 func TestCreateFailure(t *testing.T) {
-	want := 422
+	c := setupTestEnv()
 	var obj = Datacenter{
 		Properties: DatacenterProperties{
 			Name:        "GO SDK Test",
 			Description: "GO SDK test datacenter",
 		},
 	}
-	resp := CompositeCreateDatacenter(obj)
+	_, err := c.CreateDatacenter(obj)
+	if err == nil {
+		t.Error(err)
+		t.Fail()
+	}
 
-	assert.Equal(t, resp.StatusCode, want)
 }
 
 func TestCreateComposite(t *testing.T) {
-	want := 202
-	var obj = Datacenter{
-		Properties: DatacenterProperties{
-			Name:        "GO SDK Test Composite",
-			Description: "GO SDK test composite datacenter",
-			Location:    location,
-		},
-		Entities: DatacenterEntities{
-			Servers: &Servers{
-				Items: []Server{
-					{
-						Properties: ServerProperties{
-							Name:  "GO SDK Test",
-							Ram:   1024,
-							Cores: 1,
-						},
-					},
-				},
-			},
-			Volumes: &Volumes{
-				Items: []Volume{
-					{
-						Properties: VolumeProperties{
-							Type:             "HDD",
-							Size:             2,
-							Name:             "GO SDK Test",
-							Bus:              "VIRTIO",
-							LicenceType:      "UNKNOWN",
-							AvailabilityZone: "ZONE_3",
-						},
-					},
-				},
-			},
-		},
-	}
-	resp := CompositeCreateDatacenter(obj)
-	compositedcId = resp.Id
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
+	syncCDC.Do(createCompositeDataCenter)
 
-	assert.Equal(t, resp.Type_, "datacenter")
-	assert.Equal(t, resp.Properties.Name, "GO SDK Test Composite")
-	assert.Equal(t, resp.Properties.Description, "GO SDK test composite datacenter")
-	assert.Equal(t, resp.Properties.Location, location)
-	assert.True(t, len(resp.Entities.Servers.Items) > 0)
-	assert.True(t, len(resp.Entities.Volumes.Items) > 0)
+	assert.Equal(t, compositeDataCenter.PBType, "datacenter")
+	assert.Equal(t, compositeDataCenter.Properties.Name, "GO SDK Test Composite")
+	assert.Equal(t, compositeDataCenter.Properties.Description, "GO SDK test composite datacenter")
+	assert.Equal(t, compositeDataCenter.Properties.Location, location)
+	assert.True(t, len(compositeDataCenter.Entities.Servers.Items) > 0)
+	assert.True(t, len(compositeDataCenter.Entities.Volumes.Items) > 0)
 }
 
 func TestGetDatacenter(t *testing.T) {
-	want := 200
-	resp := GetDatacenter(dcID)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	syncDC.Do(createDataCenter)
+	c := setupTestEnv()
+	resp, err := c.GetDatacenter(dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
-
-	assert.Equal(t, resp.Id, dcID)
-	assert.Equal(t, resp.Type_, "datacenter")
+	assert.Equal(t, resp.ID, dataCenter.ID)
+	assert.Equal(t, resp.PBType, "datacenter")
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
 	assert.Equal(t, resp.Properties.Description, "GO SDK test datacenter")
 	assert.Equal(t, resp.Properties.Location, location)
 }
 
-func TestPatchDatacenter(t *testing.T) {
-	want := 202
+func TestUpdateDatacenter(t *testing.T) {
+	syncDC.Do(createDataCenter)
+	c := setupTestEnv()
 	newName := "GO SDK Test - RENAME"
 	obj := DatacenterProperties{Name: newName}
 
-	resp := PatchDatacenter(dcID, obj)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.UpdateDataCenter(dataCenter.ID, obj)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, dcID)
+	assert.Equal(t, resp.ID, dataCenter.ID)
 	assert.Equal(t, resp.Properties.Name, newName)
 }
 
 func TestDeleteDatacenter(t *testing.T) {
-	want := 202
-	resp := DeleteDatacenter(dcID)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	syncDC.Do(createDataCenter)
+	syncCDC.Do(createCompositeDataCenter)
+	c := setupTestEnv()
+	_, err := c.DeleteDatacenter(dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	compositeResp := DeleteDatacenter(compositedcId)
-	if compositeResp.StatusCode != want {
-		t.Errorf(bad_status(want, compositeResp.StatusCode))
+	_, err = c.DeleteDatacenter(compositeDataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 }

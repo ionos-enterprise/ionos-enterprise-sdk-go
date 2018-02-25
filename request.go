@@ -1,20 +1,23 @@
 package profitbricks
 
 import (
-	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 )
 
+//RequestStatus object
 type RequestStatus struct {
-	Id         string                `json:"id,omitempty"`
-	Type_      string                `json:"type,omitempty"`
+	ID         string                `json:"id,omitempty"`
+	PBType     string                `json:"type,omitempty"`
 	Href       string                `json:"href,omitempty"`
 	Metadata   RequestStatusMetadata `json:"metadata,omitempty"`
 	Response   string                `json:"Response,omitempty"`
 	Headers    *http.Header          `json:"headers,omitempty"`
-	StatusCode int                   `json:"headers,omitempty"`
+	StatusCode int                   `json:"statuscode,omitempty"`
 }
+
+//RequestStatusMetadata object
 type RequestStatusMetadata struct {
 	Status  string          `json:"status,omitempty"`
 	Message string          `json:"message,omitempty"`
@@ -22,21 +25,24 @@ type RequestStatusMetadata struct {
 	Targets []RequestTarget `json:"targets,omitempty"`
 }
 
+//RequestTarget object
 type RequestTarget struct {
 	Target ResourceReference `json:"target,omitempty"`
 	Status string            `json:"status,omitempty"`
 }
 
+//Requests object
 type Requests struct {
-	Id         string       `json:"id,omitempty"`
-	Type_      string       `json:"type,omitempty"`
+	ID         string       `json:"id,omitempty"`
+	PBType     string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
 	Items      []Request    `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"headers,omitempty"`
+	StatusCode int          `json:"statuscode,omitempty"`
 }
 
+//Request object
 type Request struct {
 	ID       string `json:"id"`
 	Type     string `json:"type"`
@@ -59,53 +65,29 @@ type Request struct {
 	} `json:"properties"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"headers,omitempty"`
+	StatusCode int          `json:"statuscode,omitempty"`
 }
 
-func ListRequests() Requests {
-	url := mk_url("/requests") + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toRequests(do(req))
+//ListRequests lists all requests
+func (c *Client) ListRequests() (*Requests, error) {
+	url := "/requests" + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Requests{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func GetRequest(req_id string) Request {
-	url := mk_url("/requests/"+req_id) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toRequest(do(req))
+//GetRequest gets a specific request
+func (c *Client) GetRequest(reqID string) (*Request, error) {
+	url := "/requests/" + reqID + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Request{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
-func GetRequestStatus(path string) RequestStatus {
-	url := mk_url(path) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toRequestStatus(do(req))
-}
-
-func toRequestStatus(resp Resp) RequestStatus {
-	var server RequestStatus
-	json.Unmarshal(resp.Body, &server)
-	server.Response = string(resp.Body)
-	server.Headers = &resp.Headers
-	server.StatusCode = resp.StatusCode
-	return server
-}
-
-func toRequests(resp Resp) Requests {
-	var server Requests
-	json.Unmarshal(resp.Body, &server)
-	server.Response = string(resp.Body)
-	server.Headers = &resp.Headers
-	server.StatusCode = resp.StatusCode
-	return server
-}
-
-func toRequest(resp Resp) Request {
-	var server Request
-	json.Unmarshal(resp.Body, &server)
-	server.Response = string(resp.Body)
-	server.Headers = &resp.Headers
-	server.StatusCode = resp.StatusCode
-	return server
+// GetRequestStatus retursn status of the request
+func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
+	url := path + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &RequestStatus{}
+	err := c.client.GetRequestStatus(url, ret, http.StatusOK)
+	return ret, err
 }

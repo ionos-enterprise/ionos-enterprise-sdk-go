@@ -1,43 +1,44 @@
 package profitbricks
 
 import (
-	"github.com/stretchr/testify/assert"
+	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 var locid string
 
 func TestListLocations(t *testing.T) {
-	setupTestEnv()
-	want := 200
-	resp := ListLocations()
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	fmt.Println("Location tests")
+	c := setupTestEnv()
+
+	resp, err := c.ListLocations()
+	if err != nil {
+		t.Errorf(err.Error())
 	}
-	locid = resp.Items[0].Id
+
+	locid = resp.Items[0].ID
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetLocation(t *testing.T) {
-	want := 200
-	resp := GetLocation("us/las")
+	c := setupTestEnv()
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.GetLocation("us/las")
+	if err != nil {
+		t.Errorf(err.Error())
 	}
 
-	assert.Equal(t, resp.Id, "us/las")
-	assert.Equal(t, resp.Type_, "location")
+	assert.Equal(t, resp.ID, "us/las")
+	assert.Equal(t, resp.PBType, "location")
 }
 
 func TestGetRegionalLocations(t *testing.T) {
-	want := 200
-	resp := GetRegionalLocations("us")
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	_, err := c.GetRegionalLocations("us")
+	if err != nil {
+		t.Errorf(err.Error())
 	}
-
-	assert.True(t, len(resp.Items) > 0)
 }

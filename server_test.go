@@ -1,248 +1,157 @@
-// server_test.go
 package profitbricks
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"strings"
-	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
-
-var (
-	once_dc     sync.Once
-	once_srv    sync.Once
-	once_volume sync.Once
-	srv_dc_id   string
-	srv_srvid   string
-	srv_vol     string
-	imageId     string
-)
-
-var sourceMac string = "01:23:45:67:89:00"
-var portRangeStart int = 22
-var portRangeEnd int = 22
-
-func setupDataCenter() {
-	setupTestEnv()
-	srv_dc_id = mkdcid("GO SDK SERVER DC 02")
-	if len(srv_dc_id) == 0 {
-		fmt.Errorf("DataCenter not created %s", srv_dc_id)
-	}
-}
-
-func setupServer() {
-	srv_srvid = setupCreateServer(srv_dc_id)
-	if len(srv_srvid) == 0 {
-		fmt.Errorf("Server not created %s", srv_srvid)
-	}
-}
-
-func setupVolume() {
-
-	vol := Volume{
-		Properties: VolumeProperties{
-			Type:        "HDD",
-			Size:        2,
-			Name:        "GO SDK Test",
-			Bus:         "VIRTIO",
-			LicenceType: "UNKNOWN",
-		},
-	}
-	resp := CreateVolume(srv_dc_id, vol)
-	srv_vol = resp.Id
-
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	if len(srv_vol) == 0 {
-		fmt.Errorf("Volume not created %s", 1)
-	}
-
-}
-
-func setupCreateServer(srv_dc_id string) string {
-
-	var req = Server{
-		Properties: ServerProperties{
-			Name:             "GO SDK Test",
-			Ram:              1024,
-			Cores:            1,
-			AvailabilityZone: "ZONE_1",
-			CpuFamily:        "INTEL_XEON",
-		},
-	}
-	srv := CreateServer(srv_dc_id, req)
-	// wait for server to be running
-	waitTillProvisioned(srv.Headers.Get("Location"))
-	srvid := srv.Id
-	return srvid
-}
 
 func TestCreateServer(t *testing.T) {
-	once_dc.Do(setupDataCenter)
+	fmt.Println("Server tests")
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
 
-	want := 202
-
-	var req = Server{
-		Properties: ServerProperties{
-			Name:             "GO SDK Test",
-			Ram:              1024,
-			Cores:            1,
-			AvailabilityZone: "ZONE_1",
-			CpuFamily:        "INTEL_XEON",
-		},
-	}
-	t.Logf("Creating server in DC: %s", srv_dc_id)
-	srv := CreateServer(srv_dc_id, req)
-	waitTillProvisioned(srv.Headers.Get("Location"))
-	srv_srvid = srv.Id
-	if srv.StatusCode != want {
-		t.Errorf(bad_status(want, srv.StatusCode))
-	}
-
-	assert.Equal(t, srv.Type_, "server")
-	assert.Equal(t, srv.Properties.Name, "GO SDK Test")
-	assert.Equal(t, srv.Properties.Ram, 1024)
-	assert.Equal(t, srv.Properties.Cores, 1)
-	assert.Equal(t, srv.Properties.AvailabilityZone, "ZONE_1")
-	assert.Equal(t, srv.Properties.CpuFamily, "INTEL_XEON")
+	assert.Equal(t, server.PBType, "server")
+	assert.Equal(t, server.Properties.Name, "GO SDK Test")
+	assert.Equal(t, server.Properties.RAM, 1024)
+	assert.Equal(t, server.Properties.Cores, 1)
+	assert.Equal(t, server.Properties.AvailabilityZone, "ZONE_1")
+	assert.Equal(t, server.Properties.CPUFamily, "INTEL_XEON")
 }
 
 func TestCreateServerFailure(t *testing.T) {
-	want := 422
+	c := setupTestEnv()
 
 	var req = Server{
 		Properties: ServerProperties{
 			Name:             "GO SDK Test",
-			Ram:              1024,
+			RAM:              1024,
 			AvailabilityZone: "ZONE_1",
-			CpuFamily:        "INTEL_XEON",
+			CPUFamily:        "INTEL_XEON",
 		},
 	}
-	t.Logf("Creating server in DC: %s", srv_dc_id)
-	srv := CreateServer(srv_dc_id, req)
-	if srv.StatusCode != want {
-		t.Errorf(bad_status(want, srv.StatusCode))
+	_, err := c.CreateServer(dataCenter.ID, req)
+	if err == nil {
+		t.Errorf("no error has been returned")
 	}
-	assert.True(t, strings.Contains(srv.Response, "Attribute 'cores' is required"))
 }
 
 func TestGetServer(t *testing.T) {
-	want := 200
-	resp := GetServer(srv_dc_id, srv_srvid)
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	c := setupTestEnv()
+	resp, err := c.GetServer(dataCenter.ID, server.ID)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	if err != nil {
+		t.Error(err)
 	}
-
-	assert.Equal(t, resp.Id, srv_srvid)
-	assert.Equal(t, resp.Type_, "server")
+	assert.Equal(t, resp.ID, server.ID)
+	assert.Equal(t, resp.PBType, "server")
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
-	assert.Equal(t, resp.Properties.Ram, 1024)
+	assert.Equal(t, resp.Properties.RAM, 1024)
 	assert.Equal(t, resp.Properties.Cores, 1)
 	assert.Equal(t, resp.Properties.AvailabilityZone, "ZONE_1")
-	assert.Equal(t, resp.Properties.CpuFamily, "INTEL_XEON")
+	assert.Equal(t, resp.Properties.CPUFamily, "INTEL_XEON")
 }
 
 func TestGetServerFailure(t *testing.T) {
-	want := 404
-	resp := GetServer(srv_dc_id, "00000000-0000-0000-0000-000000000000")
+	c := setupTestEnv()
+	_, err := c.GetServer(dataCenter.ID, "00000000-0000-0000-0000-000000000000")
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	if err == nil {
+		t.Errorf("no error has been returned")
 	}
-
-	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
 }
 
 func TestListServers(t *testing.T) {
-	if srv_dc_id == "" {
-		once_dc.Do(setupDataCenter)
-		once_srv.Do(setupServer)
-	}
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
 
-	want := 200
-
-	resp := ListServers(srv_dc_id)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.ListServers(dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 	assert.True(t, len(resp.Items) > 0)
 }
 
-func TestPatchServer(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
+func TestUpdateServer(t *testing.T) {
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
 
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
-
-	want := 202
 	req := ServerProperties{
 		Name: "GO SDK Test RENAME",
 	}
-	resp := PatchServer(srv_dc_id, srv_srvid, req)
-	if resp.StatusCode != want {
-		t.Error("resp: ", resp.Response)
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.UpdateServer(dataCenter.ID, server.ID, req)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, srv_srvid)
+	assert.Equal(t, resp.ID, server.ID)
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test RENAME")
 }
 
 func TestStopServer(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
-
-	want := 202
-	resp := StopServer(srv_dc_id, srv_srvid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	resp, err := c.StopServer(dataCenter.ID, server.ID)
+	if err != nil {
+		t.Error(err)
 	}
-
+	c.WaitTillProvisioned(resp.Get("Location"))
 }
 
 func TestStartServer(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
 
-	want := 202
-	resp := StartServer(srv_dc_id, srv_srvid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.StartServer(dataCenter.ID, server.ID)
+	if err != nil {
+		t.Error(err)
 	}
-
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestRebootServer(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
 
-	want := 202
-	resp := RebootServer(srv_dc_id, srv_srvid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.RebootServer(dataCenter.ID, server.ID)
+	if err != nil {
+		t.Error(err)
 	}
-
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestAttachImage(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
-	once_volume.Do(setupVolume)
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	onceServerVolume.Do(setupVolume)
 
-	want := 202
+	resp, err := c.AttachVolume(dataCenter.ID, server.ID, volume.ID)
 
-	resp := AttachVolume(srv_dc_id, srv_srvid, srv_vol)
-	waitTillProvisioned(resp.Headers.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
+	err = c.WaitTillProvisioned(resp.Headers.Get("Location"))
 
-	if resp.StatusCode != want {
-		t.Error(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, srv_vol)
+	assert.Equal(t, resp.ID, volume.ID)
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
 	assert.Equal(t, resp.Properties.Size, 2)
 	assert.Equal(t, resp.Properties.Type, "HDD")
@@ -250,35 +159,31 @@ func TestAttachImage(t *testing.T) {
 }
 
 func TestListAttachedVolumes(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	onceServerVolume.Do(setupVolumeAttached)
 
-	want := 200
-
-	resp := ListAttachedVolumes(srv_dc_id, srv_srvid)
-
-	if resp.StatusCode != want {
-		t.Error(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.ListAttachedVolumes(dataCenter.ID, server.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetAttachedVolume(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	onceServerVolume.Do(setupVolumeAttached)
 
-	want := 200
-
-	resp := GetAttachedVolume(srv_dc_id, srv_srvid, srv_vol)
-
-	if resp.StatusCode != want {
-		t.Error(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.GetAttachedVolume(dataCenter.ID, server.ID, volume.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, srv_vol)
+	assert.Equal(t, resp.ID, volume.ID)
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
 	assert.Equal(t, resp.Properties.Size, 2)
 	assert.Equal(t, resp.Properties.Bus, "VIRTIO")
@@ -287,112 +192,76 @@ func TestGetAttachedVolume(t *testing.T) {
 }
 
 func TestDetachVolume(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
-	once_volume.Do(setupVolume)
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	onceServerVolume.Do(setupVolumeAttached)
 
-	want := 202
-	resp := DetachVolume(srv_dc_id, srv_srvid, srv_vol)
-	if resp.StatusCode != want {
-		t.Error(string(resp.Body))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.DetachVolume(dataCenter.ID, server.ID, volume.ID)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
 	}
 }
 
 func TestAttachCdrom(t *testing.T) {
-	want := 202
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
-
-	images := ListImages()
-	for _, image := range images.Items {
-		if image.Properties.ImageType == "CDROM" && image.Properties.Location == "us/las" {
-			imageId = image.Id
-			break
-		}
-	}
-
-	resp := AttachCdrom(srv_dc_id, srv_srvid, imageId)
-
-	waitTillProvisioned(resp.Headers.Get("Location"))
-
-	if resp.StatusCode != want {
-		t.Error(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.Equal(t, resp.Id, imageId)
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	onceServerVolume.Do(setupCDAttached)
 }
 
 func TestListAttachedCdroms(t *testing.T) {
-	want := 200
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	onceCD.Do(setupCDAttached)
 
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
-
-	resp := ListAttachedCdroms(srv_dc_id, srv_srvid)
-	if resp.StatusCode != want {
-		t.Error(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	_, err := c.ListAttachedCdroms(dataCenter.ID, server.ID)
+	if err != nil {
+		t.Error(err)
 	}
-
-	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetAttachedCdrom(t *testing.T) {
-	want := 200
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	onceCD.Do(setupCDAttached)
 
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
-
-	resp := GetAttachedCdrom(srv_dc_id, srv_srvid, imageId)
-	if resp.StatusCode != want {
-		t.Error(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.GetAttachedCdrom(dataCenter.ID, server.ID, image.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, imageId)
+	assert.Equal(t, resp.ID, image.ID)
 }
 
 func TestDetachCdrom(t *testing.T) {
-	want := 202
-	once_dc.Do(setupDataCenter)
-	once_srv.Do(setupServer)
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
+	onceCD.Do(setupCDAttached)
 
-	resp := DetachCdrom(srv_dc_id, srv_srvid, imageId)
-
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	_, err := c.DetachCdrom(dataCenter.ID, server.ID, image.ID)
+	if err != nil {
+		t.Error(err)
 	}
-}
-
-func TestDeleteServer(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-	once_dc.Do(setupServer)
-
-	want := 202
-
-	resp := DeleteServer(srv_dc_id, srv_srvid)
-
-	if resp.StatusCode != want {
-		t.Error(string(resp.Body))
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
 }
 
 func TestCreateCompositeServer(t *testing.T) {
-	once_dc.Do(setupDataCenter)
-
-	want := 202
-
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
 	var req = Server{
 		Properties: ServerProperties{
 			Name:             "GO SDK Test",
-			Ram:              1024,
+			RAM:              1024,
 			Cores:            1,
 			AvailabilityZone: "ZONE_1",
-			CpuFamily:        "INTEL_XEON",
+			CPUFamily:        "INTEL_XEON",
 		},
 		Entities: &ServerEntities{
 			Volumes: &Volumes{
@@ -402,8 +271,8 @@ func TestCreateCompositeServer(t *testing.T) {
 							Type:          "HDD",
 							Size:          5,
 							Name:          "volume1",
-							Image:         image,
-							ImagePassword: "test1234",
+							ImageAlias:    "ubuntu:latest",
+							ImagePassword: "JWXuXR9CMghXAc6v",
 						},
 					},
 				},
@@ -416,7 +285,7 @@ func TestCreateCompositeServer(t *testing.T) {
 							Lan:  1,
 						},
 						Entities: &NicEntities{
-							Firewallrules: &FirewallRules{
+							FirewallRules: &FirewallRules{
 								Items: []FirewallRule{
 									{
 										Properties: FirewallruleProperties{
@@ -436,28 +305,38 @@ func TestCreateCompositeServer(t *testing.T) {
 		},
 	}
 
-	t.Logf("Creating server in DC: %s", srv_dc_id)
-	srv := CreateServer(srv_dc_id, req)
+	srv, err := c.CreateServer(dataCenter.ID, req)
 
-	if srv.StatusCode != want {
-		fmt.Println(srv.Response)
-		t.Errorf(bad_status(want, srv.StatusCode))
+	if err != nil {
+		t.Error(err)
 	}
-	waitTillProvisioned(srv.Headers.Get("Location"))
+	err = c.WaitTillProvisioned(srv.Headers.Get("Location"))
 
-	assert.Equal(t, srv.Type_, "server")
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.Equal(t, srv.PBType, "server")
 	assert.Equal(t, srv.Properties.Name, "GO SDK Test")
-	assert.Equal(t, srv.Properties.Ram, 1024)
+	assert.Equal(t, srv.Properties.RAM, 1024)
 	assert.Equal(t, srv.Properties.Cores, 1)
 	assert.True(t, len(srv.Entities.Nics.Items) > 0)
-	assert.True(t, len(srv.Entities.Nics.Items[0].Entities.Firewallrules.Items) > 0)
+	assert.True(t, len(srv.Entities.Nics.Items[0].Entities.FirewallRules.Items) > 0)
 	assert.True(t, len(srv.Entities.Volumes.Items) > 0)
+}
 
-	resp := DeleteDatacenter(srv_dc_id)
+func TestDeleteServer(t *testing.T) {
+	c := setupTestEnv()
+	onceServerDC.Do(createDataCenter)
+	onceServer.Do(createServer)
 
-	if resp.StatusCode != want {
-		fmt.Println(srv.Response)
-		t.Errorf(bad_status(want, resp.StatusCode))
+	_, err := c.DeleteServer(dataCenter.ID, server.ID)
+	if err != nil {
+		t.Error(err)
+	}
 
+	_, err = c.DeleteDatacenter(dataCenter.ID)
+	if err != nil {
+		t.Error(err)
 	}
 }

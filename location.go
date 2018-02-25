@@ -1,31 +1,34 @@
 package profitbricks
 
 import (
-	"encoding/json"
 	"net/http"
+	"strconv"
 )
 
+//Location object
 type Location struct {
-	Id         string             `json:"id,omitempty"`
-	Type_      string             `json:"type,omitempty"`
+	ID         string             `json:"id,omitempty"`
+	PBType     string             `json:"type,omitempty"`
 	Href       string             `json:"href,omitempty"`
 	Metadata   Metadata           `json:"metadata,omitempty"`
 	Properties LocationProperties `json:"properties,omitempty"`
 	Response   string             `json:"Response,omitempty"`
 	Headers    *http.Header       `json:"headers,omitempty"`
-	StatusCode int                `json:"headers,omitempty"`
+	StatusCode int                `json:"statuscode,omitempty"`
 }
 
+//Locations object
 type Locations struct {
-	Id         string       `json:"id,omitempty"`
-	Type_      string       `json:"type,omitempty"`
+	ID         string       `json:"id,omitempty"`
+	PBType     string       `json:"type,omitempty"`
 	Href       string       `json:"href,omitempty"`
 	Items      []Location   `json:"items,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"headers,omitempty"`
+	StatusCode int          `json:"statuscode,omitempty"`
 }
 
+//LocationProperties object
 type LocationProperties struct {
 	Name         string   `json:"name,omitempty"`
 	Features     []string `json:"features,omitempty"`
@@ -33,43 +36,25 @@ type LocationProperties struct {
 }
 
 // ListLocations returns location collection data
-func ListLocations() Locations {
-	url := mk_url(location_col_path()) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toLocations(do(req))
+func (c *Client) ListLocations() (*Locations, error) {
+	url := locationColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Locations{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
 // GetRegionalLocations returns a list of available locations in a specific region
-func GetRegionalLocations(regid string) Locations {
-	url := mk_url(location_reg_path(regid)) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toLocations(do(req))
+func (c *Client) GetRegionalLocations(regid string) (*Locations, error) {
+	url := locationRegPath(regid) + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Locations{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }
 
 // GetLocation returns location data
-func GetLocation(locid string) Location {
-	url := mk_url(location_path(locid)) + `?depth=` + Depth
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Add("Content-Type", FullHeader)
-	return toLocation(do(req))
-}
-
-func toLocation(resp Resp) Location {
-	var obj Location
-	json.Unmarshal(resp.Body, &obj)
-	obj.Response = string(resp.Body)
-	obj.Headers = &resp.Headers
-	obj.StatusCode = resp.StatusCode
-	return obj
-}
-
-func toLocations(resp Resp) Locations {
-	var col Locations
-	json.Unmarshal(resp.Body, &col)
-	col.Response = string(resp.Body)
-	col.Headers = &resp.Headers
-	col.StatusCode = resp.StatusCode
-	return col
+func (c *Client) GetLocation(locid string) (*Location, error) {
+	url := locationPath(locid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &Location{}
+	err := c.client.Get(url, ret, http.StatusOK)
+	return ret, err
 }

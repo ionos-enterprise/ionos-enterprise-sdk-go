@@ -2,7 +2,7 @@
 
 Version: profitbricks-sdk-go **4.0.2**
 
-The ProfitBricks Client Library for [Go](https://www.golang.org/) provides you with access to the ProfitBricks REST API. It is designed for developers who are building applications in Go.
+The ProfitBricks Client Library for [Go](https://www.golang.org/) provides you with access to the ProfitBricks Cloud API. It is designed for developers who are building applications in Go.
 
 This guide will walk you through getting setup with the library and performing various actions against the API.
 
@@ -10,10 +10,11 @@ This guide will walk you through getting setup with the library and performing v
 
 * [Description](#description)
 * [Getting Started](#getting-started)
-  * [Installation](#installation)
-  * [Authenticating](#authenticating)
-  * [Error Handling](#error-handling)
+    * [Installation](#installation)
+    * [Authenticating](#authenticating)
+    * [Error Handling](#error-handling)
 * [Reference](#reference)
+    * [Depth](#depth)
     * [Data Centers](#data-centers)
         * [List Data Centers](#list-data-centers)
         * [Retrieve a Data Center](#retrieve-a-data-center)
@@ -117,7 +118,7 @@ This guide will walk you through getting setup with the library and performing v
         * [List Resources](#list-resources)
         * [List All Resources of a Type](#list-all-resources-of-a-type)
         * [List a specific Resource Type](#list-a-specific-resource-type)
-* [Example](#example)    
+* [Example](#example)
 * [Support](#support)
 * [Testing](#testing)
 * [Contributing](#contributing)
@@ -125,13 +126,13 @@ This guide will walk you through getting setup with the library and performing v
 
 # Description
 
-The Go SDK wraps the latest version of the ProfitBricks REST API. All API operations are performed over SSL and authenticated using your ProfitBricks portal credentials. The API can be accessed within an instance running in ProfitBricks or directly over the Internet from any application that can send an HTTPS request and receive an HTTPS response.
+The Go SDK wraps the latest version of the ProfitBricks Cloud API. All API operations are performed over SSL and authenticated using your ProfitBricks portal credentials. The API can be accessed within an instance running in ProfitBricks or directly over the Internet from any application that can send an HTTPS request and receive an HTTPS response.
 
 ## Getting Started
 
 Before you begin you will need to have [signed-up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you setup during sign-up will be used to authenticate against the API.
 
-### Installation
+#### Installation
 
 Install the Go language from: [Go Installation](https://golang.org/doc/install)
 
@@ -145,7 +146,7 @@ export PATH=$PATH:$GOBIN
 ```
 
 
-The following go command will download `profitbricks-sdk-go` to your configured `GOPATH`:
+The following `go` command will download `profitbricks-sdk-go` to your configured `GOPATH`:
 
 ```go
 go get "github.com/profitbricks/profitbricks-sdk-go"
@@ -153,7 +154,7 @@ go get "github.com/profitbricks/profitbricks-sdk-go"
 
 The source code of the package will be located at:
 
-	$GOBIN\src\profitbricks-sdk-go
+	$GOBIN/src/profitbricks-sdk-go
 
 Create main package file *example.go*:
 
@@ -177,18 +178,38 @@ import(
 ```
 
 
-### Authenticating
+#### Authenticating
+
 Add your credentials for connecting to ProfitBricks:
 
 ```go
-profitbricks.SetAuth("username", "password")
+client := profitbricks.NewClient("username", "password")
+```
+
+Set depth:
+
+```go
+client.SetDepth(5)
+```
+
+Set Cloud API URL
+
+```go
+client.SetURL([url])
+```
+
+Set "User-Agent" header for all API calls
+
+```go
+client.SetAgentHeader([agent-header])
 ```
 
 
+Depth controls the amount of data returned from the REST server ( range 1-5 ). The larger the number the more information is returned from the server. This is especially useful if you are looking for the information in the nested objects.
 
 **Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
 
-### Error Handling
+#### Error Handling
 
 The SDK will raise custom exceptions when the Cloud API returns an error. There are four response types:
 
@@ -199,81 +220,19 @@ The SDK will raise custom exceptions when the Cloud API returns an error. There 
 | 422 | The request body includes invalid JSON. |
 | 429 | The Cloud API rate limit has been exceeded. |
 
-# Concepts
-
-The Go SDK wraps the latest version of the ProfitBricks REST API. All API operations are performed over SSL and authenticated using your ProfitBricks portal credentials. The API can be accessed within an instance running in ProfitBricks or directly over the Internet from any application that can send an HTTPS request and receive an HTTPS response.
-
-# Getting Started
-
-Before you begin you will need to have [signed-up](https://www.profitbricks.com/signup) for a ProfitBricks account. The credentials you setup during sign-up will be used to authenticate against the API.
-
-Install the Go language from: [Go Installation](https://golang.org/doc/install)
-
-The `GOPATH` environment variable specifies the location of your Go workspace. It is likely the only environment variable you'll need to set when developing Go code. This is an example of pointing to a workspace configured underneath your home directory:
-
-```
-mkdir -p ~/go/bin
-export GOPATH=~/go
-export GOBIN=$GOPATH/bin
-export PATH=$PATH:$GOBIN
-```
-
-# Installation
-
-The following go command will download `profitbricks-sdk-go` to your configured `GOPATH`:
+Therefore each client function returns two parameters expected response and an error. For example:
 
 ```go
-go get "github.com/profitbricks/profitbricks-sdk-go"
+datacenters, err := ListDatacenters()
 ```
 
-The source code of the package will be located at:
-
-	$GOBIN\src\profitbricks-sdk-go
-
-Create main package file *example.go*:
-
-```go
-package main
-
-import (
-	"fmt"
-)
-
-func main() {
-}
-```
-
-Import GO SDK:
-
-```go
-import(
-	"github.com/profitbricks/profitbricks-sdk-go"
-)
-```
-
-Add your credentials for connecting to ProfitBricks:
-
-```go
-profitbricks.SetAuth("username", "password")
-```
-
-Set depth:
-
-```go
-profitbricks.SetDepth("5")
-```
-
-Depth controls the amount of data returned from the REST server ( range 1-5 ). The larger the number the more information is returned from the server. This is especially useful if you are looking for the information in the nested objects.
-
-**Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
-
+In the example the first parameter is a collection of virtual data centers and an error.
 
 ## Reference
 
 This section provides details on all the available operations and the arguments they accept. Brief code snippets demonstrating usage are also included.
 
-
-##### Depth
+#### Depth
 
 Many of the *List* or *Get* operations will accept an optional *depth* argument. Setting this to a value between 0 and 5 affects the amount of data that is returned. The detail returned varies somewhat depending on the resource being queried, however it generally follows this pattern.
 
@@ -288,7 +247,7 @@ Many of the *List* or *Get* operations will accept an optional *depth* argument.
 
 This SDK sets the *Depth=5* by default as that works well in the majority of cases. You may find that setting *Depth* to a lower or higher value could simplify a later operation by reducing or increasing the data available in the response object.
 
-### Data Centers
+## Data Centers
 
 Virtual Data Centers (VDCs) are the foundation of the ProfitBricks platform. VDCs act as logical containers for all other objects you will be creating, e.g., servers. You can provision as many VDCs as you want. VDCs have their own private network and are logically segmented from each other to create isolation.
 
@@ -388,9 +347,9 @@ Build the `DatacenterProperties` resource object:
 
     var obj = DatacenterProperties{Name: "new Name",Description: "new desc"}
 
-Pass the arguments to `PatchDatacenter`:
+Pass the arguments to `UpdateDatacenter`:
 
-PatchDatacenter(dcid string, obj DatacenterProperties)
+UpdateDatacenter(dcid string, obj DatacenterProperties)
 
 ---
 
@@ -412,7 +371,7 @@ Pass the argument to `DeleteDatacenter`:
 
 ---
 
-### Locations
+## Locations
 
 Locations are the physical ProfitBricks data centers where you can provision your VDCs.
 
@@ -458,7 +417,7 @@ Pass the argument to `GetRegionalLocations`:
 
 ---
 
-### Servers
+## Servers
 
 #### List Servers
 
@@ -509,10 +468,10 @@ Build a [Server](#server-resource-object) object:
     var server = Server{
 		Properties: ServerProperties{
 			Name:             "GO SDK Test",
-			Ram:              1024,
+			RAM:              1024,
 			Cores:            1,
 			AvailabilityZone: "ZONE_1",
-			CpuFamily:        "INTEL_XEON",
+			CPUFamily:        "INTEL_XEON",
 		},
 	}
 
@@ -520,15 +479,15 @@ Pass the object and other arguments to `CreateServer`:
 
     CreateServer(datacenterId, server)
 
-##### Server Resource Object
+#### Server Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
 | Name | **yes** | string | The name of the server. |
 | Cores | **yes** | int | The total number of cores for the server. |
-| Ram | **yes** | int | The amount of memory for the server in MB, e.g. 2048. Size must be specified in multiples of 256 MB with a minimum of 256 MB; however, if you set `RamHotPlug` to *true* then you must use a minimum of 1024 MB. |
+| RAM | **yes** | int | The amount of memory for the server in MB, e.g. 2048. Size must be specified in multiples of 256 MB with a minimum of 256 MB; however, if you set `RamHotPlug` to *true* then you must use a minimum of 1024 MB. |
 | AvailabilityZone | no | string | The availability zone in which the server should exist. |
-| CpuFamily | no | string | Sets the CPU type. "AMD_OPTERON" or "INTEL_XEON". Defaults to "AMD_OPTERON". |
+| CPUFamily | no | string | Sets the CPU type. "AMD_OPTERON" or "INTEL_XEON". Defaults to "AMD_OPTERON". |
 | BootVolume | no | string | A volume ID that the server will boot from. If not *nil* then `BootCdrom` has to be *nil*. |
 | BootCdrom | no | string | A CD-ROM image ID used for booting. If not *nil* then `BootVolume` has to be *nil*. |
 | Cdroms | no | list | A list of existing volume IDs that you want to connect to the server. |
@@ -557,9 +516,9 @@ The following table describes the request arguments:
 | serverId | **yes** | string | The ID of the server. |
 | Name | no | string | The name of the server. |
 | Cores | no | int | The number of cores for the server. |
-| Ram | no | int | The amount of memory in the server. |
+| RAM | no | int | The amount of memory in the server. |
 | AvailabilityZone | no | string | The new availability zone for the server. |
-| CpuFamily | no | string | Sets the CPU type. "AMD_OPTERON" or "INTEL_XEON". Defaults to "AMD_OPTERON". |
+| CPUFamily | no | string | Sets the CPU type. "AMD_OPTERON" or "INTEL_XEON". Defaults to "AMD_OPTERON". |
 | BootVolume | no | string | A volume ID used for booting. If not *nil* then `BootCdrom` has to be *nil*. |
 | BootCdrom | no | string | A CD-ROM image ID used for booting. If not *nil* then `BootVolume` has to be *nil*. |
 
@@ -572,7 +531,7 @@ Build a [ServerProperties](#serverproperties) object:
 
 Pass the arguments to `update_server`:
 
-    PatchServer(datacenterId, serverId, server)
+    UpdateServer(datacenterId, serverId, server)
 
 ---
 
@@ -788,7 +747,7 @@ Pass the arguments to `StopServer`:
 
 ---
 
-### Images
+## Images
 
 #### List Images
 
@@ -817,7 +776,7 @@ Pass the arguments to `GetImage`:
 ---
 
 
-### Volumes
+## Volumes
 
 #### List Volumes
 
@@ -871,7 +830,7 @@ Build the `Volume` resource object:
 			Name:             "GO SDK Test",
 			ImageAlias:       "ubuntu:latest",
 			Bus:              "VIRTIO",
-			SshKeys:          []string{"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoLVLHON4BSK3D8L4H79aFo..."},
+			SSHKeys:          []string{"ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCoLVLHON4BSK3D8L4H79aFo..."},
 			Type:             "HDD",
 			ImagePassword:    "test1234",
 			AvailabilityZone: "ZONE_3",
@@ -882,7 +841,7 @@ Pass the object and arguments to `CreateVolume`:
 
     CreateVolume(dcID, request)
 
-##### Volume Resource Object
+#### Volume Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
@@ -894,7 +853,7 @@ Pass the object and arguments to `CreateVolume`:
 | LicenceType | **yes** | string | The licence type of the volume. Options: LINUX, WINDOWS, WINDOWS2016, UNKNOWN, OTHER. Default: UNKNOWN |
 | ImagePassword | **yes** | string | A password to set on the volume for the appropriate root or administrative account. This field may only be set in creation requests. When reading, it always returns *null*. The password has to contain 8-50 characters. Only these characters are allowed: [abcdefghjkmnpqrstuvxABCDEFGHJKLMNPQRSTUVX23456789] |
 | ImageAlias | **yes** | string | An alias to a ProfitBricks public image. Use instead of "image".] |
-| SshKeys | **yes** | string | SSH keys to allow access to the volume via SSH. |
+| SSHKeys | **yes** | string | SSH keys to allow access to the volume via SSH. |
 | AvailabilityZone | no | string | The storage availability zone assigned to the volume. Valid values: AUTO, ZONE_1, ZONE_2, or ZONE_3. This only applies to HDD volumes. Leave blank or set to AUTO when provisioning SSD volumes. |
 
 The following table outlines the various licence types you can define:
@@ -941,13 +900,13 @@ The following table describes the request arguments:
 
 **Note**: Trying to change the `Image`, `Type`, or `AvailabilityZone` in an update request will result in an error.
 
-Pass the arguments to `PatchVolume`:
+Pass the arguments to `UpdateVolume`:
 
     var obj := VolumeProperties{
 		Name: "GO SDK Test - RENAME",
 		Size: 5,
 	}
-	PatchVolume(datacenterId, volumeId, obj)
+	UpdateVolume(datacenterId, volumeId, obj)
 
 ---
 
@@ -1005,7 +964,7 @@ Pass the arguments to `restore_snapshot`:
 
 ---
 
-### Snapshots
+## Snapshots
 
 #### List Snapshots
 
@@ -1043,10 +1002,10 @@ The following table describes the request arguments:
 | Name | no | string | The name of the snapshot. |
 | Description | no | string | The description of the snapshot. |
 | LicenceType | no | string | The snapshot's licence type: LINUX, WINDOWS, WINDOWS2016, or OTHER. |
-| CpuHotPlug | no | bool | This volume is capable of CPU hot plug (no reboot required) |
-| CpuHotUnplug | no | bool | This volume is capable of CPU hot unplug (no reboot required) |
-| RamHotPlug | no | bool |  This volume is capable of memory hot plug (no reboot required) |
-| RamHotUnplug | no | bool | This volume is capable of memory hot unplug (no reboot required) |
+| CPUHotPlug | no | bool | This volume is capable of CPU hot plug (no reboot required) |
+| CPUHotUnplug | no | bool | This volume is capable of CPU hot unplug (no reboot required) |
+| RAMHotPlug | no | bool |  This volume is capable of memory hot plug (no reboot required) |
+| RAMHotUnplug | no | bool | This volume is capable of memory hot unplug (no reboot required) |
 | NicHotPlug | no | bool | This volume is capable of NIC hot plug (no reboot required) |
 | NicHotUnplug | no | bool | This volume is capable of NIC hot unplug (no reboot required) |
 | DiscVirtioHotPlug | no | bool | This volume is capable of VirtIO drive hot plug (no reboot required) |
@@ -1076,7 +1035,7 @@ Pass the arguments to `DeleteSnapshot`:
 
 ---
 
-### IP Blocks
+## IP Blocks
 
 The IP block operations assist with managing reserved /static public IP addresses.
 
@@ -1130,7 +1089,7 @@ Pass it to `ReserveIpBlock`:
 
     ReserveIpBlock(ipblock)
 
-##### IPBlock Resource Object
+#### IPBlock Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
@@ -1165,7 +1124,7 @@ Pass the arguments to `ReleaseIpBlock`:
 
 ---
 
-### LANs
+## LANs
 
 #### List LANs
 
@@ -1211,7 +1170,7 @@ Pass the object and arguments to `create_lan`:
 
     CreateLan(datacenterId, request)
 
-##### LAN Resource Object
+#### LAN Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
@@ -1250,7 +1209,7 @@ The following table describes the request arguments:
 | lanId | **yes** | int | The ID of the LAN. |
 | Name | no | string | A descriptive name for the LAN. |
 | Public | no | bool | Boolean indicating if the LAN faces the public Internet or not. |
-| IpFailover | no | array | A list of IP fail-over dicts. |
+| IPFailover | no | array | A list of IP fail-over dicts. |
 
 Pass the arguments to `update_lan`:
 
@@ -1259,7 +1218,7 @@ Pass the arguments to `update_lan`:
 			Public: true,
 			Name:   "GO SDK Test with failover",
 		}
-	PatchLan(datacenterId, lanId, obj)
+	UpdateLan(datacenterId, lanId, obj)
 
 ---
 
@@ -1279,7 +1238,7 @@ Pass the arguments to `delete_lan`:
     DeleteLan(lan_dcid, lanid)
 ---
 
-### Network Interfaces (NICs)
+## Network Interfaces (NICs)
 
 #### List NICs
 
@@ -1345,7 +1304,7 @@ Pass the object and arguments to `create_nic`:
 
    CreateNic(datacenterId, serverId, nic)
 
-##### NIC Resource Object
+#### NIC Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
@@ -1384,7 +1343,7 @@ The following table describes the request arguments:
 Pass the arguments to `update_nic`:
 
     var obj = NicProperties{Name: "GO SDK Test - RENAME", Lan: 1}
-	PatchNic(nic_dcid, nic_srvid, nicid, obj)	
+	UpdateNic(nic_dcid, nic_srvid, nicid, obj)
 
 ---
 
@@ -1406,7 +1365,7 @@ Pass the arguments to `DeleteNic`:
 
 ---
 
-### Firewall Rules
+## Firewall Rules
 
 #### List Firewall Rules
 
@@ -1474,15 +1433,15 @@ Pass the object and arguments to `create_firewall_rule`:
 
     CreateFirewallRule(datacenterId, serverId, nicId, firewallRule)
 
-##### Firewall Rule Resource Object
+#### Firewall Rule Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
 | Name | no | string | The name of the firewall rule. |
 | Protocol | **yes** | string | The protocol for the rule: TCP, UDP, ICMP, ANY. |
 | SourceMac | no | string | Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. A *nil* value allows all source MAC address. |
-| SourceIp | no | string | Only traffic originating from the respective IPv4 address is allowed. A *nil* value allows all source IPs. |
-| TargetIp | no | string | In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. A *nil* value allows all target IPs. |
+| SourceIP | no | string | Only traffic originating from the respective IPv4 address is allowed. A *nil* value allows all source IPs. |
+| TargetIP | no | string | In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. A *nil* value allows all target IPs. |
 | PortRangeStart | no | string | Defines the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *nil* to allow all ports. |
 | PortRangeEnd | no | string | Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *nil* to allow all ports. |
 | IcmpType | no | string | Defines the allowed type (from 0 to 254) if the protocol ICMP is chosen. A *nil* value allows all types. |
@@ -1504,19 +1463,19 @@ The following table describes the request arguments:
 | firewallRuleId | **yes** | string | The ID of the firewall rule. |
 | Name | no | string | The name of the firewall rule. |
 | SourceMac | no | string | Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. A *nil* value allows all source MAC address. |
-| SourceIp | no | string | Only traffic originating from the respective IPv4 address is allowed. A *nil* value allows all source IPs. |
-| TargetIp | no | string | In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. A *nil* value allows all target IPs. |
+| SourceIP | no | string | Only traffic originating from the respective IPv4 address is allowed. A *nil* value allows all source IPs. |
+| TargetIP | no | string | In case the target NIC has multiple IP addresses, only traffic directed to the respective IP address of the NIC is allowed. A *nil* value allows all target IPs. |
 | PortRangeStart | no | string | Defines the start range of the allowed port (from 1 to 65534) if protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *nil* to allow all ports. |
 | PortRangeEnd | no | string | Defines the end range of the allowed port (from 1 to 65534) if the protocol TCP or UDP is chosen. Leave `PortRangeStart` and `PortRangeEnd` value as *nil* to allow all ports. |
 | IcmpType | no | string | Defines the allowed type (from 0 to 254) if the protocol ICMP is chosen. A *nil* value allows all types. |
 | IcmpCode | no | string | Defines the allowed code (from 0 to 254) if protocol ICMP is chosen. A *nil* value allows all codes. |
 
-Pass the arguments to `PatchFirewallRule`:
+Pass the arguments to `UpdateFirewallRule`:
 
     props := FirewallruleProperties{
 		Name: "SSH - RENAME",
 	}
-	PatchFirewallRule(dcID, srv_srvid, nicid, fwId, props)
+	UpdateFirewallRule(dcID, srv_srvid, nicid, fwId, props)
 
 ---
 
@@ -1537,7 +1496,7 @@ Pass the arguments to `DeleteFirewallRule`:
 
 ---
 
-### Load Balancers
+## Load Balancers
 
 #### List Load Balancers
 
@@ -1597,7 +1556,7 @@ Pass the object and arguments to `CreateLoadbalancer`:
 
     CreateLoadbalancer(datacenterId, loadbalancer)
 
-##### Load Balancer Resource Object
+#### Load Balancer Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
@@ -1622,10 +1581,10 @@ The following table describes the request arguments:
 | Ip | no | string | The IP of the load balancer. |
 | Dhcp | no | bool | Indicates if the load balancer will reserve an IP using DHCP. |
 
-Pass the arguments to `PatchLoadbalancer`:
+Pass the arguments to `UpdateLoadbalancer`:
 
     var obj = LoadbalancerProperties{Name: "GO SDK Test - RENAME"}
-	PatchLoadbalancer(datacenterId, loadbalancerId, obj)
+	UpdateLoadbalancer(datacenterId, loadbalancerId, obj)
 
 ---
 
@@ -1718,7 +1677,7 @@ Pass the arguments to `DeleteBalancedNic`:
 
 ---
 
-### Requests
+## Requests
 
 Each call to the ProfitBricks Cloud API is assigned a request ID. These operations can be used to get information about the requests that have been submitted and their current status.
 
@@ -1765,7 +1724,7 @@ Pass the arguments to `get_request`:
 
 ---
 
-### Contract Resources
+## Contract Resources
 
 #### List Contract Resources
 
@@ -1777,7 +1736,7 @@ GetContractResources()
 
 ---
 
-### Users Management
+## Users Management
 These operations are designed to allow you to orchestrate users and resources via the Cloud API. Previously this functionality required use of the DCD (Data Center Designer) web application.
 
 #### List Groups
@@ -1825,14 +1784,14 @@ Pass the object to `CreateGroup`:
 CreateGroup(group Group)
 ```
 
-##### Group Resource Object
+#### Group Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
 | Name | **yes** | string | A name that was given to the group. |
 | CreateDataCenter | no | bool | The group has permission to create virtual data centers. |
 | CreateSnapshot | no | bool | The group has permission to create snapshots. |
-| ReserveIp  | no | bool | The group has permission to reserve IP addresses. |
+| ReserveIP  | no | bool | The group has permission to reserve IP addresses. |
 | AccessActivityLog  | no | bool | The group has permission to access the activity log. |
 
 #### Update a Group
@@ -1916,7 +1875,7 @@ Pass the object to `AddShare`:
 AddShare(share Share, groupid, resourceId)
 ```
 
-##### Share Resource Object
+#### Share Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
@@ -2063,7 +2022,7 @@ Pass the object to `CreateUser`:
 CreateUser(user User)
 ```
 
-##### User Resource Object
+#### User Resource Object
 
 | Name | Required | Type | Description |
 |---|:-:|---|---|
@@ -2120,7 +2079,7 @@ DeleteUser(userid)
 ---
 
 #### List Resources
-Retrieves a list of all resources and optionally their group associations. 
+Retrieves a list of all resources and optionally their group associations.
 
 *Note*: This API call can take a significant amount of time to return when there are a large number of provisioned resources. You may wish to consult the next section on how to list resources of a particular type.
 
@@ -2188,7 +2147,7 @@ package main
 
 import (
 	"fmt"
-	"time"
+	"os"
 
 	"github.com/profitbricks/profitbricks-sdk-go"
 )
@@ -2196,28 +2155,41 @@ import (
 func main() {
 
 	//Sets username and password
-	profitbricks.SetAuth("username", "password")
-	//Sets depth.
-	profitbricks.SetDepth("5")
+	client := profitbricks.NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 
 	dcrequest := profitbricks.Datacenter{
 		Properties: profitbricks.DatacenterProperties{
-			Name:        "example.go3",
+			Name:        "Example",
 			Description: "description",
-			Location:    "us/lasdev",
+			Location:    "us/las",
 		},
 	}
 
-	datacenter := profitbricks.CreateDatacenter(dcrequest)
+	datacenter, err := client.CreateDatacenter(dcrequest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
 	serverrequest := profitbricks.Server{
 		Properties: profitbricks.ServerProperties{
 			Name:  "go01",
-			Ram:   1024,
+			RAM:   1024,
 			Cores: 2,
 		},
 	}
-	server := profitbricks.CreateServer(datacenter.Id, serverrequest)
+
+	server, err := client.CreateServer(datacenter.ID, serverrequest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	err = client.WaitTillProvisioned(server.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
 	volumerequest := profitbricks.Volume{
 		Properties: profitbricks.VolumeProperties{
@@ -2228,33 +2200,76 @@ func main() {
 		},
 	}
 
-	storage := profitbricks.CreateVolume(datacenter.Id, volumerequest)
+	volume, err := client.CreateVolume(datacenter.ID, volumerequest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	err = client.WaitTillProvisioned(volume.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
 	serverupdaterequest := profitbricks.ServerProperties{
 		Name:  "go01renamed",
 		Cores: 1,
-		Ram:   256,
+		RAM:   256,
 	}
 
-	profitbricks.PatchServer(datacenter.Id, server.Id, serverupdaterequest)
-	//It takes a moment for a volume to be provisioned so we wait.
-	time.Sleep(60 * time.Second)
+	server, err = client.UpdateServer(datacenter.ID, server.ID, serverupdaterequest)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
-	profitbricks.AttachVolume(datacenter.Id, server.Id, storage.Id)
+	err = client.WaitTillProvisioned(server.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 
-	volumes := profitbricks.ListVolumes(datacenter.Id)
+	volume, err = client.AttachVolume(datacenter.ID, server.ID, volume.ID)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	err = client.WaitTillProvisioned(volume.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	volumes, err := client.ListVolumes(datacenter.ID)
 	fmt.Println(volumes.Items)
-	servers := profitbricks.ListServers(datacenter.Id)
+	servers, err := client.ListServers(datacenter.ID)
 	fmt.Println(servers.Items)
-	datacenters := profitbricks.ListDatacenters()
+	datacenters, err := client.ListDatacenters()
 	fmt.Println(datacenters.Items)
 
-	profitbricks.DeleteServer(datacenter.Id, server.Id)
-	profitbricks.DeleteDatacenter(datacenter.Id)
+	resp, err := client.DeleteServer(datacenter.ID, server.ID)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	err = client.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
+
+	_, err = client.DeleteDatacenter(datacenter.ID)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(0)
+	}
 }
 ```
 
-# Support
+## Support
 You are welcome to contact us with questions or comments at [ProfitBricks DevOps Central](https://devops.profitbricks.com/). Please report any issues via [GitHub's issue tracker](https://github.com/profitbricks/profitbricks-sdk-go/issues).
 
 ## Testing

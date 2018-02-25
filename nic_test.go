@@ -2,49 +2,33 @@ package profitbricks
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"strings"
+	"sync"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-var nic_dcid string
-var nic_srvid string
-var nicid string
+var (
+	onceNicDc     sync.Once
+	onceNicServer sync.Once
+	onceNic       sync.Once
+)
 
 func TestCreateNic(t *testing.T) {
-	setupTestEnv()
-	nic_dcid = mkdcid("GO SDK NIC DC")
-	nic_srvid = mksrvid(nic_dcid)
+	fmt.Println("Nic tests")
+	onceNicDc.Do(createDataCenter)
+	onceNicServer.Do(createServer)
+	onceNicNic.Do(createNic)
 
-	want := 202
-	var request = Nic{
-		Properties: &NicProperties{
-			Lan:            1,
-			Name:           "GO SDK Test",
-			Nat:            false,
-			FirewallActive: true,
-			Ips:            []string{"10.0.0.1"},
-		},
-	}
-
-	resp := CreateNic(nic_dcid, nic_srvid, request)
-	waitTillProvisioned(resp.Headers.Get("Location"))
-	nicid = resp.Id
-	if resp.StatusCode != want {
-		t.Error(resp.Response)
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-
-	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
-	assert.Equal(t, resp.Properties.Lan, 1)
-	assert.Equal(t, resp.Properties.Nat, false)
-	assert.Equal(t, resp.Properties.Dhcp, request.Properties.Dhcp)
-	assert.Equal(t, resp.Properties.FirewallActive, true)
-	assert.Equal(t, resp.Properties.Ips, []string{"10.0.0.1"})
+	assert.Equal(t, nic.Properties.Name, "GO SDK Test")
+	assert.Equal(t, nic.Properties.Lan, 1)
 }
 
 func TestCreateNicFailure(t *testing.T) {
-	want := 422
+	c := setupTestEnv()
+	onceNicDc.Do(createDataCenter)
+	onceNicServer.Do(createServer)
+
 	var request = Nic{
 		Properties: &NicProperties{
 			Name:           "GO SDK Test",
@@ -54,78 +38,99 @@ func TestCreateNicFailure(t *testing.T) {
 		},
 	}
 
-	resp := CreateNic(nic_dcid, nic_srvid, request)
-	if resp.StatusCode != want {
-		fmt.Println(string(resp.Response))
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
+	_, err := c.CreateNic(dataCenter.ID, server.ID, request)
 
-	assert.True(t, strings.Contains(resp.Response, "Attribute 'lan' is required"))
+	assert.NotNil(t, err)
 }
 
 func TestListNics(t *testing.T) {
-	//t.Parallel()
-	want := 200
-	resp := ListNics(nic_dcid, nic_srvid)
+	c := setupTestEnv()
+	onceNicDc.Do(createDataCenter)
+	onceNicServer.Do(createServer)
+	onceNicNic.Do(createNic)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.ListNics(dataCenter.ID, server.ID)
+
+	if err != nil {
+		t.Error(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
 }
 
 func TestGetNic(t *testing.T) {
-	want := 200
-	resp := GetNic(nic_dcid, nic_srvid, nicid)
+	c := setupTestEnv()
+	onceNicDc.Do(createDataCenter)
+	onceNicServer.Do(createServer)
+	onceNicNic.Do(createNic)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	resp, err := c.GetNic(dataCenter.ID, server.ID, nic.ID)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, nicid)
-	assert.Equal(t, resp.Type_, "nic")
+	assert.Equal(t, resp.ID, nic.ID)
+	assert.Equal(t, resp.PBType, "nic")
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test")
 	assert.Equal(t, resp.Properties.Lan, 1)
-	assert.Equal(t, resp.Properties.Nat, false)
-	assert.Equal(t, *resp.Properties.Dhcp, true)
-	assert.Equal(t, resp.Properties.FirewallActive, true)
-	assert.Equal(t, resp.Properties.Ips, []string{"10.0.0.1"})
 }
 
 func TestGetNicFailure(t *testing.T) {
-	want := 404
-	resp := GetNic(nic_dcid, nic_srvid, "00000000-0000-0000-0000-000000000000")
+	c := setupTestEnv()
+	onceNicDc.Do(createDataCenter)
+	onceNicServer.Do(createServer)
+	onceNicNic.Do(createNic)
 
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
+	_, err := c.GetNic(dataCenter.ID, server.ID, "00000000-0000-0000-0000-000000000000")
 
-	assert.True(t, strings.Contains(resp.Response, "Resource does not exist"))
+	assert.NotNil(t, err)
 }
 
-func TestPatchNic(t *testing.T) {
-	want := 202
-	obj := NicProperties{Name: "GO SDK Test - RENAME", Lan: 1}
+func TestUpdateNic(t *testing.T) {
+	c := setupTestEnv()
+	onceNicDc.Do(createDataCenter)
+	onceNicServer.Do(createServer)
+	onceNicNic.Do(createNic)
 
-	resp := PatchNic(nic_dcid, nic_srvid, nicid, obj)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
+	obj := NicProperties{Name: "GO SDK Test - RENAME"}
+
+	resp, err := c.UpdateNic(dataCenter.ID, server.ID, nic.ID, obj)
+	if err != nil {
+		t.Error(err)
 	}
 
-	assert.Equal(t, resp.Id, nicid)
-	assert.Equal(t, resp.Type_, "nic")
+	err = c.WaitTillProvisioned(resp.Headers.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
+
 	assert.Equal(t, resp.Properties.Name, "GO SDK Test - RENAME")
 }
 func TestDeleteNic(t *testing.T) {
-	want := 202
-	resp := DeleteNic(nic_dcid, nic_srvid, nicid)
-	if resp.StatusCode != want {
-		t.Errorf(bad_status(want, resp.StatusCode))
-	}
-}
+	c := setupTestEnv()
+	onceNicDc.Do(createDataCenter)
+	onceNicServer.Do(createServer)
+	onceNicNic.Do(createNic)
 
-func TestNicCleanup(t *testing.T) {
-	DeleteServer(nic_dcid, nic_srvid)
-	DeleteDatacenter(nic_dcid)
+	resp, err := c.DeleteNic(dataCenter.ID, server.ID, nic.ID)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
+
+	resp, err = c.DeleteServer(dataCenter.ID, server.ID)
+	if err != nil {
+		t.Error(err)
+	}
+
+	err = c.WaitTillProvisioned(resp.Get("Location"))
+	if err != nil {
+		t.Error(err)
+	}
+
+	c.DeleteDatacenter(dataCenter.ID)
 }
