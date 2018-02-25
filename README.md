@@ -1,6 +1,6 @@
 # Go SDK
 
-Version: profitbricks-sdk-go **4.0.2**
+Version: profitbricks-sdk-go **5.0.0**
 
 The ProfitBricks Client Library for [Go](https://www.golang.org/) provides you with access to the ProfitBricks Cloud API. It is designed for developers who are building applications in Go.
 
@@ -11,10 +11,13 @@ This guide will walk you through getting setup with the library and performing v
 * [Description](#description)
 * [Getting Started](#getting-started)
     * [Installation](#installation)
-    * [Authenticating](#authenticating)
+    * [Authentication](#authentication)
     * [Error Handling](#error-handling)
 * [Reference](#reference)
-    * [Depth](#depth)
+    * [Client Configuration](#client-configuration)
+        * [SetDepth](#setdepth)
+        * [SetURL](#seturl)
+        * [SetUserAgent](#setuseragent)
     * [Data Centers](#data-centers)
         * [List Data Centers](#list-data-centers)
         * [Retrieve a Data Center](#retrieve-a-data-center)
@@ -123,7 +126,6 @@ This guide will walk you through getting setup with the library and performing v
 * [Testing](#testing)
 * [Contributing](#contributing)
 
-
 # Description
 
 The Go SDK wraps the latest version of the ProfitBricks Cloud API. All API operations are performed over SSL and authenticated using your ProfitBricks portal credentials. The API can be accessed within an instance running in ProfitBricks or directly over the Internet from any application that can send an HTTPS request and receive an HTTPS response.
@@ -134,9 +136,9 @@ Before you begin you will need to have [signed-up](https://www.profitbricks.com/
 
 #### Installation
 
-Install the Go language from: [Go Installation](https://golang.org/doc/install)
+Install the Go language from from the official [Go installation](https://golang.org/doc/install) guide or using your Linux distribution package management system.
 
-The `GOPATH` environment variable specifies the location of your Go workspace. It is likely the only environment variable you'll need to set when developing Go code. This is an example of pointing to a workspace configured underneath your home directory:
+The `GOPATH` environment variable specifies the location of your Go workspace. It is likely the only environment variable you will need to set when developing Go code. This is an example of pointing to a workspace configured under your home directory:
 
 ```
 mkdir -p ~/go/bin
@@ -145,16 +147,15 @@ export GOBIN=$GOPATH/bin
 export PATH=$PATH:$GOBIN
 ```
 
-
 The following `go` command will download `profitbricks-sdk-go` to your configured `GOPATH`:
 
 ```go
 go get "github.com/profitbricks/profitbricks-sdk-go"
 ```
 
-The source code of the package will be located at:
+The source code of the package will be located here:
 
-	$GOBIN/src/profitbricks-sdk-go
+    $GOPATH/src/github.com/profitbricks/profitbricks-sdk-go
 
 Create main package file *example.go*:
 
@@ -169,43 +170,40 @@ func main() {
 }
 ```
 
-Import GO SDK:
+Include the ProfitBricks SDK for Go under the list of imports.
 
 ```go
 import(
+    "fmt"    
 	"github.com/profitbricks/profitbricks-sdk-go"
 )
 ```
 
+#### Authentication
 
-#### Authenticating
-
-Add your credentials for connecting to ProfitBricks:
+Add your ProfitBricks credentials to the client connection.
 
 ```go
 client := profitbricks.NewClient("username", "password")
 ```
 
-Set depth:
+It might be necessary to accept credentials through environment variables in a containerized environment.
 
 ```go
-client.SetDepth(5)
+import (
+	"fmt"
+    "os"
+
+	"github.com/profitbricks/profitbricks-sdk-go"
+)
+
+func main() {
+	client := profitbricks.NewClient(
+		os.Getenv("PROFITBRICKS_USERNAME"),
+		os.Getenv("PROFITBRICKS_PASSWORD"),
+	)
+...
 ```
-
-Set Cloud API URL
-
-```go
-client.SetURL([url])
-```
-
-Set "User-Agent" header for all API calls
-
-```go
-client.SetAgentHeader([agent-header])
-```
-
-
-Depth controls the amount of data returned from the REST server ( range 1-5 ). The larger the number the more information is returned from the server. This is especially useful if you are looking for the information in the nested objects.
 
 **Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
 
@@ -215,9 +213,10 @@ The SDK will raise custom exceptions when the Cloud API returns an error. There 
 
 | HTTP Code | Description |
 |---|---|
+| 400 | Bad request. |
 | 401 | The supplied user credentials are invalid. |
 | 404 | The requested resource cannot be found. |
-| 422 | The request body includes invalid JSON. |
+| 422 | Invalid parameters have been passed onto Cloud API. |
 | 429 | The Cloud API rate limit has been exceeded. |
 
 Therefore each client function returns two parameters expected response and an error. For example:
@@ -232,9 +231,11 @@ In the example the first parameter is a collection of virtual data centers and a
 
 This section provides details on all the available operations and the arguments they accept. Brief code snippets demonstrating usage are also included.
 
-#### Depth
+## Client Configuration
 
-Many of the *List* or *Get* operations will accept an optional *depth* argument. Setting this to a value between 0 and 5 affects the amount of data that is returned. The detail returned varies somewhat depending on the resource being queried, however it generally follows this pattern.
+#### SetDepth
+
+Many of the *List* or *Get* operations will accept an optional *depth* argument. Setting this to a value between 0 and 5 affects the amount of data that is returned. The details returned vary depending on the resource being queried, however, it generally follows this pattern.
 
 | Depth | Description |
 |:-:|---|
@@ -246,6 +247,27 @@ Many of the *List* or *Get* operations will accept an optional *depth* argument.
 | 5 | Returns all available properties. |
 
 This SDK sets the *Depth=5* by default as that works well in the majority of cases. You may find that setting *Depth* to a lower or higher value could simplify a later operation by reducing or increasing the data available in the response object.
+
+```go
+client := profitbricks.NewClient("username", "password")
+client.SetDepth(3)
+```
+
+#### SetURL
+
+Set Cloud API URL:
+
+```go
+client.SetURL("https://api.profitbricks.com/cloudapi/v4")
+```
+
+#### SetUserAgent
+
+Set "User-Agent" HTTP header for all Cloud API calls:
+
+```go
+client.SetUserAgent("myproject/1.0.0")
+```
 
 ## Data Centers
 
@@ -2155,7 +2177,10 @@ import (
 func main() {
 
 	//Sets username and password
-	client := profitbricks.NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
+	client := profitbricks.NewClient(
+        os.Getenv("PROFITBRICKS_USERNAME"),
+        os.Getenv("PROFITBRICKS_PASSWORD"),
+    )
 
 	dcrequest := profitbricks.Datacenter{
 		Properties: profitbricks.DatacenterProperties{
