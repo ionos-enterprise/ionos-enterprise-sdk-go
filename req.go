@@ -133,7 +133,7 @@ func (c *client) do(url string, method string, requestBody interface{}, result i
 				if err != nil {
 					return err
 				}
-				return apiError{*erResp}
+				return ApiError{*erResp}
 			} else {
 
 				if string(body) != "" {
@@ -185,12 +185,12 @@ type errorResponse struct {
 	} `json:"messages"`
 }
 
-type apiError struct {
-	respone errorResponse
+type ApiError struct {
+	response errorResponse
 }
 
-func (e apiError) Error() string {
-	return e.respone.String()
+func (e ApiError) Error() string {
+	return e.response.String()
 }
 
 func (e errorResponse) String() string {
@@ -199,4 +199,8 @@ func (e errorResponse) String() string {
 		toReturn = toReturn + fmt.Sprintf("Error Code: %s Message: %s\n", m.ErrorCode, m.Message)
 	}
 	return toReturn
+}
+
+func (e ApiError) HttpStatusCode() int {
+	return e.response.HTTPStatus
 }
