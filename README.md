@@ -1130,6 +1130,31 @@ The following table outlines the locations currently supported:
 
 ---
 
+#### Update a IPBlock
+
+Perform updates to the attributes of a ipblock.
+
+The following table describes the request arguments:
+
+| Name | Required | Type | Description |
+|---|:-:|---|---|
+| ipblkid | **yes** | string | The ID of the IP Block you want to update. |
+| Name | no | string | A descriptive name for the IP Block. |
+
+Build a [ServerProperties](#serverproperties) object:
+
+    var ipblock = IPBlockProperties{
+		Name: "GO SDK Test RENAME",
+	}
+
+
+Pass the arguments to `UpdateIPBlock`:
+
+    UpdateIPBlock(ipblkid, ipblock)
+
+---
+
+
 #### Delete an IP Block
 
 Deletes the specified IP Block.
