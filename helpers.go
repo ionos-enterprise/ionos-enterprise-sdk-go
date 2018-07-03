@@ -47,8 +47,12 @@ var (
 
 // Setup creds for single running tests
 func setupTestEnv() Client {
+	client := *NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
+	if val, ok := os.LookupEnv("PROFITBRICKS_API_URL"); ok {
+		client.SetURL(val)
+	}
 
-	return *NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
+	return client
 }
 
 func createDataCenter() {
