@@ -60,6 +60,14 @@ func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
 	return ret, err
 }
 
+// UpdateIPBlock partial update of ipblock properties
+func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBlock, error) {
+	url := ipblockPath(ipblockid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	ret := &IPBlock{}
+	err := c.client.Patch(url, props, ret, http.StatusAccepted)
+	return ret, err
+}
+
 //ReleaseIPBlock deletes an IP block
 func (c *Client) ReleaseIPBlock(ipblockid string) (*http.Header, error) {
 	url := ipblockPath(ipblockid)

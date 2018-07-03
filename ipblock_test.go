@@ -74,6 +74,25 @@ func TestGetIpBlock(t *testing.T) {
 	assert.Equal(t, len(resp.Properties.IPs), 1)
 }
 
+func TestUpdateIpBlock(t *testing.T) {
+	c := setupTestEnv()
+	ipblock, err := c.GetIPBlock(ipblkid)
+	if err != nil {
+		t.Error(err)
+	}
+
+	req := IPBlockProperties{
+		Name: "GO SDK Test RENAME",
+	}
+	resp, err := c.UpdateIPBlock(ipblkid, req)
+	if err != nil {
+		t.Error(err)
+	}
+
+	assert.Equal(t, resp.ID, ipblock.ID)
+	assert.Equal(t, resp.Properties.Name, "GO SDK Test RENAME")
+}
+
 func TestGetIpBlockFailure(t *testing.T) {
 	c := setupTestEnv()
 	_, err := c.GetIPBlock("00000000-0000-0000-0000-000000000000")
