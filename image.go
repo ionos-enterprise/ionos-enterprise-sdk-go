@@ -35,6 +35,7 @@ type ImageProperties struct {
 	DiscScsiHotUnplug   bool         `json:"discScsiHotUnplug,omitempty"`
 	LicenceType         string       `json:"licenceType,omitempty"`
 	ImageType           string       `json:"imageType,omitempty"`
+	ImageAliases        []string     `json:"imageAliases,omitempty"`
 	Public              bool         `json:"public,omitempty"`
 	Response            string       `json:"Response,omitempty"`
 	Headers             *http.Header `json:"headers,omitempty"`
