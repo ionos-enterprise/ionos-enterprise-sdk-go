@@ -8,6 +8,7 @@ type Client struct {
 	userName string
 	password string
 	client   *client
+	token    string
 }
 
 //NewClient is a constructor for Client object
@@ -18,6 +19,17 @@ func NewClient(username, password string) *Client {
 		userName: c.username,
 		password: c.password,
 		client:   c,
+	}
+}
+
+// NewClientbyToken is a constructor for Client object using bearer tokens for
+// authentication instead of username, password
+func NewClientbyToken(token string) *Client {
+
+	c := newPBRestClientbyToken(token, "", "", true)
+	return &Client{
+		token:  c.token,
+		client: c,
 	}
 }
 
