@@ -28,6 +28,7 @@ type client struct {
 	pretty      bool
 	apiURL      string
 	agentHeader string
+	token       string
 }
 
 func newPBRestClient(username string, password string, apiURL string, depth string, pretty bool) *client {
@@ -49,6 +50,26 @@ func newPBRestClient(username string, password string, apiURL string, depth stri
 
 	return client
 }
+
+func newPBRestClientbyToken(token, apiURL, depth string, pretty bool) *client {
+	client := new(client)
+	client.token = token
+	client.agentHeader = "profitbricks-sdk-go/5.0.0"
+	if apiURL == "" {
+		client.apiURL = "https://api.profitbricks.com/cloudapi/v4"
+	} else {
+		client.apiURL = apiURL
+	}
+
+	if depth == "" {
+		client.depth = "5"
+	} else {
+		client.depth = depth
+	}
+
+	return client
+}
+
 func (c *client) mkURL(path string) string {
 	url := c.apiURL + path
 
@@ -102,7 +123,11 @@ func (c *client) do(url string, method string, requestBody interface{}, result i
 		}
 
 		client := &http.Client{}
-		r.SetBasicAuth(c.username, c.password)
+		if c.token != "" {
+			r.Header.Add("Authorization", "Bearer "+c.token)
+		} else {
+			r.SetBasicAuth(c.username, c.password)
+		}
 		resp, err := client.Do(r)
 		if err != nil {
 			return err

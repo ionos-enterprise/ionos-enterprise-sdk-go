@@ -233,6 +233,17 @@ This section provides details on all the available operations and the arguments 
 
 ## Client Configuration
 
+Clients can be created using either username / password or a bearer token for client authentification. A bearer token can be optained from the auth api, e.g. by using a curl request
+
+```bash
+curl --user '<username:password>' https://api.profitbricks.com/auth/v1/tokens/generate
+```
+
+```go
+client := profitbricks.NewClient("username", "password")
+token_client := profitbricks.NewClientbyToken("token")
+```
+
 #### SetDepth
 
 Many of the *List* or *Get* operations will accept an optional *depth* argument. Setting this to a value between 0 and 5 affects the amount of data that is returned. The details returned vary depending on the resource being queried, however, it generally follows this pattern.
