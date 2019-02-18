@@ -77,7 +77,7 @@ func TestCreateCompositeLan(t *testing.T) {
 		Properties: &NicProperties{
 			Lan:  1,
 			Name: "Test NIC with failover",
-			Nat:  false,
+			Nat:  boolAddr(false),
 		},
 	}
 

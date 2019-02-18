@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-//Nic object
+// Nic object
 type Nic struct {
 	ID         string         `json:"id,omitempty"`
 	PBType     string         `json:"type,omitempty"`
@@ -18,23 +18,23 @@ type Nic struct {
 	StatusCode int            `json:"statuscode,omitempty"`
 }
 
-//NicProperties object
+// NicProperties object
 type NicProperties struct {
 	Name           string   `json:"name,omitempty"`
 	Mac            string   `json:"mac,omitempty"`
 	Ips            []string `json:"ips,omitempty"`
 	Dhcp           *bool    `json:"dhcp,omitempty"`
 	Lan            int      `json:"lan,omitempty"`
-	FirewallActive bool     `json:"firewallActive,omitempty"`
-	Nat            bool     `json:"nat,omitempty"`
+	FirewallActive *bool    `json:"firewallActive,omitempty"`
+	Nat            *bool    `json:"nat,omitempty"`
 }
 
-//NicEntities object
+// NicEntities object
 type NicEntities struct {
 	FirewallRules *FirewallRules `json:"firewallrules,omitempty"`
 }
 
-//Nics object
+// Nics object
 type Nics struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`
