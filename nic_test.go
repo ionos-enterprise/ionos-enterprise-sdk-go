@@ -32,8 +32,8 @@ func TestCreateNicFailure(t *testing.T) {
 	var request = Nic{
 		Properties: &NicProperties{
 			Name:           "GO SDK Test",
-			Nat:            false,
-			FirewallActive: true,
+			Nat:            boolAddr(false),
+			FirewallActive: boolAddr(true),
 			Ips:            []string{"10.0.0.1"},
 		},
 	}

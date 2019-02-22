@@ -45,6 +45,11 @@ var (
 	snapshotdescription = "GO SDK test snapshot"
 )
 
+
+func boolAddr(v bool) *bool {
+	return &v
+}
+
 // Setup creds for single running tests
 func setupTestEnv() Client {
 	client := *NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
@@ -284,8 +289,8 @@ func mknicCustom(client Client, dcid, serverid string, lanid int, ips []string) 
 		Properties: &NicProperties{
 			Lan:            lanid,
 			Name:           "GO SDK Test",
-			Nat:            false,
-			FirewallActive: true,
+			Nat:            boolAddr(false),
+			FirewallActive: boolAddr(true),
 			Ips:            ips,
 		},
 	}
