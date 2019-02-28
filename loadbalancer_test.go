@@ -139,7 +139,7 @@ func TestGetBalancedNic(t *testing.T) {
 	assert.Equal(t, resp.ID, nic.ID)
 	assert.Equal(t, resp.PBType, "nic")
 	assert.Equal(t, resp.Properties.Lan, 2)
-	assert.Equal(t, resp.Properties.Nat, false)
+	assert.Equal(t, *resp.Properties.Nat, false)
 	assert.Equal(t, *resp.Properties.Dhcp, true)
 }
 

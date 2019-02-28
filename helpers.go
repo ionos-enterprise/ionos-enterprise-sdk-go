@@ -45,7 +45,6 @@ var (
 	snapshotdescription = "GO SDK test snapshot"
 )
 
-
 func boolAddr(v bool) *bool {
 	return &v
 }
