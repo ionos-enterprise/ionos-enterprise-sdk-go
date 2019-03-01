@@ -42,30 +42,30 @@ type Requests struct {
 	StatusCode int          `json:"statuscode,omitempty"`
 }
 
+type RequestMetadata struct {
+	CreatedDate   time.Time     `json:"createdDate"`
+	CreatedBy     string        `json:"createdBy"`
+	Etag          string        `json:"etag"`
+	RequestStatus RequestStatus `json:"requestStatus"`
+}
+
+type RequestProperties struct {
+	Method  string      `json:"method"`
+	Headers interface{} `json:"headers"`
+	Body    string      `json:"body"`
+	URL     string      `json:"url"`
+}
+
 //Request object
 type Request struct {
-	ID       string `json:"id"`
-	Type     string `json:"type"`
-	Href     string `json:"href"`
-	Metadata struct {
-		CreatedDate   time.Time `json:"createdDate"`
-		CreatedBy     string    `json:"createdBy"`
-		Etag          string    `json:"etag"`
-		RequestStatus struct {
-			ID   string `json:"id"`
-			Type string `json:"type"`
-			Href string `json:"href"`
-		} `json:"requestStatus"`
-	} `json:"metadata"`
-	Properties struct {
-		Method  string      `json:"method"`
-		Headers interface{} `json:"headers"`
-		Body    interface{} `json:"body"`
-		URL     string      `json:"url"`
-	} `json:"properties"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"statuscode,omitempty"`
+	ID         string            `json:"id"`
+	Type       string            `json:"type"`
+	Href       string            `json:"href"`
+	Metadata   RequestMetadata   `json:"metadata"`
+	Properties RequestProperties `json:"properties"`
+	Response   string            `json:"Response,omitempty"`
+	Headers    *http.Header      `json:"headers,omitempty"`
+	StatusCode int               `json:"statuscode,omitempty"`
 }
 
 //ListRequests lists all requests
