@@ -51,7 +51,7 @@ func IsStatusNotFound(err error) bool {
 }
 
 // IsStatusMethodNotAllowed - (405) Use for any POST, PUT, PATCH, or DELETE performed
-// on read-only resources. This is also there response to PATCH requests
+// on read-only resources. This is also the response to PATCH requests
 // on resources that do not support partial updates.
 func IsStatusMethodNotAllowed(err error) bool {
 	return IsHttpStatus(err, http.StatusMethodNotAllowed)
