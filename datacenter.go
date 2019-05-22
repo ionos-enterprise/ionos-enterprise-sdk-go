@@ -1,7 +1,8 @@
 package profitbricks
 
 import (
-	"fmt"
+	"context"
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -94,19 +95,41 @@ func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
 	return ret, c.client.Delete(url, ret, http.StatusAccepted)
 }
 
-//WaitTillProvisioned helper function
-func (c *Client) WaitTillProvisioned(path string) error {
-	waitCount := 300
-	for i := 0; i < waitCount; i++ {
-		request, err := c.GetRequestStatus(path)
-		if err != nil {
-			return err
+// WaitTillProvisionedOrCanceled waits for a request to be completed.
+// It returns an error if the request status could not be fetched, the request
+// failed or the given context is canceled.
+func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string) error {
+	ticker := time.NewTicker(1 * time.Second)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-ticker.C:
+			request, err := c.GetRequestStatus(path)
+			if err != nil {
+				return err
+			}
+			switch request.Metadata.Status {
+			case "DONE":
+				return nil
+			case "FAILED":
+				return errors.New("request failed")
+			}
 		}
-		if request.Metadata.Status == "DONE" {
-			return nil
-		}
-		time.Sleep(1 * time.Second)
-		i++
 	}
-	return fmt.Errorf("timeout expired while waiting for request to complete")
+}
+
+// WaitTillProvisioned waits for a request to be completed.
+// It returns an error if the request status could not be fetched, the request
+// failed or a timeout of 2.5 minutes is exceeded.
+func (c *Client) WaitTillProvisioned(path string) (err error) {
+	ctx, cancel := context.WithTimeout(context.TODO(), 150*time.Second)
+	defer cancel()
+	if err = c.WaitTillProvisionedOrCanceled(ctx, path); err != nil {
+		if err == context.DeadlineExceeded {
+			return errors.New("timeout expired while waiting for request to complete")
+		}
+	}
+	return
 }
