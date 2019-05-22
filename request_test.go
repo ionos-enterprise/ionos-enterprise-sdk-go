@@ -1,7 +1,9 @@
 package profitbricks
 
 import (
+	"context"
 	"fmt"
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -38,4 +40,20 @@ func TestGetRequestFailure(t *testing.T) {
 	_, err := c.GetRequest("00000000-0000-0000-0000-000000000000")
 
 	assert.NotNil(t, err)
+}
+
+func TestWaitTillProvisionedOrCanceled(t *testing.T) {
+	c := setupTestEnv()
+	t.Run("cancellation", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+		err := c.WaitTillProvisionedOrCanceled(ctx, "a/path")
+		assert.Equal(t, context.Canceled, err)
+	})
+	t.Run("error getting request status", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		err := c.WaitTillProvisionedOrCanceled(ctx, "no/such/path")
+		assert.IsType(t, &url.Error{}, err)
+	})
 }
