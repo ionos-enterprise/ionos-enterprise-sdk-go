@@ -48,12 +48,16 @@ func TestWaitTillProvisionedOrCanceled(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
 		err := c.WaitTillProvisionedOrCanceled(ctx, "a/path")
-		assert.Equal(t, context.Canceled, err)
+		if assert.Error(t, err) {
+			assert.Equal(t, context.Canceled, err)
+		}
 	})
 	t.Run("error getting request status", func(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
 		err := c.WaitTillProvisionedOrCanceled(ctx, "no/such/path")
-		assert.IsType(t, &url.Error{}, err)
+		if assert.Error(t, err) {
+			assert.IsType(t, &url.Error{}, err)
+		}
 	})
 }
