@@ -104,6 +104,18 @@ func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string)
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
+		default:
+		}
+
+		// The order of a select's cases does not imply a priority for Go.
+		// If the work done on every tick takes longer than the tick interval
+		// and the context is cancelled, both channels can be read.
+		// This is a race condition as the cancelled context might be ignored
+		// indefinitely. To mitigate this behavior, we non-blockingly recheck
+		// the context's cancellation at the beginning of every loop run.
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
 		case <-ticker.C:
 			request, err := c.GetRequestStatus(path)
 			if err != nil {
