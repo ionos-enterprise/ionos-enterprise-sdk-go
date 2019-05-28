@@ -1,7 +1,6 @@
 package profitbricks
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -92,21 +91,4 @@ func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
 	url := dcPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &http.Header{}
 	return ret, c.client.Delete(url, ret, http.StatusAccepted)
-}
-
-//WaitTillProvisioned helper function
-func (c *Client) WaitTillProvisioned(path string) error {
-	waitCount := 300
-	for i := 0; i < waitCount; i++ {
-		request, err := c.GetRequestStatus(path)
-		if err != nil {
-			return err
-		}
-		if request.Metadata.Status == "DONE" {
-			return nil
-		}
-		time.Sleep(1 * time.Second)
-		i++
-	}
-	return fmt.Errorf("timeout expired while waiting for request to complete")
 }
