@@ -3,6 +3,7 @@ package profitbricks
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -125,7 +126,7 @@ func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string)
 			case "DONE":
 				return nil
 			case "FAILED":
-				return errors.New("request failed")
+				return fmt.Errorf("request %q failed: %s", request.ID, request.Metadata.Message)
 			}
 		}
 	}
