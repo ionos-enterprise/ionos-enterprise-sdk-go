@@ -21,7 +21,7 @@ func (c ClientError) Error() string {
 	return c.msg
 }
 
-func NewClientError(errType ClientErrorType, msg string) error {
+func NewClientError(errType ClientErrorType, msg string) ClientError {
 	return ClientError{
 		errType: errType,
 		msg:     msg,
