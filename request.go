@@ -3,12 +3,13 @@ package profitbricks
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 )
 
-//RequestStatus object
+// RequestStatus object
 type RequestStatus struct {
 	ID         string                `json:"id,omitempty"`
 	PBType     string                `json:"type,omitempty"`
@@ -19,7 +20,7 @@ type RequestStatus struct {
 	StatusCode int                   `json:"statuscode,omitempty"`
 }
 
-//RequestStatusMetadata object
+// RequestStatusMetadata object
 type RequestStatusMetadata struct {
 	Status  string          `json:"status,omitempty"`
 	Message string          `json:"message,omitempty"`
@@ -27,13 +28,13 @@ type RequestStatusMetadata struct {
 	Targets []RequestTarget `json:"targets,omitempty"`
 }
 
-//RequestTarget object
+// RequestTarget object
 type RequestTarget struct {
 	Target ResourceReference `json:"target,omitempty"`
 	Status string            `json:"status,omitempty"`
 }
 
-//Requests object
+// Requests object
 type Requests struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`
@@ -58,7 +59,7 @@ type RequestProperties struct {
 	URL     string      `json:"url"`
 }
 
-//Request object
+// Request object
 type Request struct {
 	ID         string            `json:"id"`
 	Type       string            `json:"type"`
@@ -70,7 +71,7 @@ type Request struct {
 	StatusCode int               `json:"statuscode,omitempty"`
 }
 
-//ListRequests lists all requests
+// ListRequests lists all requests
 func (c *Client) ListRequests() (*Requests, error) {
 	url := "/requests" + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Requests{}
@@ -78,7 +79,7 @@ func (c *Client) ListRequests() (*Requests, error) {
 	return ret, err
 }
 
-//GetRequest gets a specific request
+// GetRequest gets a specific request
 func (c *Client) GetRequest(reqID string) (*Request, error) {
 	url := "/requests/" + reqID + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Request{}
@@ -125,7 +126,10 @@ func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string)
 			case "DONE":
 				return nil
 			case "FAILED":
-				return ClientError{errType: RequestFailed, msg: request.Metadata.Message}
+				return ClientError{
+					errType: RequestFailed,
+					msg:     fmt.Sprintf("Request %s failed: %s", request.ID, request.Metadata.Message),
+				}
 			}
 		}
 	}
