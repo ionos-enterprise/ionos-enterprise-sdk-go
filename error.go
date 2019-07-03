@@ -21,6 +21,13 @@ func (c ClientError) Error() string {
 	return c.msg
 }
 
+func NewClientError(errType ClientErrorType, msg string) error {
+	return ClientError{
+		errType: errType,
+		msg:     msg,
+	}
+}
+
 func IsClientErrorType(err error, errType ClientErrorType) bool {
 	if err, ok := err.(ClientError); ok {
 		return err.errType == errType

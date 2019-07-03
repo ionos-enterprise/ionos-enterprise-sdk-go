@@ -126,10 +126,10 @@ func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string)
 			case "DONE":
 				return nil
 			case "FAILED":
-				return ClientError{
-					errType: RequestFailed,
-					msg:     fmt.Sprintf("Request %s failed: %s", request.ID, request.Metadata.Message),
-				}
+				return NewClientError(
+					RequestFailed,
+					fmt.Sprintf("Request %s failed: %s", request.ID, request.Metadata.Message),
+				)
 			}
 		}
 	}
