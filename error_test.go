@@ -69,3 +69,8 @@ func TestIsStatusTooManyRequests(t *testing.T) {
 	assert.True(t, IsStatusTooManyRequests(newApiError(http.StatusTooManyRequests)))
 	assert.False(t, IsStatusTooManyRequests(newApiError(http.StatusTeapot)))
 }
+
+func TestIsRequestFailed(t *testing.T) {
+	assert.True(t, IsRequestFailed(ClientError{errType: RequestFailed, msg: "fail"}))
+	assert.False(t, IsRequestFailed(ClientError{errType: ClientErrorType(-1), msg: "fail"}))
+}

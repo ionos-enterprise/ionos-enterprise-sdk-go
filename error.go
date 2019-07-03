@@ -6,6 +6,28 @@ package profitbricks
 
 import "net/http"
 
+type ClientErrorType int
+
+const (
+	RequestFailed ClientErrorType = iota
+)
+
+type ClientError struct {
+	errType ClientErrorType
+	msg     string
+}
+
+func (c ClientError) Error() string {
+	return c.msg
+}
+
+func IsClientErrorType(err error, errType ClientErrorType) bool {
+	if err, ok := err.(ClientError); ok {
+		return err.errType == errType
+	}
+	return false
+}
+
 func IsHttpStatus(err error, status int) bool {
 	if err, ok := err.(ApiError); ok {
 		return err.HttpStatusCode() == status
@@ -70,4 +92,9 @@ func IsStatusUnprocessableEntity(err error) bool {
 // IsStatusTooManyRequests - (429) The number of requests exceeds the rate limit.
 func IsStatusTooManyRequests(err error) bool {
 	return IsHttpStatus(err, http.StatusTooManyRequests)
+}
+
+// IsRequestFailed - returns true if the error reason was that the request status was failed
+func IsRequestFailed(err error) bool {
+	return IsClientErrorType(err, RequestFailed)
 }
