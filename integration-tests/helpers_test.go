@@ -1,25 +1,26 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"os"
 	"strings"
 	"sync"
+
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 )
 
 var (
 	syncDC              sync.Once
 	syncCDC             sync.Once
-	dataCenter          *Datacenter
-	compositeDataCenter *Datacenter
-	server              *Server
-	volume              *Volume
-	lan                 *Lan
+	dataCenter          *sdk.Datacenter
+	compositeDataCenter *sdk.Datacenter
+	server              *sdk.Server
+	volume              *sdk.Volume
+	lan                 *sdk.Lan
 	location            = "us/las"
-	image               *Image
-	attachedCD          *Image
-	fw                  *FirewallRule
-	nic                 *Nic
+	image               *sdk.Image
+	fw                  *sdk.FirewallRule
+	nic                 *sdk.Nic
 	sourceMac           = "01:23:45:67:89:00"
 	portRangeStart      = 22
 	portRangeEnd        = 22
@@ -37,10 +38,9 @@ var (
 	onceLBServer        sync.Once
 	onceLBNic           sync.Once
 	onceNicNic          sync.Once
-	imageID             string
-	ipBlock             *IPBlock
-	loadBalancer        *Loadbalancer
-	snapshot            *Snapshot
+	ipBlock             *sdk.IPBlock
+	loadBalancer        *sdk.Loadbalancer
+	snapshot            *sdk.Snapshot
 	snapshotname        = "GO SDK TEST"
 	snapshotdescription = "GO SDK test snapshot"
 )
@@ -50,8 +50,8 @@ func boolAddr(v bool) *bool {
 }
 
 // Setup creds for single running tests
-func setupTestEnv() Client {
-	client := *NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
+func setupTestEnv() sdk.Client {
+	client := *sdk.NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	if val, ok := os.LookupEnv("PROFITBRICKS_API_URL"); ok {
 		client.SetURL(val)
 	}
@@ -62,8 +62,8 @@ func setupTestEnv() Client {
 func createDataCenter() {
 	c := setupTestEnv()
 
-	var obj = Datacenter{
-		Properties: DatacenterProperties{
+	var obj = sdk.Datacenter{
+		Properties: sdk.DatacenterProperties{
 			Name:        "GO SDK Test",
 			Description: "GO SDK test datacenter",
 			Location:    location,
@@ -77,8 +77,8 @@ func createDataCenter() {
 func createLan() {
 	c := setupTestEnv()
 
-	var obj = Lan{
-		Properties: LanProperties{
+	var obj = sdk.Lan{
+		Properties: sdk.LanProperties{
 			Name:   "GO SDK Test",
 			Public: true,
 		},
@@ -91,17 +91,17 @@ func createLan() {
 
 func createCompositeDataCenter() {
 	c := setupTestEnv()
-	var obj = Datacenter{
-		Properties: DatacenterProperties{
+	var obj = sdk.Datacenter{
+		Properties: sdk.DatacenterProperties{
 			Name:        "GO SDK Test Composite",
 			Description: "GO SDK test composite datacenter",
 			Location:    location,
 		},
-		Entities: DatacenterEntities{
-			Servers: &Servers{
-				Items: []Server{
+		Entities: sdk.DatacenterEntities{
+			Servers: &sdk.Servers{
+				Items: []sdk.Server{
 					{
-						Properties: ServerProperties{
+						Properties: sdk.ServerProperties{
 							Name:  "GO SDK Test",
 							RAM:   1024,
 							Cores: 1,
@@ -109,10 +109,10 @@ func createCompositeDataCenter() {
 					},
 				},
 			},
-			Volumes: &Volumes{
-				Items: []Volume{
+			Volumes: &sdk.Volumes{
+				Items: []sdk.Volume{
 					{
-						Properties: VolumeProperties{
+						Properties: sdk.VolumeProperties{
 							Type:             "HDD",
 							Size:             2,
 							Name:             "GO SDK Test",
@@ -139,19 +139,19 @@ func createCompositeDataCenter() {
 
 func createCompositeServerFW() {
 	c := setupTestEnv()
-	var req = Server{
-		Properties: ServerProperties{
+	var req = sdk.Server{
+		Properties: sdk.ServerProperties{
 			Name:             "GO SDK Test",
 			RAM:              1024,
 			Cores:            1,
 			AvailabilityZone: "ZONE_1",
 			CPUFamily:        "INTEL_XEON",
 		},
-		Entities: &ServerEntities{
-			Volumes: &Volumes{
-				Items: []Volume{
+		Entities: &sdk.ServerEntities{
+			Volumes: &sdk.Volumes{
+				Items: []sdk.Volume{
 					{
-						Properties: VolumeProperties{
+						Properties: sdk.VolumeProperties{
 							Type:          "HDD",
 							Size:          5,
 							Name:          "volume1",
@@ -161,18 +161,18 @@ func createCompositeServerFW() {
 					},
 				},
 			},
-			Nics: &Nics{
-				Items: []Nic{
+			Nics: &sdk.Nics{
+				Items: []sdk.Nic{
 					{
-						Properties: &NicProperties{
+						Properties: &sdk.NicProperties{
 							Name: "nic",
 							Lan:  1,
 						},
-						Entities: &NicEntities{
-							FirewallRules: &FirewallRules{
-								Items: []FirewallRule{
+						Entities: &sdk.NicEntities{
+							FirewallRules: &sdk.FirewallRules{
+								Items: []sdk.FirewallRule{
 									{
-										Properties: FirewallruleProperties{
+										Properties: sdk.FirewallruleProperties{
 											Name:           "SSH",
 											Protocol:       "TCP",
 											SourceMac:      &sourceMac,
@@ -207,8 +207,8 @@ func createCompositeServerFW() {
 
 func createNic() {
 	c := setupTestEnv()
-	obj := Nic{
-		Properties: &NicProperties{
+	obj := sdk.Nic{
+		Properties: &sdk.NicProperties{
 			Name: "GO SDK Test",
 			Lan:  1,
 		},
@@ -222,8 +222,8 @@ func createNic() {
 
 func createLoadBalancerWithIP() {
 	c := setupTestEnv()
-	var obj = IPBlock{
-		Properties: IPBlockProperties{
+	var obj = sdk.IPBlock{
+		Properties: sdk.IPBlockProperties{
 			Name:     "GO SDK Test",
 			Size:     1,
 			Location: "us/las",
@@ -236,15 +236,15 @@ func createLoadBalancerWithIP() {
 
 	c.WaitTillProvisioned(resp.Headers.Get("Location"))
 	ipBlock = resp
-	var request = Loadbalancer{
-		Properties: LoadbalancerProperties{
+	var request = sdk.Loadbalancer{
+		Properties: sdk.LoadbalancerProperties{
 			Name: "GO SDK Test",
 			IP:   resp.Properties.IPs[0],
 			Dhcp: true,
 		},
-		Entities: LoadbalancerEntities{
-			Balancednics: &BalancedNics{
-				Items: []Nic{
+		Entities: sdk.LoadbalancerEntities{
+			Balancednics: &sdk.BalancedNics{
+				Items: []sdk.Nic{
 					{
 						ID: nic.ID,
 					},
@@ -261,8 +261,8 @@ func createLoadBalancerWithIP() {
 
 func createVolume() {
 	c := setupTestEnv()
-	var request = Volume{
-		Properties: VolumeProperties{
+	var request = sdk.Volume{
+		Properties: sdk.VolumeProperties{
 			Size:        2,
 			Name:        "GO SDK Test",
 			LicenceType: "OTHER",
@@ -283,9 +283,9 @@ func createSnapshot() {
 	c.WaitTillProvisioned(snapshot.Headers.Get("Location"))
 }
 
-func mknicCustom(client Client, dcid, serverid string, lanid int, ips []string) string {
-	var request = Nic{
-		Properties: &NicProperties{
+func mknicCustom(client sdk.Client, dcid, serverid string, lanid int, ips []string) string {
+	var request = sdk.Nic{
+		Properties: &sdk.NicProperties{
 			Lan:            lanid,
 			Name:           "GO SDK Test",
 			Nat:            boolAddr(false),
@@ -312,11 +312,11 @@ func createServer() {
 	}
 }
 
-func setupCreateServer(srvDc string) *Server {
+func setupCreateServer(srvDc string) *sdk.Server {
 	c := setupTestEnv()
 
-	var req = Server{
-		Properties: ServerProperties{
+	var req = sdk.Server{
+		Properties: sdk.ServerProperties{
 			Name:             "GO SDK Test",
 			RAM:              1024,
 			Cores:            1,
@@ -339,8 +339,8 @@ func setupCreateServer(srvDc string) *Server {
 func setupVolume() {
 	c := setupTestEnv()
 
-	vol := Volume{
-		Properties: VolumeProperties{
+	vol := sdk.Volume{
+		Properties: sdk.VolumeProperties{
 			Type:        "HDD",
 			Size:        2,
 			Name:        "GO SDK Test",
@@ -364,8 +364,8 @@ func setupVolume() {
 func setupVolumeAttached() {
 	c := setupTestEnv()
 
-	vol := Volume{
-		Properties: VolumeProperties{
+	vol := sdk.Volume{
+		Properties: sdk.VolumeProperties{
 			Type:        "HDD",
 			Size:        2,
 			Name:        "GO SDK Test",
@@ -424,8 +424,8 @@ func setupCDAttached() {
 
 func reserveIP() {
 	c := setupTestEnv()
-	var obj = IPBlock{
-		Properties: IPBlockProperties{
+	var obj = sdk.IPBlock{
+		Properties: sdk.IPBlockProperties{
 			Name:     "GO SDK Test",
 			Size:     1,
 			Location: location,

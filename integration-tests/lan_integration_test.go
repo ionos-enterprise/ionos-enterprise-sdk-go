@@ -1,18 +1,17 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
-var landcid string
 var lanid string
 var lanfailoverid string
 var lannicsrvid string
 var lannicid string
-var reservedIP []string
 var ipblockID2 string
 
 func TestCreateLan(t *testing.T) {
@@ -20,8 +19,8 @@ func TestCreateLan(t *testing.T) {
 	c := setupTestEnv()
 	onceLan.Do(createDataCenter)
 
-	var request = Lan{
-		Properties: LanProperties{
+	var request = sdk.Lan{
+		Properties: sdk.LanProperties{
 			Public: true,
 			Name:   "GO SDK Test",
 		},
@@ -46,8 +45,8 @@ func TestCreateLan(t *testing.T) {
 
 func TestCreateLanFailure(t *testing.T) {
 	c := setupTestEnv()
-	var request = Lan{
-		Properties: LanProperties{
+	var request = sdk.Lan{
+		Properties: sdk.LanProperties{
 			Public: true,
 		},
 	}
@@ -60,8 +59,8 @@ func TestCreateCompositeLan(t *testing.T) {
 	onceLan.Do(createDataCenter)
 	onceLanServer.Do(createCompositeServerFW)
 
-	var obj = IPBlock{
-		Properties: IPBlockProperties{
+	var obj = sdk.IPBlock{
+		Properties: sdk.IPBlockProperties{
 			Name:     "test",
 			Size:     1,
 			Location: "us/las",
@@ -73,8 +72,8 @@ func TestCreateCompositeLan(t *testing.T) {
 
 	lannicsrvid = nic.ID
 
-	var nicRequest = Nic{
-		Properties: &NicProperties{
+	var nicRequest = sdk.Nic{
+		Properties: &sdk.NicProperties{
 			Lan:  1,
 			Name: "Test NIC with failover",
 			Nat:  boolAddr(false),
@@ -91,16 +90,16 @@ func TestCreateCompositeLan(t *testing.T) {
 	}
 
 	lannicid = nicResponse.ID
-	lanNics := LanNics{
-		Items: []Nic{{ID: nic.ID}},
+	lanNics := sdk.LanNics{
+		Items: []sdk.Nic{{ID: nic.ID}},
 	}
 
-	var request = Lan{
-		Properties: LanProperties{
+	var request = sdk.Lan{
+		Properties: sdk.LanProperties{
 			Public: true,
 			Name:   "GO SDK Test with failover",
 		},
-		Entities: &LanEntities{
+		Entities: &sdk.LanEntities{
 			Nics: &lanNics,
 		},
 	}
@@ -149,7 +148,7 @@ func TestUpdateLan(t *testing.T) {
 	c := setupTestEnv()
 	onceLan.Do(createDataCenter)
 	onceLanLan.Do(createLan)
-	obj := LanProperties{
+	obj := sdk.LanProperties{
 		Name: "newName",
 	}
 

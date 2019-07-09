@@ -1,9 +1,10 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -23,8 +24,8 @@ func TestCreateServer(t *testing.T) {
 func TestCreateServerFailure(t *testing.T) {
 	c := setupTestEnv()
 
-	var req = Server{
-		Properties: ServerProperties{
+	var req = sdk.Server{
+		Properties: sdk.ServerProperties{
 			Name:             "GO SDK Test",
 			RAM:              1024,
 			AvailabilityZone: "ZONE_1",
@@ -81,7 +82,7 @@ func TestUpdateServer(t *testing.T) {
 	onceServerDC.Do(createDataCenter)
 	onceServer.Do(createServer)
 
-	req := ServerProperties{
+	req := sdk.ServerProperties{
 		Name: "GO SDK Test RENAME",
 	}
 	resp, err := c.UpdateServer(dataCenter.ID, server.ID, req)
@@ -255,19 +256,19 @@ func TestDetachCdrom(t *testing.T) {
 func TestCreateCompositeServer(t *testing.T) {
 	c := setupTestEnv()
 	onceServerDC.Do(createDataCenter)
-	var req = Server{
-		Properties: ServerProperties{
+	var req = sdk.Server{
+		Properties: sdk.ServerProperties{
 			Name:             "GO SDK Test",
 			RAM:              1024,
 			Cores:            1,
 			AvailabilityZone: "ZONE_1",
 			CPUFamily:        "INTEL_XEON",
 		},
-		Entities: &ServerEntities{
-			Volumes: &Volumes{
-				Items: []Volume{
+		Entities: &sdk.ServerEntities{
+			Volumes: &sdk.Volumes{
+				Items: []sdk.Volume{
 					{
-						Properties: VolumeProperties{
+						Properties: sdk.VolumeProperties{
 							Type:          "HDD",
 							Size:          5,
 							Name:          "volume1",
@@ -277,18 +278,18 @@ func TestCreateCompositeServer(t *testing.T) {
 					},
 				},
 			},
-			Nics: &Nics{
-				Items: []Nic{
+			Nics: &sdk.Nics{
+				Items: []sdk.Nic{
 					{
-						Properties: &NicProperties{
+						Properties: &sdk.NicProperties{
 							Name: "nic",
 							Lan:  1,
 						},
-						Entities: &NicEntities{
-							FirewallRules: &FirewallRules{
-								Items: []FirewallRule{
+						Entities: &sdk.NicEntities{
+							FirewallRules: &sdk.FirewallRules{
+								Items: []sdk.FirewallRule{
 									{
-										Properties: FirewallruleProperties{
+										Properties: sdk.FirewallruleProperties{
 											Name:           "SSH",
 											Protocol:       "TCP",
 											SourceMac:      &sourceMac,

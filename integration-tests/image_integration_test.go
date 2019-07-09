@@ -1,4 +1,4 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"

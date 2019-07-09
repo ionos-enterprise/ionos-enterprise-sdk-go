@@ -1,10 +1,11 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"sync"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,7 +13,6 @@ var (
 	onceVolume         sync.Once
 	onceVolumeDC       sync.Once
 	onceVolumeSnapshot sync.Once
-	snapshotID         string
 )
 
 func TestCreateVolume(t *testing.T) {
@@ -29,8 +29,8 @@ func TestCreateVolume(t *testing.T) {
 func TestCreateVolumeFail(t *testing.T) {
 	c := setupTestEnv()
 	onceVolumeDC.Do(createDataCenter)
-	var request = Volume{
-		Properties: VolumeProperties{
+	var request = sdk.Volume{
+		Properties: sdk.VolumeProperties{
 			Name:             "Volume Test",
 			Image:            "rewar",
 			Type:             "HDD",
@@ -87,7 +87,7 @@ func TestUpdateVolume(t *testing.T) {
 	onceVolumeDC.Do(createDataCenter)
 	onceVolume.Do(createVolume)
 	newName := "GO SDK Test - RENAME"
-	obj := VolumeProperties{
+	obj := sdk.VolumeProperties{
 		Name: newName,
 		Size: 5,
 	}

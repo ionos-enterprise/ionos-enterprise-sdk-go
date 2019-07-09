@@ -1,4 +1,4 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
@@ -8,13 +8,14 @@ import (
 	"testing"
 	"time"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	groupid     string
-	user        *User
-	group       *Group
+	user        *sdk.User
+	group       *sdk.Group
 	email       string
 	TRUE        = true
 	FALSE       = false
@@ -30,8 +31,8 @@ func createUser() {
 	r1 := rand.New(s1)
 	email = "test" + strconv.Itoa(r1.Intn(1000)) + "@go.com"
 	c := setupTestEnv()
-	var obj = User{
-		Properties: &UserProperties{
+	var obj = sdk.User{
+		Properties: &sdk.UserProperties{
 			Firstname:     "John",
 			Lastname:      "Doe",
 			Email:         email,
@@ -47,8 +48,8 @@ func createUser() {
 
 func createGroup() {
 	c := setupTestEnv()
-	var obj = Group{
-		Properties: GroupProperties{
+	var obj = sdk.Group{
+		Properties: sdk.GroupProperties{
 			Name:              "GO SDK Test",
 			CreateDataCenter:  &TRUE,
 			CreateSnapshot:    &TRUE,
@@ -62,8 +63,8 @@ func createGroup() {
 
 func addShare() {
 	c := setupTestEnv()
-	var obj = Share{
-		Properties: ShareProperties{
+	var obj = sdk.Share{
+		Properties: sdk.ShareProperties{
 			SharePrivilege: &TRUE,
 			EditPrivilege:  &TRUE,
 		},
@@ -82,8 +83,8 @@ func TestCreateUser(t *testing.T) {
 
 func TestCreateUserFailure(t *testing.T) {
 	c := setupTestEnv()
-	var obj = User{
-		Properties: &UserProperties{
+	var obj = sdk.User{
+		Properties: &sdk.UserProperties{
 			Firstname:     "John",
 			Lastname:      "Doe",
 			Password:      "abc123-321CBA",
@@ -127,8 +128,8 @@ func TestGetUser(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	c := setupTestEnv()
 	newName := "user updated"
-	obj := User{
-		Properties: &UserProperties{
+	obj := sdk.User{
+		Properties: &sdk.UserProperties{
 			Firstname:     "John",
 			Lastname:      newName,
 			Email:         email,
@@ -155,8 +156,8 @@ func TestCreateGroup(t *testing.T) {
 
 func TestCreateGroupFaliure(t *testing.T) {
 	c := setupTestEnv()
-	var obj = Group{
-		Properties: GroupProperties{
+	var obj = sdk.Group{
+		Properties: sdk.GroupProperties{
 			CreateDataCenter:  &TRUE,
 			CreateSnapshot:    &TRUE,
 			ReserveIP:         &TRUE,
@@ -207,8 +208,8 @@ func TestUpdateGroup(t *testing.T) {
 	onceUmGroup.Do(createGroup)
 
 	newName := "GO SDK Test - RENAME"
-	obj := Group{
-		Properties: GroupProperties{
+	obj := sdk.Group{
+		Properties: sdk.GroupProperties{
 			Name:              newName,
 			CreateDataCenter:  &FALSE,
 			CreateSnapshot:    &TRUE,
@@ -230,8 +231,8 @@ func TestAddShare(t *testing.T) {
 	onceUmGroup.Do(createGroup)
 	onceUmDC.Do(createDataCenter)
 
-	var obj = Share{
-		Properties: ShareProperties{
+	var obj = sdk.Share{
+		Properties: sdk.ShareProperties{
 			SharePrivilege: &TRUE,
 			EditPrivilege:  &TRUE,
 		},
@@ -250,8 +251,8 @@ func TestAddShareFailure(t *testing.T) {
 	onceUmGroup.Do(createGroup)
 	onceUmDC.Do(createDataCenter)
 
-	var obj = Share{
-		Properties: ShareProperties{},
+	var obj = sdk.Share{
+		Properties: sdk.ShareProperties{},
 	}
 	_, err := c.AddShare(groupid, dataCenter.ID, obj)
 	assert.NotNil(t, err)
@@ -298,8 +299,8 @@ func TestUpdateShare(t *testing.T) {
 	onceUmGroup.Do(createGroup)
 	onceUmDC.Do(createDataCenter)
 
-	obj := Share{
-		Properties: ShareProperties{
+	obj := sdk.Share{
+		Properties: sdk.ShareProperties{
 			SharePrivilege: &TRUE,
 			EditPrivilege:  &FALSE,
 		},

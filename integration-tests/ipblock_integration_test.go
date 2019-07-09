@@ -1,10 +1,11 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"strings"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,8 +14,8 @@ var ipblkid string
 func TestReserveIpBlock(t *testing.T) {
 	fmt.Println("IP block tests")
 	c := setupTestEnv()
-	var obj = IPBlock{
-		Properties: IPBlockProperties{
+	var obj = sdk.IPBlock{
+		Properties: sdk.IPBlockProperties{
 			Name:     "GO SDK Test",
 			Size:     1,
 			Location: location,
@@ -35,8 +36,8 @@ func TestReserveIpBlock(t *testing.T) {
 
 func TestReserveIpBlockFailure(t *testing.T) {
 	c := setupTestEnv()
-	var obj = IPBlock{
-		Properties: IPBlockProperties{
+	var obj = sdk.IPBlock{
+		Properties: sdk.IPBlockProperties{
 			Name: "GO SDK Test",
 			Size: 2,
 		},
@@ -81,7 +82,7 @@ func TestUpdateIpBlock(t *testing.T) {
 		t.Error(err)
 	}
 
-	req := IPBlockProperties{
+	req := sdk.IPBlockProperties{
 		Name: "GO SDK Test RENAME",
 	}
 	resp, err := c.UpdateIPBlock(ipblkid, req)
