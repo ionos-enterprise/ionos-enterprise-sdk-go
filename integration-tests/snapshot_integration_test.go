@@ -1,10 +1,11 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"sync"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -83,7 +84,7 @@ func TestUpdateSnapshot(t *testing.T) {
 	onceSnapshot.Do(createSnapshot)
 
 	newValue := "GO SDK Test - RENAME"
-	resp, err := c.UpdateSnapshot(snapshot.ID, SnapshotProperties{Name: newValue})
+	resp, err := c.UpdateSnapshot(snapshot.ID, sdk.SnapshotProperties{Name: newValue})
 	if err != nil {
 		t.Error(err)
 	}

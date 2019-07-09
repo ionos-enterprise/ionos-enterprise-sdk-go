@@ -1,9 +1,10 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -15,8 +16,8 @@ func TestCreateFirewallRule(t *testing.T) {
 	sm := "01:23:45:67:89:11"
 	start := 23
 	end := 23
-	fw := &FirewallRule{
-		Properties: FirewallruleProperties{
+	fw := &sdk.FirewallRule{
+		Properties: sdk.FirewallruleProperties{
 			Name:           "SSH",
 			Protocol:       "TCP",
 			SourceMac:      &sm,
@@ -50,8 +51,8 @@ func TestCreateFirewallRuleFailure(t *testing.T) {
 	c := setupTestEnv()
 	onceDC.Do(createDataCenter)
 	onceFw.Do(createCompositeServerFW)
-	fw := FirewallRule{
-		Properties: FirewallruleProperties{
+	fw := sdk.FirewallRule{
+		Properties: sdk.FirewallruleProperties{
 			Name:           "SSH",
 			SourceMac:      &sourceMac,
 			PortRangeStart: &portRangeStart,
@@ -110,7 +111,7 @@ func TestUpdateFirewallRule(t *testing.T) {
 	onceDC.Do(createDataCenter)
 	onceFw.Do(createCompositeServerFW)
 
-	props := FirewallruleProperties{
+	props := sdk.FirewallruleProperties{
 		Name: "SSH - RENAME",
 	}
 	resp, err := c.UpdateFirewallRule(dataCenter.ID, server.ID, nic.ID, fw.ID, props)

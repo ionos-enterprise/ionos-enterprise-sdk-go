@@ -22,14 +22,10 @@ _testmain.go
 *.exe
 *.test
 *.prof
-/.idea/
-.idea/compiler.xml
-.idea/copyright/
-.idea/encodings.xml
-.idea/misc.xml
-.idea/modules.xml
-.idea/profitbricks-sdk-go.iml
-.idea/vcs.xml
-.idea/workspace.xml
-/.idea/libraries/
+.idea/
 .DS_Store
+
+# direnv environment file
+.envrc
+
+

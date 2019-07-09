@@ -1,4 +1,4 @@
-package profitbricks
+package integration_tests
 
 import (
 	"context"
@@ -6,10 +6,11 @@ import (
 	"net/url"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
-var reqID Request
+var reqID sdk.Request
 
 func TestListRequests(t *testing.T) {
 	fmt.Println("Request tests")

@@ -1,9 +1,10 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,8 +21,8 @@ func TestCreateLoadbalancer(t *testing.T) {
 
 func TestCreateLoadbalancerFailure(t *testing.T) {
 	c := setupTestEnv()
-	var request = Loadbalancer{
-		Properties: LoadbalancerProperties{
+	var request = sdk.Loadbalancer{
+		Properties: sdk.LoadbalancerProperties{
 			Dhcp: true,
 		},
 	}
@@ -74,7 +75,7 @@ func TestPatchLoadbalancer(t *testing.T) {
 	onceLBNic.Do(createNic)
 	onceLB.Do(createLoadBalancerWithIP)
 
-	obj := LoadbalancerProperties{Name: "GO SDK Test - RENAME"}
+	obj := sdk.LoadbalancerProperties{Name: "GO SDK Test - RENAME"}
 
 	resp, err := c.UpdateLoadbalancer(dataCenter.ID, loadBalancer.ID, obj)
 	if err != nil {

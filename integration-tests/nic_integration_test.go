@@ -1,17 +1,17 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"sync"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
 var (
 	onceNicDc     sync.Once
 	onceNicServer sync.Once
-	onceNic       sync.Once
 )
 
 func TestCreateNic(t *testing.T) {
@@ -29,8 +29,8 @@ func TestCreateNicFailure(t *testing.T) {
 	onceNicDc.Do(createDataCenter)
 	onceNicServer.Do(createServer)
 
-	var request = Nic{
-		Properties: &NicProperties{
+	var request = sdk.Nic{
+		Properties: &sdk.NicProperties{
 			Name:           "GO SDK Test",
 			Nat:            boolAddr(false),
 			FirewallActive: boolAddr(true),
@@ -92,7 +92,7 @@ func TestUpdateNic(t *testing.T) {
 	onceNicServer.Do(createServer)
 	onceNicNic.Do(createNic)
 
-	obj := NicProperties{Name: "GO SDK Test - RENAME"}
+	obj := sdk.NicProperties{Name: "GO SDK Test - RENAME"}
 
 	resp, err := c.UpdateNic(dataCenter.ID, server.ID, nic.ID, obj)
 	if err != nil {

@@ -1,9 +1,10 @@
-package profitbricks
+package integration_tests
 
 import (
 	"fmt"
 	"testing"
 
+	sdk "github.com/profitbricks/profitbricks-sdk-go"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -40,8 +41,8 @@ func TestGetDatacenterFail(t *testing.T) {
 
 func TestCreateFailure(t *testing.T) {
 	c := setupTestEnv()
-	var obj = Datacenter{
-		Properties: DatacenterProperties{
+	var obj = sdk.Datacenter{
+		Properties: sdk.DatacenterProperties{
 			Name:        "GO SDK Test",
 			Description: "GO SDK test datacenter",
 		},
@@ -83,7 +84,7 @@ func TestUpdateDatacenter(t *testing.T) {
 	syncDC.Do(createDataCenter)
 	c := setupTestEnv()
 	newName := "GO SDK Test - RENAME"
-	obj := DatacenterProperties{Name: newName}
+	obj := sdk.DatacenterProperties{Name: newName}
 
 	resp, err := c.UpdateDataCenter(dataCenter.ID, obj)
 	if err != nil {
