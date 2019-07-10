@@ -18,7 +18,8 @@ const (
 	FullHeader = "application/json"
 
 	//AgentHeader is used for user agent request header
-	// AgentHeader = "profitbricks-sdk-go/3.0.1"
+	AgentHeader   = "profitbricks-sdk-go/5.0.0"
+	DefaultApiUrl = "https://api.profitbricks.com/cloudapi/v4"
 )
 
 type client struct {
@@ -35,9 +36,9 @@ func newPBRestClient(username string, password string, apiURL string, depth stri
 	client := new(client)
 	client.username = username
 	client.password = password
-	client.agentHeader = "profitbricks-sdk-go/5.0.0"
+	client.agentHeader = AgentHeader
 	if apiURL == "" {
-		client.apiURL = "https://api.profitbricks.com/cloudapi/v4"
+		client.apiURL = DefaultApiUrl
 	} else {
 		client.apiURL = apiURL
 	}
@@ -122,7 +123,7 @@ func (c *client) do(url string, method string, requestBody interface{}, result i
 			r.Body = ioutil.NopCloser(br)
 		}
 
-		client := &http.Client{}
+		client := http.DefaultClient // &http.Client{}
 		if c.token != "" {
 			r.Header.Add("Authorization", "Bearer "+c.token)
 		} else {
