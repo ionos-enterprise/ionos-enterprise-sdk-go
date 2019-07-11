@@ -133,13 +133,7 @@ func (c *Client) ListRequests() (*Requests, error) {
 	return ret, err
 }
 
-// ListRequestsWithFilter lists all requests that matches the given filters
-// Available filters are:
-// * url
-// * createdDate
-// * method
-// * body
-// * requestStatus
+// ListRequestsWithFilter lists all requests that match the given filters
 func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, error) {
 	path := "/requests"
 	query := url.Values{
@@ -209,6 +203,8 @@ func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string)
 			return ctx.Err()
 		}
 		select {
+		case <-ctx.Done():
+			return ctx.Err()
 		case <-ticker.C:
 			done, err = c.IsRequestDone(path)
 			if err != nil {
@@ -235,6 +231,7 @@ func (c *Client) WaitTillProvisioned(path string) (err error) {
 
 type RequestSelector func(Request) bool
 
+// IsFinished is true if the requests Status is neither QUEUED or RUNNING.
 func IsFinished(r Request) bool {
 	switch r.Metadata.RequestStatus.Metadata.Status {
 	case "QUEUED", "RUNNING":
