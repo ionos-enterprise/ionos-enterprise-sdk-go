@@ -76,8 +76,8 @@ type Request struct {
 // interface to make use of the filters that the ionos API provides for the
 // requests endpoint.
 // Example:
-//   filter := NewRequestListFilter().WithUrl("volumes").WithUrl("datacenter") will create a api call
-//   with query args like: /requests?filter.url=volumes&filter.url=datacenter
+//   filter := NewRequestListFilter().WithUrl("volumes").WithBody("de/fra") will create a api call
+//   with query args like: /requests?filter.url=volumes&filter.body=de%2Ffra
 type RequestListFilter struct {
 	url.Values
 }
