@@ -58,23 +58,15 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 		"filter.url": []string{"volumes"},
 		"depth":      []string{"10"},
 	}
-	listResponded := 0
 	httpmock.RegisterResponderWithQuery(http.MethodGet, s.apiUrl+"/requests", query,
-		func(r *http.Request) (*http.Response, error) {
-			if listResponded >= len(listResponses) {
-				return httpmock.NewStringResponse(404, "{}"), nil
-			}
-			rsp := httpmock.NewBytesResponse(200, listResponses[listResponded])
-			listResponded++
-			return rsp, nil
-		})
+		httpmock.NewBytesResponder(200, listResponses[0]).Once())
+	httpmock.RegisterResponderWithQuery(http.MethodGet, s.apiUrl+"/requests", query,
+		httpmock.NewBytesResponder(200, listResponses[1]).Once())
 
-	statusResponded := 0
-	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*", func(request *http.Request) (response *http.Response, e error) {
-		rsp := httpmock.NewBytesResponse(200, statusResponses[statusResponded])
-		statusResponded++
-		return rsp, nil
-	})
+	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
+		httpmock.NewBytesResponder(200, statusResponses[0]).Once())
+	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
+		httpmock.NewBytesResponder(200, statusResponses[1]).Once())
 
 	err := s.client.WaitTillRequestsFinished(context.TODO(), NewRequestListFilter().WithUrl("volumes"))
 	s.NoError(err)
@@ -82,10 +74,7 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 
 func (s *SuiteWaitTillRequests) Test_Err_ListError() {
 	httpmock.RegisterResponder(http.MethodGet, s.apiUrl+"/requests",
-		func(r *http.Request) (*http.Response, error) {
-			rsp := httpmock.NewStringResponse(401, "{}")
-			return rsp, nil
-		})
+		httpmock.NewStringResponder(401, "{}"))
 	err := s.client.WaitTillMatchingRequestsFinished(context.TODO(), nil, nil)
 	s.Error(err)
 	s.Equal(1, httpmock.GetTotalCallCount())
@@ -94,14 +83,10 @@ func (s *SuiteWaitTillRequests) Test_Err_ListError() {
 func (s *SuiteWaitTillRequests) Test_Err_GetStatusError() {
 	rsp := loadTestData(s.T(), "request_request_till_no_request_matches_01.json")
 	httpmock.RegisterResponder(http.MethodGet, s.apiUrl+"/requests",
-		func(r *http.Request) (*http.Response, error) {
-			rsp := httpmock.NewBytesResponse(200, rsp)
-			return rsp, nil
-		})
-	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*", func(request *http.Request) (
-		response *http.Response, e error) {
-		return httpmock.NewStringResponse(404, "{}"), nil
-	})
+		httpmock.NewBytesResponder(200, rsp))
+
+	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
+		httpmock.NewStringResponder(401, "{}"))
 	err := s.client.WaitTillRequestsFinished(context.TODO(), nil)
 	s.Error(err)
 	s.Equal(2, httpmock.GetTotalCallCount())

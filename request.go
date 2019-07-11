@@ -186,10 +186,10 @@ func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
 	return ret, err
 }
 
-// IsRequestDone checks the given path to a request status resource. The request is considered "done"
+// IsRequestFinished checks the given path to a request status resource. The request is considered "done"
 // if its status won't change, which is true for status FAILED and DONE. Since Failed is obviously not done,
 // the method returns true and RequestFailed error in that case.
-func (c *Client) IsRequestDone(path string) (bool, error) {
+func (c *Client) IsRequestFinished(path string) (bool, error) {
 	request, err := c.GetRequestStatus(path)
 	if err != nil {
 		return false, err
@@ -210,7 +210,7 @@ func (c *Client) IsRequestDone(path string) (bool, error) {
 // It returns an error if the request status could not be fetched, the request
 // failed or the given context is canceled.
 func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string) error {
-	done, err := c.IsRequestDone(path)
+	done, err := c.IsRequestFinished(path)
 	if err != nil {
 		return err
 	} else if done {
@@ -226,7 +226,7 @@ func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string)
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-ticker.C:
-			done, err = c.IsRequestDone(path)
+			done, err = c.IsRequestFinished(path)
 			if err != nil {
 				return err
 			}
@@ -251,8 +251,8 @@ func (c *Client) WaitTillProvisioned(path string) (err error) {
 
 type RequestSelector func(Request) bool
 
-// IsFinished is true if the requests Status is neither QUEUED or RUNNING.
-func IsFinished(r Request) bool {
+// IsRequestStatusFinished is true if the requests Status is neither QUEUED or RUNNING.
+func IsRequestStatusFinished(r Request) bool {
 	switch r.Metadata.RequestStatus.Metadata.Status {
 	case "QUEUED", "RUNNING":
 		return false
@@ -262,12 +262,12 @@ func IsFinished(r Request) bool {
 
 // WaitTillRequestsFinished will wait until there are no more unfinished requests matching the given filter
 func (c *Client) WaitTillRequestsFinished(ctx context.Context, filter *RequestListFilter) error {
-	return c.WaitTillMatchingRequestsFinished(ctx, filter, func(r Request) bool { return !IsFinished(r) })
+	return c.WaitTillMatchingRequestsFinished(ctx, filter, func(r Request) bool { return !IsRequestStatusFinished(r) })
 }
 
 // WaitTillMatchingRequestsFinished gets open requests with given filters and will
 // wait for each request that is selected by the selector. The selector
-// should consider filtering out requests that are finished. (e.g. using IsFinished)
+// should consider filtering out requests that are finished. (e.g. using IsRequestStatusFinished)
 func (c *Client) WaitTillMatchingRequestsFinished(
 	ctx context.Context, filter *RequestListFilter, selector RequestSelector) error {
 
