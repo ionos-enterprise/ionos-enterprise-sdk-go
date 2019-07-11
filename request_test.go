@@ -68,14 +68,14 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
 		httpmock.NewBytesResponder(200, statusResponses[1]).Once())
 
-	err := s.client.WaitTillRequestsFinished(context.TODO(), NewRequestListFilter().WithUrl("volumes"))
+	err := s.client.WaitTillRequestsFinished(context.Background(), NewRequestListFilter().WithUrl("volumes"))
 	s.NoError(err)
 }
 
 func (s *SuiteWaitTillRequests) Test_Err_ListError() {
 	httpmock.RegisterResponder(http.MethodGet, s.apiUrl+"/requests",
 		httpmock.NewStringResponder(401, "{}"))
-	err := s.client.WaitTillMatchingRequestsFinished(context.TODO(), nil, nil)
+	err := s.client.WaitTillMatchingRequestsFinished(context.Background(), nil, nil)
 	s.Error(err)
 	s.Equal(1, httpmock.GetTotalCallCount())
 }
@@ -87,7 +87,7 @@ func (s *SuiteWaitTillRequests) Test_Err_GetStatusError() {
 
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
 		httpmock.NewStringResponder(401, "{}"))
-	err := s.client.WaitTillRequestsFinished(context.TODO(), nil)
+	err := s.client.WaitTillRequestsFinished(context.Background(), nil)
 	s.Error(err)
 	s.Equal(2, httpmock.GetTotalCallCount())
 }
