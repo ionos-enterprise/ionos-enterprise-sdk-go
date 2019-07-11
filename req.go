@@ -14,10 +14,10 @@ import (
 )
 
 const (
-	//FullHeader is the standard header to include with all http requests except is_patch and is_command
+	// FullHeader is the standard header to include with all http requests except is_patch and is_command
 	FullHeader = "application/json"
 
-	//AgentHeader is used for user agent request header
+	// AgentHeader is used for user agent request header
 	AgentHeader   = "profitbricks-sdk-go/5.0.0"
 	DefaultApiUrl = "https://api.profitbricks.com/cloudapi/v4"
 )
@@ -123,7 +123,9 @@ func (c *client) do(url string, method string, requestBody interface{}, result i
 			r.Body = ioutil.NopCloser(br)
 		}
 
-		client := &http.Client{}
+		client := &http.Client{
+			Timeout: 60 * time.Second,
+		}
 		if c.token != "" {
 			r.Header.Add("Authorization", "Bearer "+c.token)
 		} else {
