@@ -123,7 +123,7 @@ func (c *client) do(url string, method string, requestBody interface{}, result i
 			r.Body = ioutil.NopCloser(br)
 		}
 
-		client := http.DefaultClient // &http.Client{}
+		client := &http.Client{}
 		if c.token != "" {
 			r.Header.Add("Authorization", "Bearer "+c.token)
 		} else {
