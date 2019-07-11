@@ -1,0 +1,21 @@
+{
+  "href": "https://api.ionos.com/cloudapi/v4/requests/bb24f0d9-b17e-4521-8396-b1be9686abce/status",
+  "id": "bb24f0d9-b17e-4521-8396-b1be9686abce/status",
+  "metadata": {
+    "etag": "2ba22e58ca17bb728d522bba36cf8350",
+    "message": "Request has been successfully executed",
+    "status": "DONE",
+    "targets": [
+      {
+        "status": "DONE",
+        "target": {
+          "href": "https://api.profitbricks.com/cloudapi/v4/datacenters/c6c723ae-c143-40da-bfef-ee1b050efa8c",
+          "id": "c6c723ae-c143-40da-bfef-ee1b050efa8c",
+          "type": "datacenter"
+        }
+      }
+    ]
+  },
+  "type": "request-status"
+}
+

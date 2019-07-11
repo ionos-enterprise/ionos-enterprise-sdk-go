@@ -1,0 +1,99 @@
+{
+  "href": "https://api.ionos.com/cloudapi/v4/requests",
+  "id": "requests",
+  "items": [
+    {
+      "href": "https://api.ionos.com/cloudapi/v4/requests/bb24f0d9-b17e-4521-8396-b1be9686abce",
+      "id": "bb24f0d9-b17e-4521-8396-b1be9686abce",
+      "metadata": {
+        "createdBy": "admin@example.com",
+        "createdDate": "2019-07-09T14:41:37.000Z",
+        "etag": "2ba22e58ca17bb728d522bba36cf8350",
+        "requestStatus": {
+          "href": "https://api.ionos.com/cloudapi/v4/requests/bb24f0d9-b17e-4521-8396-b1be9686abce/status",
+          "id": "bb24f0d9-b17e-4521-8396-b1be9686abce/status",
+          "metadata": {
+            "etag": "2ba22e58ca17bb728d522bba36cf8350",
+            "message": "Request has been successfully executed",
+            "status": "DONE",
+            "targets": [
+              {
+                "status": "DONE",
+                "target": {
+                  "href": "https://api.profitbricks.com/cloudapi/v4/datacenters/c6c723ae-c143-40da-bfef-ee1b050efa8c",
+                  "id": "c6c723ae-c143-40da-bfef-ee1b050efa8c",
+                  "type": "datacenter"
+                }
+              }
+            ]
+          },
+          "type": "request-status"
+        }
+      },
+      "properties": {
+        "headers": {
+          "accept-encoding": "gzip",
+          "connection": "Keep-Alive",
+          "content-length": "0",
+          "content-type": "application/json",
+          "host": "api.profitbricks.com",
+          "user-agent": "profitbricks-sdk-go/5.0.0",
+          "x-forwarded-for": "2a01:238:e170:1:8615:f811:bba9:e478",
+          "x-forwarded-host": "api.profitbricks.com",
+          "x-forwarded-server": "my.profitbricks.com",
+          "x-reseller": "pb.domain"
+        },
+        "method": "DELETE",
+        "url": "https://api.profitbricks.com/cloudapi/v4/datacenters/c6c723ae-c143-40da-bfef-ee1b050efa8c?depth=5&pretty=false?depth=5&pretty=false"
+      },
+      "type": "request"
+    },
+    {
+      "href": "https://api.ionos.com/cloudapi/v4/requests/0e8a9321-366d-4f44-9436-5d6aa5e13dcb",
+      "id": "0e8a9321-366d-4f44-9436-5d6aa5e13dcb",
+      "metadata": {
+        "createdBy": "admin@example.com",
+        "createdDate": "2019-07-09T14:41:36.000Z",
+        "etag": "2ba22e58ca17bb728d522bba36cf8350",
+        "requestStatus": {
+          "href": "https://api.ionos.com/cloudapi/v4/requests/0e8a9321-366d-4f44-9436-5d6aa5e13dcb/status",
+          "id": "0e8a9321-366d-4f44-9436-5d6aa5e13dcb/status",
+          "metadata": {
+            "etag": "2ba22e58ca17bb728d522bba36cf8350",
+            "message": "Request has been successfully executed",
+            "status": "DONE",
+            "targets": [
+              {
+                "status": "DONE",
+                "target": {
+                  "href": "TO_BE_INJECTED",
+                  "id": "054f4ecc-d5cf-4914-85e7-0ad817530b90",
+                  "type": "ipblock"
+                }
+              }
+            ]
+          },
+          "type": "request-status"
+        }
+      },
+      "properties": {
+        "headers": {
+          "accept-encoding": "gzip",
+          "connection": "Keep-Alive",
+          "content-length": "0",
+          "content-type": "application/json",
+          "host": "api.profitbricks.com",
+          "user-agent": "profitbricks-sdk-go/5.0.0",
+          "x-forwarded-for": "2a01:238:e170:1:8615:f811:bba9:e478",
+          "x-forwarded-host": "api.profitbricks.com",
+          "x-forwarded-server": "my.profitbricks.com",
+          "x-reseller": "pb.domain"
+        },
+        "method": "DELETE",
+        "url": "https://api.profitbricks.com/cloudapi/v4/ipblocks/054f4ecc-d5cf-4914-85e7-0ad817530b90"
+      },
+      "type": "request"
+    }
+  ],
+  "type": "collection"
+}
