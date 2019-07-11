@@ -260,8 +260,7 @@ func IsFinished(r Request) bool {
 	return true
 }
 
-// WaitTillRequestsFinished will wait until list requests with applied filters does not
-// return requests which are not finished.
+// WaitTillRequestsFinished will wait until there are no more unfinished requests matching the given filter
 func (c *Client) WaitTillRequestsFinished(ctx context.Context, filter *RequestListFilter) error {
 	return c.WaitTillMatchingRequestsFinished(ctx, filter, func(r Request) bool { return !IsFinished(r) })
 }
