@@ -72,54 +72,71 @@ type Request struct {
 	StatusCode int               `json:"statuscode,omitempty"`
 }
 
+// RequestListFilter is a wrapper around url.Values to provide a common
+// interface to make use of the filters that the ionos API provides for the
+// requests endpoint.
+// Example:
+//   filter := NewRequestListFilter().WithUrl("volumes").WithUrl("datacenter") will create a api call
+//   with query args like: /requests?filter.url=volumes&filter.url=datacenter
 type RequestListFilter struct {
 	url.Values
 }
 
+// NewRequestListFilter creates a new RequestListFilter
 func NewRequestListFilter() *RequestListFilter {
 	return &RequestListFilter{Values: url.Values{}}
 }
 
+// AddUrl adds an url filter to the request list filter
 func (f *RequestListFilter) AddUrl(url string) {
 	f.WithUrl(url)
 }
 
+// WithUrl adds an url filter to the request list filter returning the filter for chaining
 func (f *RequestListFilter) WithUrl(url string) *RequestListFilter {
 	f.Add("filter.url", url)
 	return f
 }
 
+// AddCreatedDate adds a createdDate filter to the request list filter
 func (f *RequestListFilter) AddCreatedDate(createdDate string) {
 	f.WithCreatedDate(createdDate)
 }
 
+// WithCreatedDate adds a createdDate filter to the request list filter returning the filter for chaining
 func (f *RequestListFilter) WithCreatedDate(createdDate string) *RequestListFilter {
 	f.Add("filter.createdDate", createdDate)
 	return f
 }
 
+// AddMethod adds a method filter to the request list filter
 func (f *RequestListFilter) AddMethod(method string) {
 	f.WithMethod(method)
 }
 
+// WithMethod adds a method filter to the request list filter returning the filter for chaining
 func (f *RequestListFilter) WithMethod(method string) *RequestListFilter {
 	f.Add("filter.method", method)
 	return f
 }
 
+// AddBody adds a body filter to the request list filter
 func (f *RequestListFilter) AddBody(body string) {
 	f.WithBody(body)
 }
 
+// WithBody adds a body filter to the request list filter returning the filter for chaining
 func (f *RequestListFilter) WithBody(body string) *RequestListFilter {
 	f.Add("filter.body", body)
 	return f
 }
 
+// AddRequestStatus adds a requestStatus filter to the request list filter
 func (f *RequestListFilter) AddRequestStatus(requestStatus string) {
 	f.WithRequestStatus(requestStatus)
 }
 
+// WithRequestStatus adds a requestStatus filter to the request list filter returning the filter for chaining
 func (f *RequestListFilter) WithRequestStatus(requestStatus string) *RequestListFilter {
 	f.Add("filter.requestStatus", requestStatus)
 	return f
@@ -161,7 +178,7 @@ func (c *Client) GetRequest(reqID string) (*Request, error) {
 	return ret, err
 }
 
-// GetRequestStatus retursn status of the request
+// GetRequestStatus returns status of the request
 func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
 	url := path + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &RequestStatus{}
@@ -169,6 +186,9 @@ func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
 	return ret, err
 }
 
+// IsRequestDone checks the given path to a request status resource. The request is considered "done"
+// if its status won't change, which is true for status FAILED and DONE. Since Failed is obviously not done,
+// the method returns true and RequestFailed error in that case.
 func (c *Client) IsRequestDone(path string) (bool, error) {
 	request, err := c.GetRequestStatus(path)
 	if err != nil {
