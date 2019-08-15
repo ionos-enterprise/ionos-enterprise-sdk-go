@@ -124,7 +124,7 @@ func (c *client) do(url string, method string, requestBody interface{}, result i
 		}
 
 		client := &http.Client{
-			Timeout: 60 * time.Second,
+			Timeout: 3 * time.Minute,
 		}
 		if c.token != "" {
 			r.Header.Add("Authorization", "Bearer "+c.token)
