@@ -214,3 +214,8 @@ func umResourcesType(restype string) string {
 func umResourcesTypePath(restype string, resourceid string) string {
 	return um() + slash("resources") + slash(restype) + slash(resourceid)
 }
+
+// tokenColPath returns the string "/tokens"
+func tokenColPath() string {
+	return slash("tokens")
+}
