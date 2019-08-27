@@ -38,9 +38,12 @@ func (c *Client) TokenID() (string, error) {
 
 // DeleteToken deletes the given token
 func (c *Client) DeleteToken(token string) error {
-	url := tokenColPath() + "?criteria=CURRENT"
-	client := newPBRestClientbyToken(token, "", "", "", false)
-	return client.do(client.authApiUrl+url, http.MethodDelete, nil, nil, http.StatusOK)
+	tokenID, err := ExtractIDFromToken(token)
+	if err != nil {
+		return err
+	}
+	url := tokenPath(tokenID)
+	return c.client.do(c.client.authApiUrl+url, http.MethodDelete, nil, nil, http.StatusOK)
 }
 
 // DeleteCurrentToken deletes the client's token if a token is set.

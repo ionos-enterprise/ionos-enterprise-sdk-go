@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"net/url"
 	"testing"
 
 	"github.com/jarcoal/httpmock"
@@ -38,10 +37,7 @@ func (s *SuiteToken) Test_TokenID() {
 }
 
 func (s *SuiteToken) Test_DeleteCurrentToken() {
-	query := url.Values{
-		"criteria": []string{"CURRENT"},
-	}
-	httpmock.RegisterResponderWithQuery(http.MethodDelete, s.apiUrl+"/tokens", query,
+	httpmock.RegisterResponder(http.MethodDelete, s.apiUrl+"/tokens/c0f6048b-ce87-4f8a-85b2-5967db9a0961",
 		httpmock.NewStringResponder(200, ""))
 	err := s.client.DeleteCurrentToken()
 	s.NoError(err)
