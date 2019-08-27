@@ -18,8 +18,9 @@ const (
 	FullHeader = "application/json"
 
 	// AgentHeader is used for user agent request header
-	AgentHeader   = "profitbricks-sdk-go/5.0.0"
-	DefaultApiUrl = "https://api.profitbricks.com/cloudapi/v4"
+	AgentHeader        = "profitbricks-sdk-go/5.0.0"
+	DefaultCloudApiUrl = "https://api.profitbricks.com/cloudapi/v4"
+	DefaultAuthApiUrl  = "https://api.ionos.com/auth/v1"
 )
 
 type client struct {
@@ -27,52 +28,41 @@ type client struct {
 	password    string
 	depth       string
 	pretty      bool
-	apiURL      string
+	cloudApiUrl string
+	authApiUrl  string
 	agentHeader string
 	token       string
 }
 
-func newPBRestClient(username string, password string, apiURL string, depth string, pretty bool) *client {
-	client := new(client)
-	client.username = username
-	client.password = password
-	client.agentHeader = AgentHeader
-	if apiURL == "" {
-		client.apiURL = DefaultApiUrl
-	} else {
-		client.apiURL = apiURL
+func newPBRestClient(username, password, cloudApiUrl, authApiUrl, depth string, pretty bool) *client {
+	if cloudApiUrl == "" {
+		cloudApiUrl = DefaultCloudApiUrl
 	}
-
+	if authApiUrl == "" {
+		authApiUrl = DefaultAuthApiUrl
+	}
 	if depth == "" {
-		client.depth = "5"
-	} else {
-		client.depth = depth
+		depth = "5"
 	}
-
-	return client
+	return &client{
+		username:    username,
+		password:    password,
+		depth:       depth,
+		pretty:      pretty,
+		cloudApiUrl: cloudApiUrl,
+		authApiUrl:  authApiUrl,
+		agentHeader: AgentHeader,
+	}
 }
 
-func newPBRestClientbyToken(token, apiURL, depth string, pretty bool) *client {
-	client := new(client)
+func newPBRestClientbyToken(token, cloudApiUrl, authApiUrl, depth string, pretty bool) *client {
+	client := newPBRestClient("", "", cloudApiUrl, authApiUrl, depth, pretty)
 	client.token = token
-	client.agentHeader = "profitbricks-sdk-go/5.0.0"
-	if apiURL == "" {
-		client.apiURL = "https://api.profitbricks.com/cloudapi/v4"
-	} else {
-		client.apiURL = apiURL
-	}
-
-	if depth == "" {
-		client.depth = "5"
-	} else {
-		client.depth = depth
-	}
-
 	return client
 }
 
 func (c *client) mkURL(path string) string {
-	url := c.apiURL + path
+	url := c.cloudApiUrl + path
 
 	return url
 }
@@ -163,19 +153,19 @@ func (c *client) do(url string, method string, requestBody interface{}, result i
 				}
 				return ApiError{*erResp}
 			} else {
-
-				if string(body) != "" {
-					err = json.Unmarshal(body, result)
-					val := reflect.ValueOf(result).Elem().FieldByName("Headers")
-					val.Set(reflect.ValueOf(&resp.Header))
-				} else {
-					raw, err := json.Marshal(resp.Header)
-					if err != nil {
-						return err
+				if result != nil {
+					if string(body) != "" {
+						err = json.Unmarshal(body, result)
+						val := reflect.ValueOf(result).Elem().FieldByName("Headers")
+						val.Set(reflect.ValueOf(&resp.Header))
+					} else {
+						raw, err := json.Marshal(resp.Header)
+						if err != nil {
+							return err
+						}
+						json.Unmarshal(raw, result)
 					}
-					json.Unmarshal(raw, result)
 				}
-
 				return err
 			}
 		}

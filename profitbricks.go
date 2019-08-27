@@ -4,31 +4,22 @@ import "strconv"
 
 //Client object
 type Client struct {
-	baseURL  string
-	userName string
-	password string
-	client   *client
-	token    string
+	client *client
 }
 
 //NewClient is a constructor for Client object
 func NewClient(username, password string) *Client {
-
-	c := newPBRestClient(username, password, "", "", true)
+	c := newPBRestClient(username, password, "", "", "", true)
 	return &Client{
-		userName: c.username,
-		password: c.password,
-		client:   c,
+		client: c,
 	}
 }
 
 // NewClientbyToken is a constructor for Client object using bearer tokens for
 // authentication instead of username, password
 func NewClientbyToken(token string) *Client {
-
-	c := newPBRestClientbyToken(token, "", "", true)
+	c := newPBRestClientbyToken(token, "", "", "", true)
 	return &Client{
-		token:  c.token,
 		client: c,
 	}
 }
@@ -48,7 +39,12 @@ func (c *Client) GetUserAgent() string {
 	return c.client.agentHeader
 }
 
-//SetURL sets Cloud API url
-func (c *Client) SetURL(url string) {
-	c.client.apiURL = url
+//SetCloudApiUrl sets Cloud API URL
+func (c *Client) SetCloudApiUrl(url string) {
+	c.client.cloudApiUrl = url
+}
+
+//SetAuthApiUrl sets Auth API URL
+func (c *Client) SetAuthApiUrl(url string) {
+	c.client.authApiUrl = url
 }

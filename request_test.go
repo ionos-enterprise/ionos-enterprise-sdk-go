@@ -23,7 +23,7 @@ type SuiteRequest struct {
 
 func (s *SuiteRequest) SetupTest() {
 	s.client = NewClient("", "")
-	s.apiUrl = s.client.client.apiURL
+	s.apiUrl = s.client.client.cloudApiUrl
 	httpmock.Activate()
 }
 
