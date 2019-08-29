@@ -36,14 +36,19 @@ func (c *Client) TokenID() (string, error) {
 	return "", nil
 }
 
+// DeleteTokenByID deletes the token with the given key ID
+func (c *Client) DeleteTokenByID(tokenID string) error {
+	url := tokenPath(tokenID)
+	return c.client.do(c.client.authApiUrl+url, http.MethodDelete, nil, nil, http.StatusOK)
+}
+
 // DeleteToken deletes the given token
 func (c *Client) DeleteToken(token string) error {
 	tokenID, err := ExtractIDFromToken(token)
 	if err != nil {
 		return err
 	}
-	url := tokenPath(tokenID)
-	return c.client.do(c.client.authApiUrl+url, http.MethodDelete, nil, nil, http.StatusOK)
+	return c.DeleteTokenByID(tokenID)
 }
 
 // DeleteCurrentToken deletes the client's token if a token is set.
