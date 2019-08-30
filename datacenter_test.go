@@ -172,11 +172,11 @@ var _ = Describe("Datacenters", func() {
 		exp := &Datacenter{}
 		err := json.Unmarshal([]byte(responseBody), exp)
 		x := &http.Response{
-			Status:     "200",
-			StatusCode: 200,
-			Body:       ioutil.NopCloser(bytes.NewReader([]byte(responseBody))),
+			Status:     "400",
+			StatusCode: 400,
+			Body:       ioutil.NopCloser(bytes.NewReader([]byte("<"+responseBody))),
 			Header: http.Header{
-				"Content-Type": []string{"application/json"},
+				"Content-Type": []string{"text/"},
 			},
 			ContentLength: -1,
 		}
@@ -195,5 +195,5 @@ var _ = Describe("Datacenters", func() {
 
 func Test_Datacenter(t *testing.T) {
 	RegisterFailHandler(Fail)
-	//RunSpecs(t, "Datacenters")
+	RunSpecs(t, "Datacenters")
 }
