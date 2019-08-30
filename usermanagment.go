@@ -2,30 +2,29 @@ package profitbricks
 
 import (
 	"net/http"
-	"strconv"
 )
 
 // Groups object
 type Groups struct {
-	ID         string       `json:"id,omitempty"`
-	PBType     string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Items      []Group      `json:"items,omitempty"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string  `json:"id,omitempty"`
+	PBType       string  `json:"type,omitempty"`
+	Href         string  `json:"href,omitempty"`
+	Items        []Group `json:"items,omitempty"`
+	Response     string  `json:"Response,omitempty"`
+	StatusCode   int     `json:"statuscode,omitempty"`
 }
 
 // Group object
 type Group struct {
-	ID         string          `json:"id,omitempty"`
-	PBType     string          `json:"type,omitempty"`
-	Href       string          `json:"href,omitempty"`
-	Properties GroupProperties `json:"properties,omitempty"`
-	Entities   *GroupEntities  `json:"entities,omitempty"`
-	Response   string          `json:"Response,omitempty"`
-	Headers    *http.Header    `json:"headers,omitempty"`
-	StatusCode int             `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string          `json:"id,omitempty"`
+	PBType       string          `json:"type,omitempty"`
+	Href         string          `json:"href,omitempty"`
+	Properties   GroupProperties `json:"properties,omitempty"`
+	Entities     *GroupEntities  `json:"entities,omitempty"`
+	Response     string          `json:"Response,omitempty"`
+	StatusCode   int             `json:"statuscode,omitempty"`
 }
 
 // GroupProperties object
@@ -45,26 +44,26 @@ type GroupEntities struct {
 
 // Users object
 type Users struct {
-	ID         string       `json:"id,omitempty"`
-	PBType     string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Items      []User       `json:"items,omitempty"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string `json:"id,omitempty"`
+	PBType       string `json:"type,omitempty"`
+	Href         string `json:"href,omitempty"`
+	Items        []User `json:"items,omitempty"`
+	Response     string `json:"Response,omitempty"`
+	StatusCode   int    `json:"statuscode,omitempty"`
 }
 
 // User object
 type User struct {
-	ID         string          `json:"id,omitempty"`
-	PBType     string          `json:"type,omitempty"`
-	Href       string          `json:"href,omitempty"`
-	Metadata   *Metadata       `json:"metadata,omitempty"`
-	Properties *UserProperties `json:"properties,omitempty"`
-	Entities   *UserEntities   `json:"entities,omitempty"`
-	Response   string          `json:"Response,omitempty"`
-	Headers    *http.Header    `json:"headers,omitempty"`
-	StatusCode int             `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string          `json:"id,omitempty"`
+	PBType       string          `json:"type,omitempty"`
+	Href         string          `json:"href,omitempty"`
+	Metadata     *Metadata       `json:"metadata,omitempty"`
+	Properties   *UserProperties `json:"properties,omitempty"`
+	Entities     *UserEntities   `json:"entities,omitempty"`
+	Response     string          `json:"Response,omitempty"`
+	StatusCode   int             `json:"statuscode,omitempty"`
 }
 
 // UserProperties object
@@ -86,25 +85,25 @@ type UserEntities struct {
 
 // Resources object
 type Resources struct {
-	ID         string       `json:"id,omitempty"`
-	PBType     string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Items      []Resource   `json:"items,omitempty"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string     `json:"id,omitempty"`
+	PBType       string     `json:"type,omitempty"`
+	Href         string     `json:"href,omitempty"`
+	Items        []Resource `json:"items,omitempty"`
+	Response     string     `json:"Response,omitempty"`
+	StatusCode   int        `json:"statuscode,omitempty"`
 }
 
 // Resource object
 type Resource struct {
-	ID         string            `json:"id,omitempty"`
-	PBType     string            `json:"type,omitempty"`
-	Href       string            `json:"href,omitempty"`
-	Metadata   *Metadata         `json:"metadata,omitempty"`
-	Entities   *ResourceEntities `json:"entities,omitempty"`
-	Response   string            `json:"Response,omitempty"`
-	Headers    *http.Header      `json:"headers,omitempty"`
-	StatusCode int               `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string            `json:"id,omitempty"`
+	PBType       string            `json:"type,omitempty"`
+	Href         string            `json:"href,omitempty"`
+	Metadata     *Metadata         `json:"metadata,omitempty"`
+	Entities     *ResourceEntities `json:"entities,omitempty"`
+	Response     string            `json:"Response,omitempty"`
+	StatusCode   int               `json:"statuscode,omitempty"`
 }
 
 // ResourceEntities object
@@ -114,46 +113,46 @@ type ResourceEntities struct {
 
 // Owns object
 type Owns struct {
-	ID         string       `json:"id,omitempty"`
-	PBType     string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Items      []Entity     `json:"items,omitempty"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string   `json:"id,omitempty"`
+	PBType       string   `json:"type,omitempty"`
+	Href         string   `json:"href,omitempty"`
+	Items        []Entity `json:"items,omitempty"`
+	Response     string   `json:"Response,omitempty"`
+	StatusCode   int      `json:"statuscode,omitempty"`
 }
 
 // Entity object
 type Entity struct {
-	ID         string       `json:"id,omitempty"`
-	PBType     string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Metadata   *Metadata    `json:"metadata,omitempty"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string    `json:"id,omitempty"`
+	PBType       string    `json:"type,omitempty"`
+	Href         string    `json:"href,omitempty"`
+	Metadata     *Metadata `json:"metadata,omitempty"`
+	Response     string    `json:"Response,omitempty"`
+	StatusCode   int       `json:"statuscode,omitempty"`
 }
 
 // Shares object
 type Shares struct {
-	ID         string       `json:"id,omitempty"`
-	PBType     string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Items      []Share      `json:"items,omitempty"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string  `json:"id,omitempty"`
+	PBType       string  `json:"type,omitempty"`
+	Href         string  `json:"href,omitempty"`
+	Items        []Share `json:"items,omitempty"`
+	Response     string  `json:"Response,omitempty"`
+	StatusCode   int     `json:"statuscode,omitempty"`
 }
 
 // Share object
 type Share struct {
-	ID         string          `json:"id,omitempty"`
-	PBType     string          `json:"type,omitempty"`
-	Href       string          `json:"href,omitempty"`
-	Properties ShareProperties `json:"properties,omitempty"`
-	Response   string          `json:"Response,omitempty"`
-	Headers    *http.Header    `json:"headers,omitempty"`
-	StatusCode int             `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string          `json:"id,omitempty"`
+	PBType       string          `json:"type,omitempty"`
+	Href         string          `json:"href,omitempty"`
+	Properties   ShareProperties `json:"properties,omitempty"`
+	Response     string          `json:"Response,omitempty"`
+	StatusCode   int             `json:"statuscode,omitempty"`
 }
 
 // ShareProperties object
@@ -162,172 +161,127 @@ type ShareProperties struct {
 	SharePrivilege *bool `json:"sharePrivilege,omitempty"`
 }
 
-//ListGroups lists all groups
+type ApiResourcePath string
+
+// ListGroups lists all groups
 func (c *Client) ListGroups() (*Groups, error) {
-	url := umGroups() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Groups{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(groupsPath(), ret)
 }
 
-//GetGroup gets a group
+// GetGroup gets a group
 func (c *Client) GetGroup(groupid string) (*Group, error) {
-	url := umGroupPath(groupid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Group{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(groupPath(groupid), ret)
 }
 
-//CreateGroup creates a group
+// CreateGroup creates a group
 func (c *Client) CreateGroup(grp Group) (*Group, error) {
-	url := umGroups() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Group{}
-	err := c.client.Post(url, grp, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PostAcc(groupsPath(), grp, ret)
 }
 
-//UpdateGroup updates a group
+// UpdateGroup updates a group
 func (c *Client) UpdateGroup(groupid string, obj Group) (*Group, error) {
-	url := umGroupPath(groupid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Group{}
-	err := c.client.Put(url, obj, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PutAcc(groupPath(groupid), obj, ret)
 }
 
-//DeleteGroup deletes a group
+// DeleteGroup deletes a group
 func (c *Client) DeleteGroup(groupid string) (*http.Header, error) {
-	url := umGroupPath(groupid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
-	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+	return c.DeleteAcc(groupPath(groupid))
 }
 
-//ListShares lists all shares
+// ListShares lists all shares
 func (c *Client) ListShares(grpid string) (*Shares, error) {
-	url := umGroupShares(grpid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Shares{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(sharesPath(grpid), ret)
 }
 
 // GetShare gets a share
 func (c *Client) GetShare(groupid string, resourceid string) (*Share, error) {
-	url := umGroupSharePath(groupid, resourceid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Share{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(sharePath(groupid, resourceid), ret)
 }
 
 // AddShare adds a share
 func (c *Client) AddShare(groupid string, resourceid string, share Share) (*Share, error) {
-	url := umGroupSharePath(groupid, resourceid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Share{}
-	err := c.client.Post(url, share, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PostAcc(sharePath(groupid, resourceid), share, ret)
 }
 
 // UpdateShare updates a share
 func (c *Client) UpdateShare(groupid string, resourceid string, obj Share) (*Share, error) {
-	url := umGroupSharePath(groupid, resourceid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Share{}
-	err := c.client.Put(url, obj, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PatchAcc(sharePath(groupid, resourceid), obj, ret)
 }
 
 // DeleteShare deletes a share
 func (c *Client) DeleteShare(groupid string, resourceid string) (*http.Header, error) {
-	url := umGroupSharePath(groupid, resourceid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
-	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+	return c.DeleteAcc(sharePath(groupid, resourceid))
 }
 
-//ListGroupUsers lists Users in a group
+// ListGroupUsers lists Users in a group
 func (c *Client) ListGroupUsers(groupid string) (*Users, error) {
-	url := umGroupUsers(groupid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Users{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(groupUsersPath(groupid), ret)
 }
 
 // AddUserToGroup adds a user to a group
 func (c *Client) AddUserToGroup(groupid string, userid string) (*User, error) {
-	var usr User
-	usr.ID = userid
-	url := umGroupUsers(groupid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	usr := &User{ID: userid}
 	ret := &User{}
-	err := c.client.Post(url, usr, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PostAcc(groupUsersPath(groupid), usr, ret)
 }
 
 // DeleteUserFromGroup removes a user from a group
 func (c *Client) DeleteUserFromGroup(groupid string, userid string) (*http.Header, error) {
-	url := umGroupUsersPath(groupid, userid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
-	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+	return c.DeleteAcc(groupUserPath(groupid, userid))
 }
 
-//ListUsers lists all users
+// ListUsers lists all users
 func (c *Client) ListUsers() (*Users, error) {
-	url := umUsers() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Users{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(usersPath(), ret)
 }
 
 // GetUser gets a user
 func (c *Client) GetUser(usrid string) (*User, error) {
-	url := umUsersPath(usrid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &User{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(userPath(usrid), ret)
 }
 
-//CreateUser creates a user
+// CreateUser creates a user
 func (c *Client) CreateUser(usr User) (*User, error) {
-	url := umUsers() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &User{}
-	err := c.client.Post(url, usr, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PostAcc(usersPath(), usr, ret)
 }
 
-//UpdateUser updates user information
+// UpdateUser updates user information
 func (c *Client) UpdateUser(userid string, obj User) (*User, error) {
-	url := umUsersPath(userid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &User{}
-	err := c.client.Put(url, obj, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PutAcc(userPath(userid), obj, ret)
 }
 
-//DeleteUser deletes the specified user
+// DeleteUser deletes the specified user
 func (c *Client) DeleteUser(userid string) (*http.Header, error) {
-	url := umUsersPath(userid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
-	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+	return c.DeleteAcc(userPath(userid))
 }
 
-//ListResources lists all resources
+// ListResources lists all resources
 func (c *Client) ListResources() (*Resources, error) {
-	url := umResources() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Resources{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(resourcesPath(), ret)
 }
 
-//GetResourceByType gets a resource by type
+// GetResourceByType gets a resource by type
 func (c *Client) GetResourceByType(resourcetype string, resourceid string) (*Resource, error) {
-	url := umResourcesTypePath(resourcetype, resourceid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Resource{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(resourcePath(resourcetype, resourceid), ret)
 }
 
-//ListResourcesByType list resources by type
+// ListResourcesByType list resources by type
 func (c *Client) ListResourcesByType(resourcetype string) (*Resources, error) {
-	url := umResourcesType(resourcetype) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Resources{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(resourcesTypePath(resourcetype), ret)
 }

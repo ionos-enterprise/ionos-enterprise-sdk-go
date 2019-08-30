@@ -1,22 +1,17 @@
 package profitbricks
 
-import (
-	"net/http"
-	"strconv"
-)
-
-//ContractResources object
+// ContractResources object
 type ContractResources struct {
-	ID         string                      `json:"id,omitempty"`
-	PBType     string                      `json:"type,omitempty"`
-	Href       string                      `json:"href,omitempty"`
-	Properties ContractResourcesProperties `json:"properties,omitempty"`
-	Response   string                      `json:"Response,omitempty"`
-	Headers    *http.Header                `json:"headers,omitempty"`
-	StatusCode int                         `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string                      `json:"id,omitempty"`
+	PBType       string                      `json:"type,omitempty"`
+	Href         string                      `json:"href,omitempty"`
+	Properties   ContractResourcesProperties `json:"properties,omitempty"`
+	Response     string                      `json:"Response,omitempty"`
+	StatusCode   int                         `json:"statuscode,omitempty"`
 }
 
-//ContractResourcesProperties object
+// ContractResourcesProperties object
 type ContractResourcesProperties struct {
 	PBContractNumber string           `json:"PB-Contract-Number,omitempty"`
 	Owner            string           `json:"owner,omitempty"`
@@ -24,7 +19,7 @@ type ContractResourcesProperties struct {
 	ResourceLimits   *ResourcesLimits `json:"resourceLimits,omitempty"`
 }
 
-//ResourcesLimits object
+// ResourcesLimits object
 type ResourcesLimits struct {
 	CoresPerServer        int32 `json:"coresPerServer,omitempty"`
 	CoresPerContract      int32 `json:"coresPerContract,omitempty"`
@@ -45,9 +40,6 @@ type ResourcesLimits struct {
 
 // GetContractResources returns list of contract resources
 func (c *Client) GetContractResources() (*ContractResources, error) {
-	url := contractResourcePath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &ContractResources{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
-
+	return ret, c.GetOK(contractsPath(), ret)
 }

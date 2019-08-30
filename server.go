@@ -1,24 +1,24 @@
 package profitbricks
 
 import (
+	"context"
 	"net/http"
-	"strconv"
 )
 
-//Server object
+// Server object
 type Server struct {
-	ID         string           `json:"id,omitempty"`
-	PBType     string           `json:"type,omitempty"`
-	Href       string           `json:"href,omitempty"`
-	Metadata   *Metadata        `json:"metadata,omitempty"`
-	Properties ServerProperties `json:"properties,omitempty"`
-	Entities   *ServerEntities  `json:"entities,omitempty"`
-	Response   string           `json:"Response,omitempty"`
-	Headers    *http.Header     `json:"headers,omitempty"`
-	StatusCode int              `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string           `json:"id,omitempty"`
+	PBType       string           `json:"type,omitempty"`
+	Href         string           `json:"href,omitempty"`
+	Metadata     *Metadata        `json:"metadata,omitempty"`
+	Properties   ServerProperties `json:"properties,omitempty"`
+	Entities     *ServerEntities  `json:"entities,omitempty"`
+	Response     string           `json:"Response,omitempty"`
+	StatusCode   int              `json:"statuscode,omitempty"`
 }
 
-//ServerProperties object
+// ServerProperties object
 type ServerProperties struct {
 	Name             string             `json:"name,omitempty"`
 	Cores            int                `json:"cores,omitempty"`
@@ -30,25 +30,25 @@ type ServerProperties struct {
 	CPUFamily        string             `json:"cpuFamily,omitempty"`
 }
 
-//ServerEntities object
+// ServerEntities object
 type ServerEntities struct {
 	Cdroms  *Cdroms  `json:"cdroms,omitempty"`
 	Volumes *Volumes `json:"volumes,omitempty"`
 	Nics    *Nics    `json:"nics,omitempty"`
 }
 
-//Servers collection
+// Servers collection
 type Servers struct {
-	ID         string       `json:"id,omitempty"`
-	PBType     string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Items      []Server     `json:"items,omitempty"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string   `json:"id,omitempty"`
+	PBType       string   `json:"type,omitempty"`
+	Href         string   `json:"href,omitempty"`
+	Items        []Server `json:"items,omitempty"`
+	Response     string   `json:"Response,omitempty"`
+	StatusCode   int      `json:"statuscode,omitempty"`
 }
 
-//ResourceReference object
+// ResourceReference object
 type ResourceReference struct {
 	ID     string `json:"id,omitempty"`
 	PBType string `json:"type,omitempty"`
@@ -57,140 +57,108 @@ type ResourceReference struct {
 
 // ListServers returns a server struct collection
 func (c *Client) ListServers(dcid string) (*Servers, error) {
-	url := serverColPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Servers{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(serversPath(dcid), ret)
 }
 
 // CreateServer creates a server from a jason []byte and returns a Instance struct
 func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
-	url := serverColPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Server{}
-	err := c.client.Post(url, server, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PostAcc(serversPath(dcid), server, ret)
 }
 
 // GetServer pulls data for the server where id = srvid returns a Instance struct
 func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
-	url := serverPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Server{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(serverPath(dcid, srvid), ret)
 }
 
 // UpdateServer partial update of server properties passed in as jason []byte
 // Returns Instance struct
 func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties) (*Server, error) {
-	url := serverPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Server{}
-	err := c.client.Patch(url, props, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PatchAcc(serverPath(dcid, srvid), props, ret)
 }
 
 // DeleteServer deletes the server where id=srvid and returns Resp struct
 func (c *Client) DeleteServer(dcid, srvid string) (*http.Header, error) {
-	ret := &http.Header{}
-	err := c.client.Delete(serverPath(dcid, srvid), ret, http.StatusAccepted)
-	return ret, err
+	return c.DeleteAcc(serverPath(dcid, srvid))
 }
 
-//ListAttachedCdroms returns list of attached cd roms
+// ListAttachedCdroms returns list of attached cd roms
 func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
-	url := serverCdromColPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+
 	ret := &Images{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(cdromsPath(dcid, srvid), ret)
 }
 
-//AttachCdrom attaches a CD rom
+// AttachCdrom attaches a CD rom
 func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, error) {
-	data := struct {
-		ID string `json:"id,omitempty"`
-	}{
-		cdid,
-	}
-	url := serverCdromColPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	data := map[string]string{"id": cdid}
 	ret := &Image{}
-	err := c.client.Post(url, data, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PostAcc(cdromsPath(dcid, srvid), data, ret)
 }
 
-//GetAttachedCdrom gets attached cd roms
+// GetAttachedCdrom gets attached cd roms
 func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
-	url := serverCdromPath(dcid, srvid, cdid) // + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Image{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(cdromPath(dcid, srvid, cdid), ret)
 }
 
-//DetachCdrom detaches a CD rom
+// DetachCdrom detaches a CD rom
 func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
-	url := serverCdromPath(dcid, srvid, cdid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
-	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+	return c.DeleteAcc(cdromPath(dcid, srvid, cdid))
 }
 
-//ListAttachedVolumes lists attached volumes
+// ListAttachedVolumes lists attached volumes
 func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
-	url := serverVolumeColPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Volumes{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(attachedVolumesPath(dcid, srvid), ret)
 }
 
-//AttachVolume attaches a volume
+// AttachVolume attaches a volume
 func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume, error) {
-	data := struct {
-		ID string `json:"id,omitempty"`
-	}{
-		volid,
-	}
-	url := serverVolumeColPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	data := map[string]string{"id": volid}
 	ret := &Volume{}
-	err := c.client.Post(url, data, ret, http.StatusAccepted)
-
-	return ret, err
+	return ret, c.PostAcc(attachedVolumesPath(dcid, srvid), data, ret)
 }
 
-//GetAttachedVolume gets an attached volume
+// GetAttachedVolume gets an attached volume
 func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
-	url := serverVolumePath(dcid, srvid, volid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Volume{}
-	err := c.client.Get(url, ret, http.StatusOK)
-
-	return ret, err
+	return ret, c.GetOK(attachedVolumePath(dcid, srvid, volid), ret)
 }
 
-//DetachVolume detaches a volume
+// DetachVolume detaches a volume
 func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
-	url := serverVolumePath(dcid, srvid, volid)
-	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+	return c.DeleteAcc(attachedVolumePath(dcid, srvid, volid))
+}
+
+func (c *Client) SyncDetachVolume(ctx context.Context, dcid, srvid, volid string) error {
+	rsp, err := c.DetachVolume(dcid, srvid, volid)
+	if err != nil {
+		return err
+	}
+	return c.WaitTillProvisionedOrCanceled(ctx, rsp.Get("location"))
 }
 
 // StartServer starts a server
 func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
-	url := serverPath(dcid, srvid) + "/start"
-	ret := &http.Header{}
-	err := c.client.Post(url, nil, ret, http.StatusAccepted)
-	return ret, err
+	ret := &BaseResource{}
+	err := c.PostAcc(serverStartPath(dcid, srvid), nil, ret)
+	return ret.GetHeaders(), err
 }
 
 // StopServer stops a server
 func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
-	url := serverPath(dcid, srvid) + "/stop"
-	ret := &http.Header{}
-	err := c.client.Post(url, nil, ret, http.StatusAccepted)
-	return ret, err
+	ret := &BaseResource{}
+	err := c.PostAcc(serverStopPath(dcid, srvid), nil, ret)
+	return ret.GetHeaders(), err
 }
 
 // RebootServer reboots a server
 func (c *Client) RebootServer(dcid, srvid string) (*http.Header, error) {
-	url := serverPath(dcid, srvid) + "/reboot"
-	ret := &http.Header{}
-	err := c.client.Post(url, nil, ret, http.StatusAccepted)
-	return ret, err
+	ret := &BaseResource{}
+	err := c.PostAcc(serverRebootPath(dcid, srvid), nil, ret)
+	return ret.GetHeaders(), err
 }

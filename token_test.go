@@ -21,7 +21,7 @@ func Test_SuiteToken(t *testing.T) {
 func (s *SuiteToken) SetupTest() {
 	token := "eyJ0eXAiOiJKV1QiLCJraWQiOiJjMGY2MDQ4Yi1jZTg3LTRmOGEtODViMi01OTY3ZGI5YTA5NjEiLCJhbGciOiJSUzI1NiJ9.foo.bar"
 	s.client = NewClientbyToken(token)
-	s.apiUrl = s.client.client.authApiUrl
+	s.apiUrl = s.client.AuthApi
 	httpmock.Activate()
 }
 

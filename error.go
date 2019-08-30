@@ -1,45 +1,116 @@
-/* This file contains helpers to check whether given error
-is specific http status code or not.
-
-*/
 package profitbricks
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
 
-type ClientErrorType int
-
-const (
-	RequestFailed ClientErrorType = iota
+	"github.com/pkg/errors"
 )
 
-type ClientError struct {
-	errType ClientErrorType
-	msg     string
+const (
+	Error = ErrorType(iota)
+	ClientError
+	BadRequest
+	NotFound     = ErrorType(http.StatusNotFound)
+	UnAuthorized = ErrorType(http.StatusUnauthorized)
+	RequestFailed
+)
+
+type ErrorType uint
+
+type sdkError struct {
+	errorType     ErrorType
+	originalError error
 }
 
-func (c ClientError) Error() string {
-	return c.msg
+func (e sdkError) Error() string {
+	return e.originalError.Error()
 }
 
-func NewClientError(errType ClientErrorType, msg string) ClientError {
-	return ClientError{
-		errType: errType,
-		msg:     msg,
+func (etype ErrorType) New(msg string) error {
+	return sdkError{
+		errorType:     etype,
+		originalError: errors.New(msg),
 	}
 }
+func (etype ErrorType) Newf(msg string, args ...interface{}) error {
+	err := fmt.Errorf(msg, args...)
 
-func IsClientErrorType(err error, errType ClientErrorType) bool {
-	if err, ok := err.(ClientError); ok {
-		return err.errType == errType
+	return sdkError{errorType: etype, originalError: err}
+}
+
+// Wrap creates a new wrapped error
+func (etype ErrorType) Wrap(err error, msg string) error {
+	return etype.Wrapf(err, msg)
+}
+
+// Wrap creates a new wrapped error with formatted message
+func (etype ErrorType) Wrapf(err error, msg string, args ...interface{}) error {
+	newErr := errors.Wrapf(err, msg, args...)
+
+	return sdkError{
+		errorType: etype, originalError: newErr}
+}
+
+func GetType(e error) ErrorType {
+	underlying := errors.Cause(e)
+	if et, ok := underlying.(sdkError); ok {
+		return et.errorType
 	}
-	return false
+	return Error
+}
+
+func GetCause(e error) error {
+	underlying := errors.Cause(e)
+	if et, ok := underlying.(sdkError); ok {
+		return et.originalError
+	}
+	return underlying
+
+}
+
+type ApiErrorResponse struct {
+	HTTPStatus int `json:"httpStatus"`
+	Messages   []struct {
+		ErrorCode string `json:"errorCode"`
+		Message   string `json:"message"`
+	} `json:"messages"`
+}
+
+func (e ApiErrorResponse) Error() string {
+	return e.String()
+}
+
+func (e ApiErrorResponse) String() string {
+	toReturn := fmt.Sprintf("HTTP Status: %s \n%s", fmt.Sprint(e.HTTPStatus), "Error Messages:")
+	for _, m := range e.Messages {
+		toReturn = toReturn + fmt.Sprintf("Error Code: %s Message: %s\n", m.ErrorCode, m.Message)
+	}
+	return toReturn
+}
+
+func (e ApiErrorResponse) HttpStatusCode() int {
+	return e.HTTPStatus
+}
+
+func IsClientErrorType(err error, errType ErrorType) bool {
+	if err == nil {
+		return false
+	}
+	return GetType(err) == errType || IsClientErrorType(GetCause(err), errType)
 }
 
 func IsHttpStatus(err error, status int) bool {
-	if err, ok := err.(ApiError); ok {
+	if err == nil {
+		return false
+	}
+	if err, ok := err.(ApiErrorResponse); ok {
 		return err.HttpStatusCode() == status
 	}
-	return false
+	if int(GetType(err)) == status {
+		return true
+	}
+	return IsHttpStatus(GetCause(err), status)
 }
 
 // IsStatusOK - (200)

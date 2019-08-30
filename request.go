@@ -3,22 +3,19 @@ package profitbricks
 import (
 	"context"
 	"errors"
-	"fmt"
-	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 )
 
 // RequestStatus object
 type RequestStatus struct {
-	ID         string                `json:"id,omitempty"`
-	PBType     string                `json:"type,omitempty"`
-	Href       string                `json:"href,omitempty"`
-	Metadata   RequestStatusMetadata `json:"metadata,omitempty"`
-	Response   string                `json:"Response,omitempty"`
-	Headers    *http.Header          `json:"headers,omitempty"`
-	StatusCode int                   `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string                `json:"id,omitempty"`
+	PBType       string                `json:"type,omitempty"`
+	Href         string                `json:"href,omitempty"`
+	Metadata     RequestStatusMetadata `json:"metadata,omitempty"`
+	Response     string                `json:"Response,omitempty"`
+	StatusCode   int                   `json:"statuscode,omitempty"`
 }
 
 // RequestStatusMetadata object
@@ -37,13 +34,13 @@ type RequestTarget struct {
 
 // Requests object
 type Requests struct {
-	ID         string       `json:"id,omitempty"`
-	PBType     string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Items      []Request    `json:"items,omitempty"`
-	Response   string       `json:"Response,omitempty"`
-	Headers    *http.Header `json:"headers,omitempty"`
-	StatusCode int          `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string    `json:"id,omitempty"`
+	PBType       string    `json:"type,omitempty"`
+	Href         string    `json:"href,omitempty"`
+	Items        []Request `json:"items,omitempty"`
+	Response     string    `json:"Response,omitempty"`
+	StatusCode   int       `json:"statuscode,omitempty"`
 }
 
 type RequestMetadata struct {
@@ -62,14 +59,14 @@ type RequestProperties struct {
 
 // Request object
 type Request struct {
-	ID         string            `json:"id"`
-	Type       string            `json:"type"`
-	Href       string            `json:"href"`
-	Metadata   RequestMetadata   `json:"metadata"`
-	Properties RequestProperties `json:"properties"`
-	Response   string            `json:"Response,omitempty"`
-	Headers    *http.Header      `json:"headers,omitempty"`
-	StatusCode int               `json:"statuscode,omitempty"`
+	BaseResource `json:",inline"`
+	ID           string            `json:"id"`
+	Type         string            `json:"type"`
+	Href         string            `json:"href"`
+	Metadata     RequestMetadata   `json:"metadata"`
+	Properties   RequestProperties `json:"properties"`
+	Response     string            `json:"Response,omitempty"`
+	StatusCode   int               `json:"statuscode,omitempty"`
 }
 
 // RequestListFilter is a wrapper around url.Values to provide a common
@@ -144,10 +141,8 @@ func (f *RequestListFilter) WithRequestStatus(requestStatus string) *RequestList
 
 // ListRequests lists all requests
 func (c *Client) ListRequests() (*Requests, error) {
-	url := "/requests" + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Requests{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(RequestsPath(), ret)
 }
 
 // ListRequestsWithFilter lists all requests that match the given filters
@@ -165,25 +160,19 @@ func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, e
 	}
 	path += "?" + query.Encode()
 	ret := &Requests{}
-	err := c.client.Get(path, ret, http.StatusOK)
-	return ret, err
-
+	return ret, c.GetOK(RequestsPath(), ret)
 }
 
 // GetRequest gets a specific request
 func (c *Client) GetRequest(reqID string) (*Request, error) {
-	url := "/requests/" + reqID + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Request{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(RequestPath(reqID), ret)
 }
 
-// GetRequestStatus returns status of the request
+// GetRequestStatus retursn status of the request
 func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
-	url := path + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &RequestStatus{}
-	err := c.client.GetRequestStatus(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(path, ret)
 }
 
 // IsRequestFinished checks the given path to a request status resource. The request is considered "done"
@@ -198,10 +187,7 @@ func (c *Client) IsRequestFinished(path string) (bool, error) {
 	case "DONE":
 		return true, nil
 	case "FAILED":
-		return true, NewClientError(
-			RequestFailed,
-			fmt.Sprintf("Request %s failed: %s", request.ID, request.Metadata.Message),
-		)
+		return true, RequestFailed.Newf("Request %s failed: %s", request.ID, request.Metadata.Message)
 	}
 	return false, nil
 }
