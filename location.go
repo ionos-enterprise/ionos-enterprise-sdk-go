@@ -51,7 +51,7 @@ func (c *Client) GetLocation(locid string) (*Location, error) {
 	ret := &Location{}
 	parts := strings.SplitN(locid, "/", 2)
 	if len(parts) != 2 {
-		return nil, BadRequest.New("Invalid location id")
+		return nil, ClientError.New("Invalid location id")
 	}
 	return ret, c.GetOK(locationPath(parts[0], parts[1]), ret)
 }
