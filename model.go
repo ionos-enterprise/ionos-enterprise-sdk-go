@@ -1,6 +1,6 @@
 /*
 This file will contain the data models. Until refactored only Headers will be here to be included everywhere else.
- */
+*/
 
 package profitbricks
 

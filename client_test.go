@@ -1,11 +1,12 @@
 package profitbricks
 
 import (
-	"github.com/jarcoal/httpmock"
-	"github.com/stretchr/testify/suite"
 	"net/http"
 	"os"
 	"testing"
+
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -24,14 +25,13 @@ type ClientBaseSuite struct {
 }
 
 func (s *ClientBaseSuite) SetupTest() {
-	s.c = NewClient("","")
+	s.c = NewClient("", "")
 	httpmock.ActivateNonDefault(s.c.Client.GetClient())
 }
 
 func (s *ClientBaseSuite) TearDownTest() {
 	httpmock.Reset()
 }
-
 
 type SuiteClient struct {
 	ClientBaseSuite
@@ -41,7 +41,7 @@ func Test_Client(t *testing.T) {
 	suite.Run(t, new(SuiteClient))
 }
 
-func (s *SuiteClient)Test_ApiError() {
+func (s *SuiteClient) Test_ApiError() {
 	body := []byte(`{"httpStatus" : 401, "messages" : [ {"errorCode" : "315", "message" : "Unauthorized" } ] }`)
 	rsp := makeJsonResponse(http.StatusUnauthorized, body)
 	httpmock.RegisterResponder(http.MethodGet, "=~/datacenters", httpmock.ResponderFromResponse(rsp))

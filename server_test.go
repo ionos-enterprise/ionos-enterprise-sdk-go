@@ -1,8 +1,9 @@
 package profitbricks
 
 import (
-	"github.com/stretchr/testify/suite"
 	"testing"
+
+	"github.com/stretchr/testify/suite"
 )
 
 type TestClientServer struct {
@@ -12,6 +13,6 @@ type TestClientServer struct {
 func TestClient_Server(t *testing.T) {
 	suite.Run(t, new(TestClientServer))
 }
-func (s * TestClientServer) TestClient_GetServer() {
+func (s *TestClientServer) TestClient_GetServer() {
 
 }

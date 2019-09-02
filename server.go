@@ -180,7 +180,7 @@ func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
 
 // StopServer stops a server
 func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
-	url := serverCommandPath(dcid, srvid,"stop")
+	url := serverCommandPath(dcid, srvid, "stop")
 	ret := &Header{}
 	err := c.Post(url, nil, ret, http.StatusAccepted)
 	return ret.GetHeader(), err
@@ -188,7 +188,7 @@ func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
 
 // RebootServer reboots a server
 func (c *Client) RebootServer(dcid, srvid string) (*http.Header, error) {
-	url := serverCommandPath(dcid, srvid, "/reboot"
+	url := serverCommandPath(dcid, srvid, "/reboot")
 	ret := &Header{}
 	err := c.Post(url, nil, ret, http.StatusAccepted)
 	return ret.GetHeader(), err

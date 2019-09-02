@@ -2,9 +2,10 @@ package profitbricks
 
 import (
 	"fmt"
-	"gopkg.in/resty.v1"
 	"net/http"
 	"reflect"
+
+	"gopkg.in/resty.v1"
 )
 
 type BaseResource struct {
