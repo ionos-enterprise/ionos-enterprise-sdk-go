@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"strconv"
 )
 
 // Nic object
@@ -47,18 +46,18 @@ type Nics struct {
 
 // ListNics returns a Nics struct collection
 func (c *Client) ListNics(dcid, srvid string) (*Nics, error) {
-	url := nicColPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := nicColPath(dcid, srvid)
 	ret := &Nics{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // CreateNic creates a nic on a server
 func (c *Client) CreateNic(dcid string, srvid string, nic Nic) (*Nic, error) {
 
-	url := nicColPath(dcid, srvid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := nicColPath(dcid, srvid)
 	ret := &Nic{}
-	err := c.client.Post(url, nic, ret, http.StatusAccepted)
+	err := c.Post(url, nic, ret, http.StatusAccepted)
 
 	return ret, err
 }
@@ -66,18 +65,18 @@ func (c *Client) CreateNic(dcid string, srvid string, nic Nic) (*Nic, error) {
 // GetNic pulls data for the nic where id = srvid returns a Instance struct
 func (c *Client) GetNic(dcid, srvid, nicid string) (*Nic, error) {
 
-	url := nicPath(dcid, srvid, nicid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := nicPath(dcid, srvid, nicid)
 	ret := &Nic{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // UpdateNic partial update of nic properties
 func (c *Client) UpdateNic(dcid string, srvid string, nicid string, obj NicProperties) (*Nic, error) {
 
-	url := nicPath(dcid, srvid, nicid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := nicPath(dcid, srvid, nicid)
 	ret := &Nic{}
-	err := c.client.Patch(url, obj, ret, http.StatusAccepted)
+	err := c.Patch(url, obj, ret, http.StatusAccepted)
 	return ret, err
 
 }
@@ -86,6 +85,6 @@ func (c *Client) UpdateNic(dcid string, srvid string, nicid string, obj NicPrope
 func (c *Client) DeleteNic(dcid, srvid, nicid string) (*http.Header, error) {
 	url := nicPath(dcid, srvid, nicid)
 	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
+	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
 }

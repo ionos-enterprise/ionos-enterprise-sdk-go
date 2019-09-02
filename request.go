@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 )
 
@@ -144,45 +143,43 @@ func (f *RequestListFilter) WithRequestStatus(requestStatus string) *RequestList
 
 // ListRequests lists all requests
 func (c *Client) ListRequests() (*Requests, error) {
-	url := "/requests" + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := "/requests"
 	ret := &Requests{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // ListRequestsWithFilter lists all requests that match the given filters
 func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, error) {
 	path := "/requests"
-	query := url.Values{
-		"depth": []string{"10"},
-	}
+	ret := &Requests{}
+	r := c.R().SetResult(ret)
 	if filter != nil {
 		for k, v := range filter.Values {
 			for _, i := range v {
-				query.Add(k, i)
+				r.SetQueryParam(k, i)
 			}
 		}
 	}
-	path += "?" + query.Encode()
-	ret := &Requests{}
-	err := c.client.Get(path, ret, http.StatusOK)
-	return ret, err
+	return ret, c.DoWithRequest(r, http.MethodGet, path, http.StatusOK)
+	// err := c.Get(path, ret, http.StatusOK)
+	// 	return ret, err
 
 }
 
 // GetRequest gets a specific request
 func (c *Client) GetRequest(reqID string) (*Request, error) {
-	url := "/requests/" + reqID + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := "/requests/" + reqID
 	ret := &Request{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // GetRequestStatus returns status of the request
 func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
-	url := path + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := path
 	ret := &RequestStatus{}
-	err := c.client.GetRequestStatus(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
@@ -210,29 +207,32 @@ func (c *Client) IsRequestFinished(path string) (bool, error) {
 // It returns an error if the request status could not be fetched, the request
 // failed or the given context is canceled.
 func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string) error {
-	done, err := c.IsRequestFinished(path)
-	if err != nil {
-		return err
-	} else if done {
-		return nil
-	}
+	req := c.R()
+	status := &RequestStatus{}
+	req.SetContext(ctx).SetResult(status)
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
-	for !done {
-		if ctx.Err() != nil {
-			return ctx.Err()
+	for {
+		err := c.DoWithRequest(req, http.MethodGet, path, http.StatusOK)
+		if err != nil {
+			return err
+		}
+		switch status.Metadata.Status {
+		case "DONE":
+			return nil
+		case "FAILED":
+			return NewClientError(
+				RequestFailed,
+				fmt.Sprintf("Request %s failed: %s", status.ID, status.Metadata.Message),
+			)
 		}
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-ticker.C:
-			done, err = c.IsRequestFinished(path)
-			if err != nil {
-				return err
-			}
+			continue
 		}
 	}
-	return nil
 }
 
 // WaitTillProvisioned waits for a request to be completed.

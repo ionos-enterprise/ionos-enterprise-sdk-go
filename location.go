@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"strconv"
 )
 
 //Location object
@@ -37,24 +36,24 @@ type LocationProperties struct {
 
 // ListLocations returns location collection data
 func (c *Client) ListLocations() (*Locations, error) {
-	url := locationColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := locationColPath()
 	ret := &Locations{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // GetRegionalLocations returns a list of available locations in a specific region
 func (c *Client) GetRegionalLocations(regid string) (*Locations, error) {
-	url := locationRegPath(regid) + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := locationRegPath(regid)
 	ret := &Locations{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // GetLocation returns location data
 func (c *Client) GetLocation(locid string) (*Location, error) {
-	url := locationPath(locid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := locationPath(locid)
 	ret := &Location{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }

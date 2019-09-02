@@ -1,6 +1,7 @@
 package profitbricks
 
 import (
+	"bytes"
 	"context"
 	"io/ioutil"
 	"net/http"
@@ -23,7 +24,7 @@ type SuiteRequest struct {
 
 func (s *SuiteRequest) SetupTest() {
 	s.client = NewClient("", "")
-	s.apiUrl = s.client.client.cloudApiUrl
+	s.apiUrl = s.client.CloudApiUrl
 	httpmock.Activate()
 }
 
@@ -56,7 +57,7 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 	}
 	query := url.Values{
 		"filter.url": []string{"volumes"},
-		"depth":      []string{"10"},
+		"depth":      []string{"5"},
 	}
 	httpmock.RegisterResponderWithQuery(http.MethodGet, s.apiUrl+"/requests", query,
 		httpmock.NewBytesResponder(200, listResponses[0]).Once())
@@ -73,20 +74,28 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 }
 
 func (s *SuiteWaitTillRequests) Test_Err_ListError() {
-	httpmock.RegisterResponder(http.MethodGet, s.apiUrl+"/requests",
+	httpmock.RegisterResponder(http.MethodGet, "=~/requests",
 		httpmock.NewStringResponder(401, "{}"))
 	err := s.client.WaitTillMatchingRequestsFinished(context.Background(), nil, nil)
 	s.Error(err)
 	s.Equal(1, httpmock.GetTotalCallCount())
 }
 
+func makeJsonResponse(status int, data []byte) *http.Response {
+	body := ioutil.NopCloser(bytes.NewReader(data))
+	rsp := http.Response{Body: body, Header: http.Header{}, StatusCode: status, Status: http.StatusText(status)}
+	rsp.Header.Set("Content-Type", "application/json")
+	return &rsp
+}
+
 func (s *SuiteWaitTillRequests) Test_Err_GetStatusError() {
 	rsp := loadTestData(s.T(), "request_request_till_no_request_matches_01.json")
-	httpmock.RegisterResponder(http.MethodGet, s.apiUrl+"/requests",
-		httpmock.NewBytesResponder(200, rsp))
-
+	listResponse := makeJsonResponse(http.StatusOK, rsp)
+	httpmock.RegisterResponder(http.MethodGet, "=~/requests\\?.*",
+		httpmock.ResponderFromResponse(listResponse))
+	statusResponse := makeJsonResponse(http.StatusUnauthorized, []byte("{}"))
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
-		httpmock.NewStringResponder(401, "{}"))
+		httpmock.ResponderFromResponse(statusResponse))
 	err := s.client.WaitTillRequestsFinished(context.Background(), nil)
 	s.Error(err)
 	s.Equal(2, httpmock.GetTotalCallCount())

@@ -1,5 +1,7 @@
 package profitbricks
 
+import "path"
+
 // slash returns "/<str>" great for making url paths
 func slash(str string) string {
 	return "/" + str
@@ -53,6 +55,14 @@ func locationRegPath(regid string) string {
 // snapshot_col_path returns the string "/snapshots"
 func snapshotColPath() string {
 	return slash("snapshots")
+}
+
+func createSnapshotPath(dcid, volumeId string) string {
+	return path.Join(volumePath(dcid, volumeId), "create-snapshot")
+}
+
+func restoreSnapshotPath(dcid, volumeId string) string {
+	return path.Join(volumePath(dcid, volumeId), "restore-snapshot")
 }
 
 // lan_col_path returns the string "/datacenters/<dcid>/lans"

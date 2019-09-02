@@ -4,12 +4,17 @@ is specific http status code or not.
 */
 package profitbricks
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type ClientErrorType int
 
 const (
 	RequestFailed ClientErrorType = iota
+	UnexpectedResponse
+	HttpClientError
 )
 
 type ClientError struct {
@@ -104,4 +109,28 @@ func IsStatusTooManyRequests(err error) bool {
 // IsRequestFailed - returns true if the error reason was that the request status was failed
 func IsRequestFailed(err error) bool {
 	return IsClientErrorType(err, RequestFailed)
+}
+
+type ApiError struct {
+	HTTPStatus int `json:"httpStatus"`
+	Messages   []struct {
+		ErrorCode string `json:"errorCode"`
+		Message   string `json:"message"`
+	} `json:"messages"`
+}
+
+func (e ApiError) Error() string {
+	return e.String()
+}
+
+func (e ApiError) String() string {
+	toReturn := fmt.Sprintf("HTTP Status: %s \n%s", fmt.Sprint(e.HTTPStatus), "Error Messages:")
+	for _, m := range e.Messages {
+		toReturn = toReturn + fmt.Sprintf("Error Code: %s Message: %s\n", m.ErrorCode, m.Message)
+	}
+	return toReturn
+}
+
+func (e ApiError) HttpStatusCode() int {
+	return e.HTTPStatus
 }

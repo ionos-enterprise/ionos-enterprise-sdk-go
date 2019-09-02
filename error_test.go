@@ -9,9 +9,7 @@ import (
 
 func newApiError(code int) error {
 	return ApiError{
-		response: errorResponse{
-			HTTPStatus: code,
-		},
+		HTTPStatus: code,
 	}
 }
 

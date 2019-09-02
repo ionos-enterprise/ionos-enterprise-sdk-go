@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"strconv"
 )
 
 //Snapshot object
@@ -49,25 +48,25 @@ type Snapshots struct {
 
 //ListSnapshots lists all snapshots
 func (c *Client) ListSnapshots() (*Snapshots, error) {
-	url := snapshotColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := snapshotColPath()
 	ret := &Snapshots{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 //GetSnapshot gets a specific snapshot
 func (c *Client) GetSnapshot(snapshotID string) (*Snapshot, error) {
-	url := snapshotColPath() + slash(snapshotID) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := snapshotColPath() + slash(snapshotID)
 	ret := &Snapshot{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // DeleteSnapshot deletes a specified snapshot
 func (c *Client) DeleteSnapshot(snapshotID string) (*http.Header, error) {
-	url := snapshotColPath() + slash(snapshotID) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := snapshotColPath() + slash(snapshotID)
 	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
+	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
 }
 
@@ -75,6 +74,6 @@ func (c *Client) DeleteSnapshot(snapshotID string) (*http.Header, error) {
 func (c *Client) UpdateSnapshot(snapshotID string, request SnapshotProperties) (*Snapshot, error) {
 	url := snapshotColPath() + slash(snapshotID)
 	ret := &Snapshot{}
-	err := c.client.Patch(url, request, ret, http.StatusAccepted)
+	err := c.Patch(url, request, ret, http.StatusAccepted)
 	return ret, err
 }

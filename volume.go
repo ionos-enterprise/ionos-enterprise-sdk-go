@@ -2,11 +2,9 @@ package profitbricks
 
 import (
 	"net/http"
-	"net/url"
-	"strconv"
 )
 
-//Volume object
+// Volume object
 type Volume struct {
 	ID         string           `json:"id,omitempty"`
 	PBType     string           `json:"type,omitempty"`
@@ -18,7 +16,7 @@ type Volume struct {
 	StatusCode int              `json:"statuscode,omitempty"`
 }
 
-//VolumeProperties object
+// VolumeProperties object
 type VolumeProperties struct {
 	Name                string   `json:"name,omitempty"`
 	Type                string   `json:"type,omitempty"`
@@ -43,7 +41,7 @@ type VolumeProperties struct {
 	DeviceNumber        int64    `json:"deviceNumber,omitempty"`
 }
 
-//Volumes object
+// Volumes object
 type Volumes struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`
@@ -56,62 +54,48 @@ type Volumes struct {
 
 // ListVolumes returns a Collection struct for volumes in the Datacenter
 func (c *Client) ListVolumes(dcid string) (*Volumes, error) {
-	url := volumeColPath(dcid) + `?depth=` + c.client.depth
 	ret := &Volumes{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(volumeColPath(dcid), ret)
 }
 
-//GetVolume gets a volume
+// GetVolume gets a volume
 func (c *Client) GetVolume(dcid string, volumeID string) (*Volume, error) {
-	url := volumePath(dcid, volumeID) + `?depth=` + c.client.depth
 	ret := &Volume{}
-	err := c.client.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, c.GetOK(volumePath(dcid, volumeID), ret)
 }
 
-//UpdateVolume updates a volume
+// UpdateVolume updates a volume
 func (c *Client) UpdateVolume(dcid string, volid string, request VolumeProperties) (*Volume, error) {
-	url := volumePath(dcid, volid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
 	ret := &Volume{}
-	err := c.client.Patch(url, request, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PatchAcc(volumePath(dcid, volid), request, ret)
 }
 
-//CreateVolume creates a volume
+// CreateVolume creates a volume
 func (c *Client) CreateVolume(dcid string, request Volume) (*Volume, error) {
-	url := volumeColPath(dcid) + `?depth=` + c.client.depth
 	ret := &Volume{}
-	err := c.client.Post(url, request, ret, http.StatusAccepted)
-	return ret, err
+	return ret, c.PostAcc(volumeColPath(dcid), request, ret)
 }
 
 // DeleteVolume deletes a volume
 func (c *Client) DeleteVolume(dcid, volid string) (*http.Header, error) {
-	url := volumePath(dcid, volid)
-	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+	return c.DeleteAcc(volumePath(dcid, volid))
 }
 
-//CreateSnapshot creates a volume snapshot
+// CreateSnapshot creates a volume snapshot
 func (c *Client) CreateSnapshot(dcid string, volid string, name string, description string) (*Snapshot, error) {
-	path := volumePath(dcid, volid) + "/create-snapshot"
-	data := url.Values{}
-	data.Set("name", name)
-	data.Add("description", description)
-
 	ret := &Snapshot{}
-	err := c.client.Post(path, data, ret, http.StatusAccepted)
-	return ret, err
+	req := c.Client.R().
+		SetFormData(map[string]string{"name": name, "description": description}).
+		SetResult(ret)
+	return ret, c.DoWithRequest(req, http.MethodPost, createSnapshotPath(dcid, volid), http.StatusAccepted)
 }
 
 // RestoreSnapshot restores a volume with provided snapshot
 func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (*http.Header, error) {
-	path := volumePath(dcid, volid) + "/restore-snapshot"
-	data := url.Values{}
-	data.Set("snapshotId", snapshotID)
-	ret := &http.Header{}
-	err := c.client.Post(path, data, ret, http.StatusAccepted)
-	return ret, err
+	ret := &BaseResource{}
+	req := c.Client.R().
+		SetFormData(map[string]string{"snapshotId": snapshotID}).
+		SetResult(ret)
+	err := c.DoWithRequest(req, http.MethodPost, restoreSnapshotPath(dcid, volid), http.StatusAccepted)
+	return ret.GetHeaders(), err
 }

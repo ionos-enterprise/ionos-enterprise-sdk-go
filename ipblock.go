@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"strconv"
 )
 
 //IPBlock object
@@ -38,33 +37,33 @@ type IPBlocks struct {
 
 //ListIPBlocks lists all IP blocks
 func (c *Client) ListIPBlocks() (*IPBlocks, error) {
-	url := ipblockColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := ipblockColPath()
 	ret := &IPBlocks{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 //ReserveIPBlock creates an IP block
 func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
-	url := ipblockColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := ipblockColPath()
 	ret := &IPBlock{}
-	err := c.client.Post(url, request, ret, http.StatusAccepted)
+	err := c.Post(url, request, ret, http.StatusAccepted)
 	return ret, err
 }
 
 //GetIPBlock gets an IP blocks
 func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
-	url := ipblockPath(ipblockid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := ipblockPath(ipblockid)
 	ret := &IPBlock{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // UpdateIPBlock partial update of ipblock properties
 func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBlock, error) {
-	url := ipblockPath(ipblockid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := ipblockPath(ipblockid)
 	ret := &IPBlock{}
-	err := c.client.Patch(url, props, ret, http.StatusAccepted)
+	err := c.Patch(url, props, ret, http.StatusAccepted)
 	return ret, err
 }
 
@@ -72,6 +71,6 @@ func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBl
 func (c *Client) ReleaseIPBlock(ipblockid string) (*http.Header, error) {
 	url := ipblockPath(ipblockid)
 	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
+	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
 }

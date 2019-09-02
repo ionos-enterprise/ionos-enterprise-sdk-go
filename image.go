@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"strconv"
 )
 
 //Image object
@@ -66,9 +65,9 @@ type Cdroms struct {
 
 // ListImages returns an Collection struct
 func (c *Client) ListImages() (*Images, error) {
-	url := imageColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := imageColPath()
 	ret := &Images{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
@@ -76,6 +75,6 @@ func (c *Client) ListImages() (*Images, error) {
 func (c *Client) GetImage(imageid string) (*Image, error) {
 	url := imagePath(imageid)
 	ret := &Image{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
