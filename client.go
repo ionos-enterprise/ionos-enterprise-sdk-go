@@ -2,14 +2,10 @@ package profitbricks
 
 import (
 	"fmt"
+	"gopkg.in/resty.v1"
 	"net/http"
 	"reflect"
-	"regexp"
-
-	"gopkg.in/resty.v1"
 )
-
-var rPathIds = regexp.MustCompile(`\{\s*([^\s]+?)\s*\}`)
 
 type BaseResource struct {
 	Headers *http.Header `json:"headers,omitempty"`

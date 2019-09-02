@@ -97,7 +97,7 @@ func serverPath(dcid, srvid string) string {
 
 // server_cmd_path returns the string   "/datacenters/<dcid>/servers/<srvid>/<cmd>"
 func serverCommandPath(dcid, srvid, cmd string) string {
-	return serverPath(dcid, srvid) + slash(cmd)
+	return path.Join(serverPath(dcid, srvid) + cmd)
 }
 
 // volume_col_path returns the string "/volumes"
