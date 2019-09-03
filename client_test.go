@@ -59,8 +59,8 @@ func (s *SuiteClient) Test_BadGatewayError() {
 	mRsp := &http.Response{
 		Header:     http.Header{},
 		StatusCode: http.StatusBadGateway,
-		Body: ioutil.NopCloser(bytes.NewReader(body)),
-		Status: http.StatusText(http.StatusBadGateway),
+		Body:       ioutil.NopCloser(bytes.NewReader(body)),
+		Status:     http.StatusText(http.StatusBadGateway),
 	}
 	mRsp.Header.Set("Content-Type", "text/html")
 	httpmock.RegisterResponder(http.MethodGet, "=~/datacenters", httpmock.ResponderFromResponse(mRsp))
