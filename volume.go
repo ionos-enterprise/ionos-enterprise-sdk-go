@@ -92,10 +92,10 @@ func (c *Client) CreateSnapshot(dcid string, volid string, name string, descript
 
 // RestoreSnapshot restores a volume with provided snapshot
 func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (*http.Header, error) {
-	ret := &BaseResource{}
+	ret := &Header{}
 	req := c.Client.R().
 		SetFormData(map[string]string{"snapshotId": snapshotID}).
 		SetResult(ret)
 	err := c.DoWithRequest(req, http.MethodPost, restoreSnapshotPath(dcid, volid), http.StatusAccepted)
-	return ret.GetHeaders(), err
+	return ret.GetHeader(), err
 }

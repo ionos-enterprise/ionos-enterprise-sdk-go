@@ -124,7 +124,7 @@ func (e ApiError) Error() string {
 }
 
 func (e ApiError) String() string {
-	toReturn := fmt.Sprintf("HTTP Status: %s \n%s", fmt.Sprint(e.HTTPStatus), "Error Messages:")
+	toReturn := fmt.Sprintf("HTTP Status: %d\nError Messages:", e.HTTPStatus)
 	for _, m := range e.Messages {
 		toReturn = toReturn + fmt.Sprintf("Error Code: %s Message: %s\n", m.ErrorCode, m.Message)
 	}

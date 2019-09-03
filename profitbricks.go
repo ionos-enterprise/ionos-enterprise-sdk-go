@@ -4,8 +4,9 @@ import (
 	"net/http"
 	"strconv"
 	"time"
+
+	"gopkg.in/resty.v1"
 )
-import "gopkg.in/resty.v1"
 
 var DebugHTTP = true
 
@@ -42,9 +43,16 @@ func RestyClient(username, password, token string) *Client {
 	c.AddRetryCondition(
 		func(r *resty.Response) (bool, error) {
 			if r.StatusCode() == http.StatusTooManyRequests {
-				dur, err := time.ParseDuration(r.Header().Get("Retry-After") + "s")
-				if err != nil {
-					return false, err
+				retryAfter := r.Header().Get("Retry-After")
+				var dur time.Duration
+				var err error
+				if retryAfter != "" {
+					dur, err = time.ParseDuration(r.Header().Get("Retry-After") + "s")
+					if err != nil {
+						return false, err
+					}
+				} else {
+					dur = 1 * time.Second
 				}
 				c.SetRetryWaitTime(dur)
 				c.SetRetryCount(1)

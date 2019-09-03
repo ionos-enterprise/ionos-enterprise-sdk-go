@@ -8,24 +8,6 @@ import (
 	"gopkg.in/resty.v1"
 )
 
-type BaseResource struct {
-	Headers *http.Header `json:"headers,omitempty"`
-}
-
-func (b *BaseResource) SetHeaders(hd http.Header) {
-	cp := make(http.Header, len(hd))
-	for k, v := range hd {
-		values := make([]string, len(v))
-		copy(values, v)
-		cp[k] = values
-	}
-	b.Headers = &cp
-}
-
-func (b *BaseResource) GetHeaders() *http.Header {
-	return b.Headers
-}
-
 func (c *Client) Do(
 	url, method string, body interface{}, result interface{}, expectedStatus int) error {
 	req := c.R()

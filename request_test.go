@@ -91,7 +91,7 @@ func makeJsonResponse(status int, data []byte) *http.Response {
 func (s *SuiteWaitTillRequests) Test_Err_GetStatusError() {
 	rsp := loadTestData(s.T(), "request_request_till_no_request_matches_01.json")
 	listResponse := makeJsonResponse(http.StatusOK, rsp)
-	httpmock.RegisterResponder(http.MethodGet, "=~/requests\\?.*",
+	httpmock.RegisterResponder(http.MethodGet, `=~/requests\?.*`,
 		httpmock.ResponderFromResponse(listResponse))
 	statusResponse := makeJsonResponse(http.StatusUnauthorized, []byte("{}"))
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",

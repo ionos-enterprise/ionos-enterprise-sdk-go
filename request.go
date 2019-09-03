@@ -162,9 +162,6 @@ func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, e
 		}
 	}
 	return ret, c.DoWithRequest(r, http.MethodGet, path, http.StatusOK)
-	// err := c.Get(path, ret, http.StatusOK)
-	// 	return ret, err
-
 }
 
 // GetRequest gets a specific request
