@@ -1,6 +1,8 @@
 package profitbricks
 
 import (
+	"bytes"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"testing"
@@ -50,4 +52,19 @@ func (s *SuiteClient) Test_ApiError() {
 	s.True(IsStatusUnauthorized(err))
 	s.False(IsStatusAccepted(err))
 	s.Equal(1, httpmock.GetTotalCallCount())
+}
+
+func (s *SuiteClient) Test_BadGatewayError() {
+	body := []byte("<html><body>Service temporarily not available</body></html>")
+	mRsp := &http.Response{
+		Header:     http.Header{},
+		StatusCode: http.StatusBadGateway,
+		Body: ioutil.NopCloser(bytes.NewReader(body)),
+		Status: http.StatusText(http.StatusBadGateway),
+	}
+	mRsp.Header.Set("Content-Type", "text/html")
+	httpmock.RegisterResponder(http.MethodGet, "=~/datacenters", httpmock.ResponderFromResponse(mRsp))
+	_, err := s.c.ListDatacenters()
+	s.Error(err)
+	s.Equal(body, err.(ApiError).Body())
 }

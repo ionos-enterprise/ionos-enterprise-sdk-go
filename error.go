@@ -117,6 +117,7 @@ type ApiError struct {
 		ErrorCode string `json:"errorCode"`
 		Message   string `json:"message"`
 	} `json:"messages"`
+	RawBody []byte
 }
 
 func (e ApiError) Error() string {
@@ -133,4 +134,8 @@ func (e ApiError) String() string {
 
 func (e ApiError) HttpStatusCode() int {
 	return e.HTTPStatus
+}
+
+func (e ApiError) Body() []byte {
+	return e.RawBody
 }

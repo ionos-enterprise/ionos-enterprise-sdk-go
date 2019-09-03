@@ -91,6 +91,7 @@ func validateResponse(rsp *resty.Response, expectedStatus ...int) error {
 	}
 	if rsp.StatusCode() >= 400 {
 		e := rsp.Error().(*ApiError)
+		e.RawBody = rsp.Body()
 		return *e
 
 	}

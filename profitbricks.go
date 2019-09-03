@@ -8,7 +8,7 @@ import (
 	"gopkg.in/resty.v1"
 )
 
-var DebugHTTP = true
+var DebugHTTP = false
 
 type Client struct {
 	*resty.Client
