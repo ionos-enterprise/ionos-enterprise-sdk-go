@@ -79,7 +79,9 @@ func (c *Client) Delete(url string, responseHeader *http.Header, expectedStatus 
 	if err != nil {
 		return NewClientError(HttpClientError, fmt.Sprintf("[DELETE] %s: Client error: %s", url, err))
 	}
-	*responseHeader = rsp.Header()
+	if responseHeader != nil {
+		*responseHeader = rsp.Header()
+	}
 	return validateResponse(rsp, expectedStatus)
 }
 
