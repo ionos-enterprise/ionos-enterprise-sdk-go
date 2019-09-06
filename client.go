@@ -5,11 +5,10 @@ import (
 	"net/http"
 	"reflect"
 
-	"gopkg.in/resty.v1"
+	"github.com/go-resty/resty"
 )
 
-func (c *Client) Do(
-	url, method string, body interface{}, result interface{}, expectedStatus int) error {
+func (c *Client) Do(url, method string, body, result interface{}, expectedStatus int) error {
 	req := c.R()
 	if body != nil {
 		req.SetBody(body)
@@ -47,35 +46,33 @@ func (c *Client) Post(
 	return c.Do(url, resty.MethodPost, body, result, expectedStatus)
 }
 
-func (c *Client) PostAcc(url string, body interface{}, result interface{}) error {
+func (c *Client) PostAcc(url string, body, result interface{}) error {
 	return c.Do(url, resty.MethodPost, body, result, http.StatusAccepted)
 }
 
-func (c *Client) PatchAcc(url string, body interface{}, result interface{}) error {
+func (c *Client) PatchAcc(url string, body, result interface{}) error {
 	return c.Do(url, resty.MethodPatch, body, result, http.StatusAccepted)
 }
 
-func (c *Client) Patch(
-	url string, body interface{}, result interface{}, expectedStatus int) error {
+func (c *Client) Patch(url string, body, result interface{}, expectedStatus int) error {
 	return c.Do(url, resty.MethodPatch, body, result, expectedStatus)
 }
 
-func (c *Client) PutAcc(url string, body interface{}, result interface{}) error {
+func (c *Client) PutAcc(url string, body, result interface{}) error {
 	return c.Do(url, resty.MethodPut, body, result, http.StatusAccepted)
 }
 
-func (c *Client) Put(
-	url string, body interface{}, result interface{}, expectedStatus int, pathParams ...string) error {
+func (c *Client) Put(url string, body, result interface{}, expectedStatus int) error {
 	return c.Do(url, resty.MethodPut, body, result, expectedStatus)
 }
 
 func (c *Client) DeleteAcc(url string) (*http.Header, error) {
-	var h *http.Header
+	h := &http.Header{}
 	return h, c.Delete(url, h, http.StatusAccepted)
 }
 
 func (c *Client) Delete(url string, responseHeader *http.Header, expectedStatus int) error {
-	rsp, err := c.R().Delete(url)
+	rsp, err := c.R().SetError(ApiError{}).Delete(url)
 	if err != nil {
 		return NewClientError(HttpClientError, fmt.Sprintf("[DELETE] %s: Client error: %s", url, err))
 	}

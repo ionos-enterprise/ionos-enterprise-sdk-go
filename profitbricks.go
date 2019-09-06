@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"gopkg.in/resty.v1"
+	"github.com/go-resty/resty"
 )
 
 var DebugHTTP = false
@@ -38,27 +38,26 @@ func RestyClient(username, password, token string) *Client {
 	c.SetDebug(DebugHTTP)
 	c.SetHostURL(DefaultApiUrl)
 	c.SetDepth(5)
+	c.SetTimeout(3 * time.Minute)
 	c.SetUserAgent("ionos-enterprise-sdk-go " + Version)
 	c.SetRetryCount(1)
 	c.AddRetryCondition(
-		func(r *resty.Response) (bool, error) {
+		func(r *resty.Response, err error) bool {
 			if r.StatusCode() == http.StatusTooManyRequests {
 				retryAfter := r.Header().Get("Retry-After")
-				var dur time.Duration
+				dur := 1 * time.Second
 				var err error
 				if retryAfter != "" {
-					dur, err = time.ParseDuration(r.Header().Get("Retry-After") + "s")
+					dur, err = time.ParseDuration(retryAfter + "s")
 					if err != nil {
-						return false, err
+						return false
 					}
-				} else {
-					dur = 1 * time.Second
 				}
 				c.SetRetryWaitTime(dur)
 				c.SetRetryCount(1)
-				return true, nil
+				return true
 			}
-			return false, nil
+			return false
 		})
 	return c
 }

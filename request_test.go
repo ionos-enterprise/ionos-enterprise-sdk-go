@@ -25,7 +25,7 @@ type SuiteRequest struct {
 func (s *SuiteRequest) SetupTest() {
 	s.client = NewClient("", "")
 	s.apiUrl = s.client.CloudApiUrl
-	httpmock.Activate()
+	httpmock.ActivateNonDefault(s.client.Client.GetClient())
 }
 
 func (s *SuiteRequest) TearDownTest() {
@@ -47,30 +47,38 @@ func loadTestData(t *testing.T, filename string) []byte {
 }
 
 func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
-	listResponses := [][]byte{
-		loadTestData(s.T(), "request_request_till_no_request_matches_01.json"),
-		loadTestData(s.T(), "request_request_till_no_request_matches_02.json"),
+	listResponses := []*http.Response{
+		makeJsonResponse(200, loadTestData(s.T(), "request_request_till_no_request_matches_01.json")),
+		makeJsonResponse(200, loadTestData(s.T(), "request_request_till_no_request_matches_02.json")),
 	}
-	statusResponses := [][]byte{
-		loadTestData(s.T(), "request_queued.json"),
-		loadTestData(s.T(), "request_done.json"),
+	statusResponses := []*http.Response{
+		makeJsonResponse(200, loadTestData(s.T(), "request_queued.json")),
+		makeJsonResponse(200, loadTestData(s.T(), "request_done.json")),
 	}
 	query := url.Values{
 		"filter.url": []string{"volumes"},
 		"depth":      []string{"5"},
 	}
-	httpmock.RegisterResponderWithQuery(http.MethodGet, s.apiUrl+"/requests", query,
-		httpmock.NewBytesResponder(200, listResponses[0]).Once())
-	httpmock.RegisterResponderWithQuery(http.MethodGet, s.apiUrl+"/requests", query,
-		httpmock.NewBytesResponder(200, listResponses[1]).Once())
+	listCalled := 0
+	statusCalled := 0
+	var lr httpmock.Responder = func(req *http.Request) (*http.Response, error) {
+		rs := listResponses[listCalled]
+		listCalled++
+		return rs, nil
+	}
+	var sr httpmock.Responder = func(req *http.Request) (*http.Response, error) {
+		rs := statusResponses[statusCalled]
+		statusCalled++
+		return rs, nil
 
-	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
-		httpmock.NewBytesResponder(200, statusResponses[0]).Once())
-	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
-		httpmock.NewBytesResponder(200, statusResponses[1]).Once())
+	}
+	httpmock.RegisterResponderWithQuery(http.MethodGet, s.apiUrl+"/requests", query, lr.Times(2))
+
+	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*", sr.Times(2))
 
 	err := s.client.WaitTillRequestsFinished(context.Background(), NewRequestListFilter().WithUrl("volumes"))
 	s.NoError(err)
+	s.Equal(4, httpmock.GetTotalCallCount())
 }
 
 func (s *SuiteWaitTillRequests) Test_Err_ListError() {
