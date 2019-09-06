@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/go-resty/resty"
 	"net/http"
 	"net/url"
 	"time"
@@ -161,7 +162,7 @@ func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, e
 			}
 		}
 	}
-	return ret, c.DoWithRequest(r, http.MethodGet, path, http.StatusOK)
+	return ret, c.DoWithRequest(r, resty.MethodGet, path, http.StatusOK)
 }
 
 // GetRequest gets a specific request
