@@ -4,10 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-resty/resty"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/go-resty/resty"
 )
 
 // RequestStatus object
