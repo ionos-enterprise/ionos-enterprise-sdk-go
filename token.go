@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+
+	"github.com/go-resty/resty"
 )
 
 type tokenHeader struct {
@@ -39,7 +41,7 @@ func (c *Client) TokenID() (string, error) {
 // DeleteTokenByID deletes the token with the given key ID
 func (c *Client) DeleteTokenByID(tokenID string) error {
 	url := tokenPath(tokenID)
-	return c.Do(c.AuthApiUrl+url, http.MethodDelete, nil, nil, http.StatusOK)
+	return c.Do(c.AuthApiUrl+url, resty.MethodDelete, nil, nil, http.StatusOK)
 }
 
 // DeleteToken deletes the given token

@@ -2,6 +2,8 @@ package profitbricks
 
 import (
 	"net/http"
+
+	"github.com/go-resty/resty"
 )
 
 // Volume object
@@ -87,7 +89,7 @@ func (c *Client) CreateSnapshot(dcid string, volid string, name string, descript
 	req := c.Client.R().
 		SetFormData(map[string]string{"name": name, "description": description}).
 		SetResult(ret)
-	return ret, c.DoWithRequest(req, http.MethodPost, createSnapshotPath(dcid, volid), http.StatusAccepted)
+	return ret, c.DoWithRequest(req, resty.MethodPost, createSnapshotPath(dcid, volid), http.StatusAccepted)
 }
 
 // RestoreSnapshot restores a volume with provided snapshot
@@ -96,6 +98,6 @@ func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (
 	req := c.Client.R().
 		SetFormData(map[string]string{"snapshotId": snapshotID}).
 		SetResult(ret)
-	err := c.DoWithRequest(req, http.MethodPost, restoreSnapshotPath(dcid, volid), http.StatusAccepted)
+	err := c.DoWithRequest(req, resty.MethodPost, restoreSnapshotPath(dcid, volid), http.StatusAccepted)
 	return ret.GetHeader(), err
 }

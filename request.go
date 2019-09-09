@@ -212,7 +212,7 @@ func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string)
 	ticker := time.NewTicker(1 * time.Second)
 	defer ticker.Stop()
 	for {
-		err := c.DoWithRequest(req, http.MethodGet, path, http.StatusOK)
+		err := c.DoWithRequest(req, resty.MethodGet, path, http.StatusOK)
 		if err != nil {
 			return err
 		}

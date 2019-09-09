@@ -82,7 +82,7 @@ type ErrorSuite struct {
 	ClientBaseSuite
 }
 
-func Test_Client(t *testing.T) {
+func Test_ClientError(t *testing.T) {
 	suite.Run(t, new(ErrorSuite))
 }
 
@@ -93,7 +93,6 @@ func (s *ErrorSuite) Test_ApiError() {
 	_, err := s.c.ListDatacenters()
 	s.Error(err)
 	s.True(IsStatusUnauthorized(err))
-	s.False(IsStatusAccepted(err))
 	s.Equal(1, httpmock.GetTotalCallCount())
 }
 
