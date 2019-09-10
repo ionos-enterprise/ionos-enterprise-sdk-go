@@ -57,7 +57,7 @@ type Volumes struct {
 // ListVolumes returns a Collection struct for volumes in the Datacenter
 func (c *Client) ListVolumes(dcid string) (*Volumes, error) {
 	ret := &Volumes{}
-	return ret, c.GetOK(volumeColPath(dcid), ret)
+	return ret, c.GetOK(volumesPath(dcid), ret)
 }
 
 // GetVolume gets a volume
@@ -75,7 +75,7 @@ func (c *Client) UpdateVolume(dcid string, volid string, request VolumePropertie
 // CreateVolume creates a volume
 func (c *Client) CreateVolume(dcid string, request Volume) (*Volume, error) {
 	ret := &Volume{}
-	return ret, c.PostAcc(volumeColPath(dcid), request, ret)
+	return ret, c.PostAcc(volumesPath(dcid), request, ret)
 }
 
 // DeleteVolume deletes a volume

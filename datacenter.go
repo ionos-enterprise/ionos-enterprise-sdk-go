@@ -55,7 +55,7 @@ type Datacenters struct {
 
 //ListDatacenters lists all data centers
 func (c *Client) ListDatacenters() (*Datacenters, error) {
-	url := dcColPath()
+	url := datacentersPath()
 	ret := &Datacenters{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -63,7 +63,7 @@ func (c *Client) ListDatacenters() (*Datacenters, error) {
 
 //CreateDatacenter creates a data center
 func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
-	url := dcColPath()
+	url := datacentersPath()
 	ret := &Datacenter{}
 	err := c.Post(url, dc, ret, http.StatusAccepted)
 	return ret, err
@@ -71,7 +71,7 @@ func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
 
 //GetDatacenter gets a datacenter
 func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
-	url := dcPath(dcid)
+	url := datacenterPath(dcid)
 	ret := &Datacenter{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -79,7 +79,7 @@ func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
 
 //UpdateDataCenter updates a data center
 func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datacenter, error) {
-	url := dcPath(dcid)
+	url := datacenterPath(dcid)
 	ret := &Datacenter{}
 	err := c.Patch(url, obj, ret, http.StatusAccepted)
 	return ret, err
@@ -87,7 +87,7 @@ func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datac
 
 //DeleteDatacenter deletes a data center
 func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
-	url := dcPath(dcid)
+	url := datacenterPath(dcid)
 	ret := &http.Header{}
 	return ret, c.Delete(url, ret, http.StatusAccepted)
 }

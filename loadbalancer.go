@@ -52,7 +52,7 @@ type Loadbalancers struct {
 //ListLoadbalancers returns a Collection struct for loadbalancers in the Datacenter
 func (c *Client) ListLoadbalancers(dcid string) (*Loadbalancers, error) {
 
-	url := lbalColPath(dcid)
+	url := loadbalancersPath(dcid)
 	ret := &Loadbalancers{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -60,7 +60,7 @@ func (c *Client) ListLoadbalancers(dcid string) (*Loadbalancers, error) {
 
 //CreateLoadbalancer creates a loadbalancer in the datacenter from a jason []byte and returns a Instance struct
 func (c *Client) CreateLoadbalancer(dcid string, request Loadbalancer) (*Loadbalancer, error) {
-	url := lbalColPath(dcid)
+	url := loadbalancersPath(dcid)
 	ret := &Loadbalancer{}
 	err := c.Post(url, request, ret, http.StatusAccepted)
 
@@ -69,7 +69,7 @@ func (c *Client) CreateLoadbalancer(dcid string, request Loadbalancer) (*Loadbal
 
 //GetLoadbalancer pulls data for the Loadbalancer  where id = lbalid returns a Instance struct
 func (c *Client) GetLoadbalancer(dcid, lbalid string) (*Loadbalancer, error) {
-	url := lbalPath(dcid, lbalid)
+	url := loadbalancerPath(dcid, lbalid)
 	ret := &Loadbalancer{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -77,7 +77,7 @@ func (c *Client) GetLoadbalancer(dcid, lbalid string) (*Loadbalancer, error) {
 
 //UpdateLoadbalancer updates a load balancer
 func (c *Client) UpdateLoadbalancer(dcid string, lbalid string, obj LoadbalancerProperties) (*Loadbalancer, error) {
-	url := lbalPath(dcid, lbalid)
+	url := loadbalancerPath(dcid, lbalid)
 	ret := &Loadbalancer{}
 	err := c.Patch(url, obj, ret, http.StatusAccepted)
 	return ret, err
@@ -85,7 +85,7 @@ func (c *Client) UpdateLoadbalancer(dcid string, lbalid string, obj Loadbalancer
 
 //DeleteLoadbalancer deletes a load balancer
 func (c *Client) DeleteLoadbalancer(dcid, lbalid string) (*http.Header, error) {
-	url := lbalPath(dcid, lbalid)
+	url := loadbalancerPath(dcid, lbalid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
@@ -93,7 +93,7 @@ func (c *Client) DeleteLoadbalancer(dcid, lbalid string) (*http.Header, error) {
 
 //ListBalancedNics lists balanced nics
 func (c *Client) ListBalancedNics(dcid, lbalid string) (*Nics, error) {
-	url := balnicColPath(dcid, lbalid)
+	url := balancedNicsPath(dcid, lbalid)
 	ret := &Nics{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -102,7 +102,7 @@ func (c *Client) ListBalancedNics(dcid, lbalid string) (*Nics, error) {
 //AssociateNic attach a nic to load balancer
 func (c *Client) AssociateNic(dcid string, lbalid string, nicid string) (*Nic, error) {
 	sm := map[string]string{"id": nicid}
-	url := balnicColPath(dcid, lbalid)
+	url := balancedNicsPath(dcid, lbalid)
 	ret := &Nic{}
 	err := c.Post(url, sm, ret, http.StatusAccepted)
 	return ret, err
@@ -110,7 +110,7 @@ func (c *Client) AssociateNic(dcid string, lbalid string, nicid string) (*Nic, e
 
 //GetBalancedNic gets a balanced nic
 func (c *Client) GetBalancedNic(dcid, lbalid, balnicid string) (*Nic, error) {
-	url := balnicPath(dcid, lbalid, balnicid)
+	url := balancedNicPath(dcid, lbalid, balnicid)
 	ret := &Nic{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -118,7 +118,7 @@ func (c *Client) GetBalancedNic(dcid, lbalid, balnicid string) (*Nic, error) {
 
 //DeleteBalancedNic removes a balanced nic
 func (c *Client) DeleteBalancedNic(dcid, lbalid, balnicid string) (*http.Header, error) {
-	url := balnicPath(dcid, lbalid, balnicid)
+	url := balancedNicPath(dcid, lbalid, balnicid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err

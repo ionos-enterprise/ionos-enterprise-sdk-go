@@ -65,7 +65,7 @@ type Cdroms struct {
 
 // ListImages returns an Collection struct
 func (c *Client) ListImages() (*Images, error) {
-	url := imageColPath()
+	url := imagesPath()
 	ret := &Images{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err

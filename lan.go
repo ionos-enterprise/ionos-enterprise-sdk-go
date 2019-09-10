@@ -56,7 +56,7 @@ type Lans struct {
 
 // ListLans returns a Collection for lans in the Datacenter
 func (c *Client) ListLans(dcid string) (*Lans, error) {
-	url := lanColPath(dcid)
+	url := lansPath(dcid)
 	ret := &Lans{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -65,7 +65,7 @@ func (c *Client) ListLans(dcid string) (*Lans, error) {
 // CreateLan creates a lan in the datacenter
 // from a jason []byte and returns a Instance struct
 func (c *Client) CreateLan(dcid string, request Lan) (*Lan, error) {
-	url := lanColPath(dcid)
+	url := lansPath(dcid)
 	ret := &Lan{}
 	err := c.Post(url, request, ret, http.StatusAccepted)
 	return ret, err

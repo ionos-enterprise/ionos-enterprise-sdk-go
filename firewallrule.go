@@ -42,7 +42,7 @@ type FirewallRules struct {
 
 //ListFirewallRules lists all firewall rules
 func (c *Client) ListFirewallRules(dcID string, serverID string, nicID string) (*FirewallRules, error) {
-	url := fwruleColPath(dcID, serverID, nicID)
+	url := firewallRulesPath(dcID, serverID, nicID)
 	ret := &FirewallRules{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -50,7 +50,7 @@ func (c *Client) ListFirewallRules(dcID string, serverID string, nicID string) (
 
 //GetFirewallRule gets a firewall rule
 func (c *Client) GetFirewallRule(dcID string, serverID string, nicID string, fwID string) (*FirewallRule, error) {
-	url := fwrulePath(dcID, serverID, nicID, fwID)
+	url := firewallRulePath(dcID, serverID, nicID, fwID)
 	ret := &FirewallRule{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -58,7 +58,7 @@ func (c *Client) GetFirewallRule(dcID string, serverID string, nicID string, fwI
 
 //CreateFirewallRule creates a firewall rule
 func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, fw FirewallRule) (*FirewallRule, error) {
-	url := fwruleColPath(dcID, serverID, nicID)
+	url := firewallRulesPath(dcID, serverID, nicID)
 	ret := &FirewallRule{}
 	err := c.Post(url, fw, ret, http.StatusAccepted)
 	return ret, err
@@ -66,7 +66,7 @@ func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, 
 
 //UpdateFirewallRule updates a firewall rule
 func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, fwID string, obj FirewallruleProperties) (*FirewallRule, error) {
-	url := fwrulePath(dcID, serverID, nicID, fwID)
+	url := firewallRulePath(dcID, serverID, nicID, fwID)
 	ret := &FirewallRule{}
 	err := c.Patch(url, obj, ret, http.StatusAccepted)
 	return ret, err
@@ -74,7 +74,7 @@ func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, 
 
 //DeleteFirewallRule deletes a firewall rule
 func (c *Client) DeleteFirewallRule(dcID string, serverID string, nicID string, fwID string) (*http.Header, error) {
-	url := fwrulePath(dcID, serverID, nicID, fwID)
+	url := firewallRulePath(dcID, serverID, nicID, fwID)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err

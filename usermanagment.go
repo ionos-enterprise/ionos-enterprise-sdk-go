@@ -163,7 +163,7 @@ type ShareProperties struct {
 
 //ListGroups lists all groups
 func (c *Client) ListGroups() (*Groups, error) {
-	url := umGroups()
+	url := groupsPath()
 	ret := &Groups{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -171,7 +171,7 @@ func (c *Client) ListGroups() (*Groups, error) {
 
 //GetGroup gets a group
 func (c *Client) GetGroup(groupid string) (*Group, error) {
-	url := umGroupPath(groupid)
+	url := groupPath(groupid)
 	ret := &Group{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -179,7 +179,7 @@ func (c *Client) GetGroup(groupid string) (*Group, error) {
 
 //CreateGroup creates a group
 func (c *Client) CreateGroup(grp Group) (*Group, error) {
-	url := umGroups()
+	url := groupsPath()
 	ret := &Group{}
 	err := c.Post(url, grp, ret, http.StatusAccepted)
 	return ret, err
@@ -187,7 +187,7 @@ func (c *Client) CreateGroup(grp Group) (*Group, error) {
 
 //UpdateGroup updates a group
 func (c *Client) UpdateGroup(groupid string, obj Group) (*Group, error) {
-	url := umGroupPath(groupid)
+	url := groupPath(groupid)
 	ret := &Group{}
 	err := c.Put(url, obj, ret, http.StatusAccepted)
 	return ret, err
@@ -195,7 +195,7 @@ func (c *Client) UpdateGroup(groupid string, obj Group) (*Group, error) {
 
 //DeleteGroup deletes a group
 func (c *Client) DeleteGroup(groupid string) (*http.Header, error) {
-	url := umGroupPath(groupid)
+	url := groupPath(groupid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
@@ -203,7 +203,7 @@ func (c *Client) DeleteGroup(groupid string) (*http.Header, error) {
 
 //ListShares lists all shares
 func (c *Client) ListShares(grpid string) (*Shares, error) {
-	url := umGroupShares(grpid)
+	url := sharesPath(grpid)
 	ret := &Shares{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -211,7 +211,7 @@ func (c *Client) ListShares(grpid string) (*Shares, error) {
 
 // GetShare gets a share
 func (c *Client) GetShare(groupid string, resourceid string) (*Share, error) {
-	url := umGroupSharePath(groupid, resourceid)
+	url := sharePath(groupid, resourceid)
 	ret := &Share{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -219,7 +219,7 @@ func (c *Client) GetShare(groupid string, resourceid string) (*Share, error) {
 
 // AddShare adds a share
 func (c *Client) AddShare(groupid string, resourceid string, share Share) (*Share, error) {
-	url := umGroupSharePath(groupid, resourceid)
+	url := resourcePath(groupid, resourceid)
 	ret := &Share{}
 	err := c.Post(url, share, ret, http.StatusAccepted)
 	return ret, err
@@ -227,7 +227,7 @@ func (c *Client) AddShare(groupid string, resourceid string, share Share) (*Shar
 
 // UpdateShare updates a share
 func (c *Client) UpdateShare(groupid string, resourceid string, obj Share) (*Share, error) {
-	url := umGroupSharePath(groupid, resourceid)
+	url := resourcePath(groupid, resourceid)
 	ret := &Share{}
 	err := c.Put(url, obj, ret, http.StatusAccepted)
 	return ret, err
@@ -235,7 +235,7 @@ func (c *Client) UpdateShare(groupid string, resourceid string, obj Share) (*Sha
 
 // DeleteShare deletes a share
 func (c *Client) DeleteShare(groupid string, resourceid string) (*http.Header, error) {
-	url := umGroupSharePath(groupid, resourceid)
+	url := resourcePath(groupid, resourceid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
@@ -243,7 +243,7 @@ func (c *Client) DeleteShare(groupid string, resourceid string) (*http.Header, e
 
 //ListGroupUsers lists Users in a group
 func (c *Client) ListGroupUsers(groupid string) (*Users, error) {
-	url := umGroupUsers(groupid)
+	url := groupUsersPath(groupid)
 	ret := &Users{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -253,7 +253,7 @@ func (c *Client) ListGroupUsers(groupid string) (*Users, error) {
 func (c *Client) AddUserToGroup(groupid string, userid string) (*User, error) {
 	var usr User
 	usr.ID = userid
-	url := umGroupUsers(groupid)
+	url := groupUsersPath(groupid)
 	ret := &User{}
 	err := c.Post(url, usr, ret, http.StatusAccepted)
 	return ret, err
@@ -261,7 +261,7 @@ func (c *Client) AddUserToGroup(groupid string, userid string) (*User, error) {
 
 // DeleteUserFromGroup removes a user from a group
 func (c *Client) DeleteUserFromGroup(groupid string, userid string) (*http.Header, error) {
-	url := umGroupUsersPath(groupid, userid)
+	url := groupUserPath(groupid, userid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
@@ -269,7 +269,7 @@ func (c *Client) DeleteUserFromGroup(groupid string, userid string) (*http.Heade
 
 //ListUsers lists all users
 func (c *Client) ListUsers() (*Users, error) {
-	url := umUsers()
+	url := usersPath()
 	ret := &Users{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -277,7 +277,7 @@ func (c *Client) ListUsers() (*Users, error) {
 
 // GetUser gets a user
 func (c *Client) GetUser(usrid string) (*User, error) {
-	url := umUsersPath(usrid)
+	url := userPath(usrid)
 	ret := &User{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -285,7 +285,7 @@ func (c *Client) GetUser(usrid string) (*User, error) {
 
 //CreateUser creates a user
 func (c *Client) CreateUser(usr User) (*User, error) {
-	url := umUsers()
+	url := usersPath()
 	ret := &User{}
 	err := c.Post(url, usr, ret, http.StatusAccepted)
 	return ret, err
@@ -293,7 +293,7 @@ func (c *Client) CreateUser(usr User) (*User, error) {
 
 //UpdateUser updates user information
 func (c *Client) UpdateUser(userid string, obj User) (*User, error) {
-	url := umUsersPath(userid)
+	url := userPath(userid)
 	ret := &User{}
 	err := c.Put(url, obj, ret, http.StatusAccepted)
 	return ret, err
@@ -301,7 +301,7 @@ func (c *Client) UpdateUser(userid string, obj User) (*User, error) {
 
 //DeleteUser deletes the specified user
 func (c *Client) DeleteUser(userid string) (*http.Header, error) {
-	url := umUsersPath(userid)
+	url := userPath(userid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
@@ -309,7 +309,7 @@ func (c *Client) DeleteUser(userid string) (*http.Header, error) {
 
 //ListResources lists all resources
 func (c *Client) ListResources() (*Resources, error) {
-	url := umResources()
+	url := resourcesPath()
 	ret := &Resources{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -317,7 +317,7 @@ func (c *Client) ListResources() (*Resources, error) {
 
 //GetResourceByType gets a resource by type
 func (c *Client) GetResourceByType(resourcetype string, resourceid string) (*Resource, error) {
-	url := umResourcesTypePath(resourcetype, resourceid)
+	url := resourcePath(resourcetype, resourceid)
 	ret := &Resource{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -325,7 +325,7 @@ func (c *Client) GetResourceByType(resourcetype string, resourceid string) (*Res
 
 //ListResourcesByType list resources by type
 func (c *Client) ListResourcesByType(resourcetype string) (*Resources, error) {
-	url := umResourcesType(resourcetype)
+	url := resourcesTypePath(resourcetype)
 	ret := &Resources{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err

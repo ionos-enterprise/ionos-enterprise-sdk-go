@@ -56,7 +56,7 @@ type ResourceReference struct {
 
 // ListServers returns a server struct collection
 func (c *Client) ListServers(dcid string) (*Servers, error) {
-	url := serverColPath(dcid)
+	url := serversPath(dcid)
 	ret := &Servers{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -64,7 +64,7 @@ func (c *Client) ListServers(dcid string) (*Servers, error) {
 
 // CreateServer creates a server from a jason []byte and returns a Instance struct
 func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
-	url := serverColPath(dcid)
+	url := serversPath(dcid)
 	ret := &Server{}
 	err := c.Post(url, server, ret, http.StatusAccepted)
 	return ret, err
@@ -96,7 +96,7 @@ func (c *Client) DeleteServer(dcid, srvid string) (*http.Header, error) {
 
 //ListAttachedCdroms returns list of attached cd roms
 func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
-	url := serverCdromColPath(dcid, srvid)
+	url := cdromsPath(dcid, srvid)
 	ret := &Images{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -109,7 +109,7 @@ func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, er
 	}{
 		cdid,
 	}
-	url := serverCdromColPath(dcid, srvid)
+	url := cdromsPath(dcid, srvid)
 	ret := &Image{}
 	err := c.Post(url, data, ret, http.StatusAccepted)
 	return ret, err
@@ -117,7 +117,7 @@ func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, er
 
 //GetAttachedCdrom gets attached cd roms
 func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
-	url := serverCdromPath(dcid, srvid, cdid) //
+	url := cdromPath(dcid, srvid, cdid)
 	ret := &Image{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -125,7 +125,7 @@ func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 
 //DetachCdrom detaches a CD rom
 func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
-	url := serverCdromPath(dcid, srvid, cdid)
+	url := cdromPath(dcid, srvid, cdid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
@@ -133,7 +133,7 @@ func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 
 //ListAttachedVolumes lists attached volumes
 func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
-	url := serverVolumeColPath(dcid, srvid)
+	url := attachedVolumesPath(dcid, srvid)
 	ret := &Volumes{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -146,7 +146,7 @@ func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume,
 	}{
 		volid,
 	}
-	url := serverVolumeColPath(dcid, srvid)
+	url := attachedVolumesPath(dcid, srvid)
 	ret := &Volume{}
 	err := c.Post(url, data, ret, http.StatusAccepted)
 
@@ -155,7 +155,7 @@ func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume,
 
 //GetAttachedVolume gets an attached volume
 func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
-	url := serverVolumePath(dcid, srvid, volid)
+	url := attachedVolumePath(dcid, srvid, volid)
 	ret := &Volume{}
 	err := c.Get(url, ret, http.StatusOK)
 
@@ -164,7 +164,7 @@ func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 
 //DetachVolume detaches a volume
 func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
-	url := serverVolumePath(dcid, srvid, volid)
+	url := attachedVolumePath(dcid, srvid, volid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
@@ -172,7 +172,7 @@ func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
 
 // StartServer starts a server
 func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
-	url := serverCommandPath(dcid, srvid, "start")
+	url := serverStartPath(dcid, srvid)
 	ret := &Header{}
 	err := c.Post(url, nil, ret, http.StatusAccepted)
 	return ret.GetHeader(), err
@@ -180,7 +180,7 @@ func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
 
 // StopServer stops a server
 func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
-	url := serverCommandPath(dcid, srvid, "stop")
+	url := serverStopPath(dcid, srvid)
 	ret := &Header{}
 	err := c.Post(url, nil, ret, http.StatusAccepted)
 	return ret.GetHeader(), err
@@ -188,7 +188,7 @@ func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
 
 // RebootServer reboots a server
 func (c *Client) RebootServer(dcid, srvid string) (*http.Header, error) {
-	url := serverCommandPath(dcid, srvid, "/reboot")
+	url := serverRebootPath(dcid, srvid)
 	ret := &Header{}
 	err := c.Post(url, nil, ret, http.StatusAccepted)
 	return ret.GetHeader(), err

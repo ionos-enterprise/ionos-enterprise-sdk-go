@@ -20,6 +20,7 @@ func (h *Header) SetHeader(header *http.Header) {
 	h.Headers = header
 }
 
+// Get returns the actual value for given header key
 func (h *Header) Get(key string) string {
 	return h.Headers.Get(key)
 }

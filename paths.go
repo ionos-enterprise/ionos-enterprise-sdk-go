@@ -1,236 +1,277 @@
 package profitbricks
 
-import "path"
+import (
+	"fmt"
+	"net/url"
+	"path"
+)
 
-// slash returns "/<str>" great for making url paths
-func slash(str string) string {
-	return "/" + str
+func safeJoin(str ...string) string {
+	for _, s := range str {
+		if s == "" {
+			panic(fmt.Sprintf("path contains empty element: %v", str))
+		}
+	}
+	return path.Join(str...)
 }
 
-// dc_col_path	returns the string "/datacenters"
-func dcColPath() string {
-	return slash("datacenters")
+// datacentersPath: "datacenters"
+func datacentersPath() string {
+	return "datacenters"
 }
 
-// dc_path returns the string "/datacenters/<dcid>"
-func dcPath(dcid string) string {
-	return dcColPath() + slash(dcid)
+// datacenterPath: "datacenters/<datacenterID>"
+func datacenterPath(datacenterID string) string {
+	return safeJoin(datacentersPath(), url.QueryEscape(datacenterID))
 }
 
-// image_col_path returns the string" /images"
-func imageColPath() string {
-	return slash("images")
+// imagesPath: "images"
+func imagesPath() string {
+	return "images"
 }
 
-// image_path returns the string"/images/<imageid>"
-func imagePath(imageid string) string {
-	return imageColPath() + slash(imageid)
+// imagePath: "images/<imageID>"
+func imagePath(imageID string) string {
+	return safeJoin(imagesPath(), url.QueryEscape(imageID))
 }
 
-// ipblockColPath returns the string "/ipblocks"
-func ipblockColPath() string {
-	return slash("ipblocks")
+// ipblocksPath: "ipblocks"
+func ipblocksPath() string {
+	return "ipblocks"
 }
 
-//  ipblock_path returns the string "/ipblocks/<ipblockid>"
-func ipblockPath(ipblockid string) string {
-	return ipblockColPath() + slash(ipblockid)
+//  ipblockPath: "ipblocks/<ipblockID>"
+func ipblockPath(ipblockID string) string {
+	return safeJoin(ipblocksPath(), url.QueryEscape(ipblockID))
 }
 
-// location_col_path returns the string  "/locations"
-func locationColPath() string {
-	return slash("locations")
+// locationsPath: "locations"
+func locationsPath() string {
+	return "locations"
 }
 
-// location_path returns the string   "/locations/<locid>"
-func locationPath(locid string) string {
-	return locationColPath() + slash(locid)
+// locationRegionPath: "locations/<regionID>"
+func locationRegionPath(regionID string) string {
+	return safeJoin(locationsPath(), url.QueryEscape(regionID))
 }
 
-// location_path returns the string   "/locations/<regid>"
-func locationRegPath(regid string) string {
-	return locationColPath() + slash(regid)
+// locationPath: "locations/<regionID>/<locationID>"
+func locationPath(regionID, locationID string) string {
+	return safeJoin(locationRegionPath(regionID), url.QueryEscape(locationID))
 }
 
-// snapshot_col_path returns the string "/snapshots"
-func snapshotColPath() string {
-	return slash("snapshots")
+// snapshotsPath: "snapshots"
+func snapshotsPath() string {
+	return "snapshots"
 }
 
-func createSnapshotPath(dcid, volumeId string) string {
-	return path.Join(volumePath(dcid, volumeId), "create-snapshot")
+// snapshotPath: "snapshots/<snapshotID>"
+func snapshotPath(snapshotID string) string {
+	return safeJoin(snapshotsPath(), url.QueryEscape(snapshotID))
 }
 
-func restoreSnapshotPath(dcid, volumeId string) string {
-	return path.Join(volumePath(dcid, volumeId), "restore-snapshot")
+// lansPath: "datacenters/<datacenterID>/lans"
+func lansPath(datacenterID string) string {
+	return safeJoin(datacenterPath(datacenterID), "lans")
 }
 
-// lan_col_path returns the string "/datacenters/<dcid>/lans"
-func lanColPath(dcid string) string {
-	return dcPath(dcid) + slash("lans")
+// lanPath: "datacenters/<datacenterID>/lans/<lanID>"
+func lanPath(datacenterID, lanID string) string {
+	return safeJoin(lansPath(datacenterID), url.QueryEscape(lanID))
 }
 
-// lan_path returns the string	"/datacenters/<dcid>/lans/<lanid>"
-func lanPath(dcid, lanid string) string {
-	return lanColPath(dcid) + slash(lanid)
+//  loadbalancersPath: "loadbalancers"
+func loadbalancersPath(datacenterID string) string {
+	return safeJoin(datacenterPath(datacenterID), "loadbalancers")
 }
 
-//  lbal_col_path returns the string "/loadbalancers"
-func lbalColPath(dcid string) string {
-	return dcPath(dcid) + slash("loadbalancers")
+// loadbalancerPath: "loadbalancers/<loadbalancerID>"
+func loadbalancerPath(datacenterID, loadbalancerID string) string {
+	return safeJoin(loadbalancersPath(datacenterID), url.QueryEscape(loadbalancerID))
 }
 
-// lbalpath returns the string "/loadbalancers/<lbalid>"
-func lbalPath(dcid, lbalid string) string {
-	return lbalColPath(dcid) + slash(lbalid)
+// serversPath: "datacenters/<datacenterID>/servers"
+func serversPath(datacenterID string) string {
+	return safeJoin(datacenterPath(datacenterID), "servers")
 }
 
-// server_col_path returns the string	"/datacenters/<dcid>/servers"
-func serverColPath(dcid string) string {
-	return dcPath(dcid) + slash("servers")
+// serverPath: "datacenters/<datacenterID>/servers/<serverID>"
+func serverPath(datacenterID, serverID string) string {
+	return safeJoin(serversPath(datacenterID), url.QueryEscape(serverID))
 }
 
-// serverPath returns the string   "/datacenters/<dcid>/servers/<srvid>"
-func serverPath(dcid, srvid string) string {
-	return serverColPath(dcid) + slash(srvid)
+// serverStartPath: "datacenters/<datacenterID>/servers/<serverID>/start"
+func serverStartPath(datacenterID, serverID string) string {
+	return safeJoin(serverPath(datacenterID, serverID), "start")
 }
 
-// server_cmd_path returns the string   "/datacenters/<dcid>/servers/<srvid>/<cmd>"
-func serverCommandPath(dcid, srvid, cmd string) string {
-	return path.Join(serverPath(dcid, srvid) + cmd)
+// serverStopPath: "datacenters/<datacenterID>/servers/<serverID>/stop"
+func serverStopPath(datacenterID, serverID string) string {
+	return safeJoin(serverPath(datacenterID, serverID), "stop")
 }
 
-// volume_col_path returns the string "/volumes"
-func volumeColPath(dcid string) string {
-	return dcPath(dcid) + slash("volumes")
+// serverRebootPath: "datacenters/<datacenterID>/servers/<serverID>/reboot"
+func serverRebootPath(datacenterID, serverID string) string {
+	return safeJoin(serverPath(datacenterID, serverID), "reboot")
 }
 
-// volume_path returns the string "/volumes/<volid>"
-func volumePath(dcid, volid string) string {
-	return volumeColPath(dcid) + slash(volid)
+// volumesPath: "datacenters/<datacenterID>/volumes"
+func volumesPath(datacenterID string) string {
+	return safeJoin(datacenterPath(datacenterID), "volumes")
 }
 
-//  balnic_col_path returns the string "/loadbalancers/<lbalid>/balancednics"
-func balnicColPath(dcid, lbalid string) string {
-	return lbalPath(dcid, lbalid) + slash("balancednics")
+// volume_path "datacenters/<datacenterID>/volumes/<volumeID>"
+func volumePath(datacenterID, volumeID string) string {
+	return safeJoin(volumesPath(datacenterID), url.QueryEscape(volumeID))
 }
 
-//  balnic_path returns the string "/loadbalancers/<lbalid>/balancednics<balnicid>"
-func balnicPath(dcid, lbalid, balnicid string) string {
-	return balnicColPath(dcid, lbalid) + slash(balnicid)
+// createSnapshotPath: "datacenters/<datacenterID>/volumes/<volumeID>/create-snapshot"
+func createSnapshotPath(datacenterID, volumeID string) string {
+	return safeJoin(volumePath(datacenterID, volumeID), "create-snapshot")
 }
 
-// server_cdrom_col_path returns the string   "/datacenters/<dcid>/servers/<srvid>/cdroms"
-func serverCdromColPath(dcid, srvid string) string {
-	return serverPath(dcid, srvid) + slash("cdroms")
+// restoreSnapshotPath: "datacenters/<datacenterID>/volumes/<volumeID>/restore-snapshot"
+func restoreSnapshotPath(datacenterID, volumeID string) string {
+	return safeJoin(volumePath(datacenterID, volumeID), "restore-snapshot")
 }
 
-// server_cdrom_path returns the string   "/datacenters/<dcid>/servers/<srvid>/cdroms/<cdid>"
-func serverCdromPath(dcid, srvid, cdid string) string {
-	return serverCdromColPath(dcid, srvid) + slash(cdid)
+//  balancedNicsPath: "loadbalancers/<loadbalancerID>/balancednics"
+func balancedNicsPath(datacenterID, loadbalancerID string) string {
+	return safeJoin(loadbalancerPath(datacenterID, loadbalancerID), "balancednics")
 }
 
-// server_volume_col_path returns the string   "/datacenters/<dcid>/servers/<srvid>/volumes"
-func serverVolumeColPath(dcid, srvid string) string {
-	return serverPath(dcid, srvid) + slash("volumes")
+//  balancedNicPath: "loadbalancers/<loadbalancerID>/balancednics/<balancedNicID>"
+func balancedNicPath(datacenterID, loadbalancerID, balancedNicID string) string {
+	return safeJoin(balancedNicsPath(datacenterID, loadbalancerID), url.QueryEscape(balancedNicID))
 }
 
-// server_volume_path returns the string   "/datacenters/<dcid>/servers/<srvid>/volumes/<volid>"
-func serverVolumePath(dcid, srvid, volid string) string {
-	return serverVolumeColPath(dcid, srvid) + slash(volid)
+// cdromsPath: "datacenters/<datacenterID>/servers/<serverID>/cdroms"
+func cdromsPath(datacenterID, serverID string) string {
+	return safeJoin(serverPath(datacenterID, serverID), "cdroms")
 }
 
-// nic_path returns the string   "/datacenters/<dcid>/servers/<srvid>/nics"
-func nicColPath(dcid, srvid string) string {
-	return serverPath(dcid, srvid) + slash("nics")
+// cdromPath: "datacenters/<datacenterID>/servers/<serverID>/cdroms/<cdid>"
+func cdromPath(datacenterID, serverID, cdid string) string {
+	return safeJoin(cdromsPath(datacenterID, serverID), url.QueryEscape(cdid))
 }
 
-// nic_path returns the string   "/datacenters/<dcid>/servers/<srvid>/nics/<nicid>"
-func nicPath(dcid, srvid, nicid string) string {
-	return nicColPath(dcid, srvid) + slash(nicid)
+// attachedVolumesPath: "datacenters/<datacenterID>/servers/<serverID>/volumes"
+func attachedVolumesPath(datacenterID, serverID string) string {
+	return safeJoin(serverPath(datacenterID, serverID), "volumes")
 }
 
-// fwrule_col_path returns the string   "/datacenters/<dcid>/servers/<srvid>/nics/<nicid>/firewallrules"
-func fwruleColPath(dcid, srvid, nicid string) string {
-	return nicPath(dcid, srvid, nicid) + slash("firewallrules")
+// attachedVolumePath: "datacenters/<datacenterID>/servers/<serverID>/volumes/<volumeID>"
+func attachedVolumePath(datacenterID, serverID, volumeID string) string {
+	return safeJoin(attachedVolumesPath(datacenterID, serverID), url.QueryEscape(volumeID))
 }
 
-// fwrule_path returns the string
-//  "/datacenters/<dcid>/servers/<srvid>/nics/<nicid>/firewallrules/<fwruleid>"
-func fwrulePath(dcid, srvid, nicid, fwruleid string) string {
-	return fwruleColPath(dcid, srvid, nicid) + slash(fwruleid)
+// nicsPath: "datacenters/<datacenterID>/servers/<serverID>/nics"
+func nicsPath(datacenterID, serverID string) string {
+	return safeJoin(serverPath(datacenterID, serverID), "nics")
 }
 
-// contract_resource_path returns the string "/contracts"
-func contractResourcePath() string {
-	return slash("contracts")
+// nicPath: "datacenters/<datacenterID>/servers/<serverID>/nics/<nicID>"
+func nicPath(datacenterID, serverID, nicID string) string {
+	return safeJoin(nicsPath(datacenterID, serverID), url.QueryEscape(nicID))
 }
 
+// firewallRulesPath: "datacenters/<datacenterID>/servers/<serverID>/nics/<nicID>/firewallrules"
+func firewallRulesPath(datacenterID, serverID, nicID string) string {
+	return safeJoin(nicPath(datacenterID, serverID, nicID), "firewallrules")
+}
+
+// firewallRulePath:
+//  "datacenters/<datacenterID>/servers/<serverID>/nics/<nicID>/firewallrules/<firewallRuleID>"
+func firewallRulePath(datacenterID, serverID, nicID, firewallRuleID string) string {
+	return safeJoin(firewallRulesPath(datacenterID, serverID, nicID), url.QueryEscape(firewallRuleID))
+}
+
+// RequestsPath: "requests"
+func RequestsPath() string {
+	return "requests"
+}
+
+// RequestPath: "requests/<requestID>"
+func RequestPath(requestID string) string {
+	return safeJoin(RequestsPath(), url.QueryEscape(requestID))
+}
+
+// RequestStatusPath: "requests/<requestID>/status"
+func RequestStatusPath(requestID string) string {
+	return safeJoin(RequestPath(requestID), "status")
+}
+
+// contractsPath: "contracts"
+func contractsPath() string {
+	return "contracts"
+}
+
+// umPath: "um"
 func um() string {
-	return slash("um")
+	return "um"
 }
 
-// um_groups	returns the string "/groups"
-func umGroups() string {
-	return um() + slash("groups")
+// groupsPath: "um/groups"
+func groupsPath() string {
+	return safeJoin(um(), "groups")
 }
 
-// um_group_path	returns the string "/groups/groupid"
-func umGroupPath(grpid string) string {
-	return umGroups() + slash(grpid)
+// groupPath: "um/groups/<groupID>"
+func groupPath(groupID string) string {
+	return safeJoin(groupsPath(), url.QueryEscape(groupID))
 }
 
-// um_group_shares	returns the string "groups/{groupId}/shares"
-func umGroupShares(grpid string) string {
-	return um() + slash("groups") + slash(grpid) + slash("shares")
+// sharesPath: "um/groups/<groupID>}/shares"
+func sharesPath(groupID string) string {
+	return safeJoin(groupPath(groupID), "shares")
 }
 
-// um_group_share_path	returns the string "groups/{groupId}/shares/{resourceId}"
-func umGroupSharePath(grpid string, resourceid string) string {
-	return um() + slash("groups") + slash(grpid) + slash("shares") + slash(resourceid)
+// sharePath: "um/groups/{groupID}/shares/{resourceID}"
+func sharePath(groupID string, resourceID string) string {
+	return safeJoin(sharesPath(groupID), url.QueryEscape(resourceID))
 }
 
-// um_group_users	returns the string "/groups/groupid/users"
-func umGroupUsers(grpid string) string {
-	return um() + slash("groups") + slash(grpid) + slash("users")
+// groupUsersPath: "um/groups/<groupID>/users"
+func groupUsersPath(groupID string) string {
+	return safeJoin(groupPath(groupID), "users")
 }
 
-// um_group_users_path	returns the string "/groups/groupid/users/userid"
-func umGroupUsersPath(grpid string, usrid string) string {
-	return um() + slash("groups") + slash(grpid) + slash("users") + slash(usrid)
+// groupUserPath: "um/groups/<groupID>/users/<userID>"
+func groupUserPath(groupID string, userID string) string {
+	return safeJoin(groupUsersPath(groupID), url.QueryEscape(userID))
 }
 
-// um_users returns the string "/users"
-func umUsers() string {
-	return um() + slash("users")
+// usersPath: "um/users"
+func usersPath() string {
+	return safeJoin(um(), "users")
 }
 
-// um_users returns the string "/users/usrid"
-func umUsersPath(usrid string) string {
-	return um() + slash("users") + slash(usrid)
+// userPath: "um/users/userID"
+func userPath(userID string) string {
+	return safeJoin(usersPath(), url.QueryEscape(userID))
 }
 
-// um_resources returns the string "/resources"
-func umResources() string {
-	return um() + slash("resources")
+// resourcesPath: "um/resources"
+func resourcesPath() string {
+	return safeJoin(um(), "resources")
 }
 
-// um_resources_type returns the string "/resources/resourceType"
-func umResourcesType(restype string) string {
-	return um() + slash("resources") + slash(restype)
+// resourcesTypePath: "um/resources/<resourceType>"
+func resourcesTypePath(resourceType string) string {
+	return safeJoin(resourcesPath(), url.QueryEscape(resourceType))
 }
 
-// um_resources_type_path returns the string "resources/{resourceType}/{resourceId}"
-func umResourcesTypePath(restype string, resourceid string) string {
-	return um() + slash("resources") + slash(restype) + slash(resourceid)
+// resourcePath "um/resources/{resourceType}/{resourceID}"
+func resourcePath(resourceType string, resourceID string) string {
+	return safeJoin(resourcesTypePath(resourceType), url.QueryEscape(resourceID))
 }
 
 // tokenColPath returns the string "/tokens"
 func tokenColPath() string {
-	return slash("tokens")
+	return "tokens"
 }
 
 // tokenPath returns the string "/tokens/<tokenid>"
 func tokenPath(tokenid string) string {
-	return tokenColPath() + slash(tokenid)
+	return safeJoin(tokenColPath(), tokenid)
 }

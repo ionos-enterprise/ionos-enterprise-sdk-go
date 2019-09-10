@@ -15,6 +15,7 @@ const (
 	RequestFailed ClientErrorType = iota
 	UnexpectedResponse
 	HttpClientError
+	InvalidInput
 )
 
 type ClientError struct {

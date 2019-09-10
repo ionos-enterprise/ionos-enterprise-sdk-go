@@ -48,7 +48,7 @@ type Snapshots struct {
 
 //ListSnapshots lists all snapshots
 func (c *Client) ListSnapshots() (*Snapshots, error) {
-	url := snapshotColPath()
+	url := snapshotsPath()
 	ret := &Snapshots{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -56,7 +56,7 @@ func (c *Client) ListSnapshots() (*Snapshots, error) {
 
 //GetSnapshot gets a specific snapshot
 func (c *Client) GetSnapshot(snapshotID string) (*Snapshot, error) {
-	url := snapshotColPath() + slash(snapshotID)
+	url := snapshotPath(snapshotID)
 	ret := &Snapshot{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -64,7 +64,7 @@ func (c *Client) GetSnapshot(snapshotID string) (*Snapshot, error) {
 
 // DeleteSnapshot deletes a specified snapshot
 func (c *Client) DeleteSnapshot(snapshotID string) (*http.Header, error) {
-	url := snapshotColPath() + slash(snapshotID)
+	url := snapshotPath(snapshotID)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
@@ -72,7 +72,7 @@ func (c *Client) DeleteSnapshot(snapshotID string) (*http.Header, error) {
 
 // UpdateSnapshot updates a snapshot
 func (c *Client) UpdateSnapshot(snapshotID string, request SnapshotProperties) (*Snapshot, error) {
-	url := snapshotColPath() + slash(snapshotID)
+	url := snapshotPath(snapshotID)
 	ret := &Snapshot{}
 	err := c.Patch(url, request, ret, http.StatusAccepted)
 	return ret, err

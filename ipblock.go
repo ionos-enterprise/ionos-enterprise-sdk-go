@@ -37,7 +37,7 @@ type IPBlocks struct {
 
 //ListIPBlocks lists all IP blocks
 func (c *Client) ListIPBlocks() (*IPBlocks, error) {
-	url := ipblockColPath()
+	url := ipblocksPath()
 	ret := &IPBlocks{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -45,7 +45,7 @@ func (c *Client) ListIPBlocks() (*IPBlocks, error) {
 
 //ReserveIPBlock creates an IP block
 func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
-	url := ipblockColPath()
+	url := ipblocksPath()
 	ret := &IPBlock{}
 	err := c.Post(url, request, ret, http.StatusAccepted)
 	return ret, err

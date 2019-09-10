@@ -44,7 +44,7 @@ type ResourcesLimits struct {
 
 // GetContractResources returns list of contract resources
 func (c *Client) GetContractResources() (*ContractResources, error) {
-	url := contractResourcePath()
+	url := contractsPath()
 	ret := &ContractResources{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err

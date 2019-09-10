@@ -46,7 +46,7 @@ type Nics struct {
 
 // ListNics returns a Nics struct collection
 func (c *Client) ListNics(dcid, srvid string) (*Nics, error) {
-	url := nicColPath(dcid, srvid)
+	url := nicsPath(dcid, srvid)
 	ret := &Nics{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
@@ -55,7 +55,7 @@ func (c *Client) ListNics(dcid, srvid string) (*Nics, error) {
 // CreateNic creates a nic on a server
 func (c *Client) CreateNic(dcid string, srvid string, nic Nic) (*Nic, error) {
 
-	url := nicColPath(dcid, srvid)
+	url := nicsPath(dcid, srvid)
 	ret := &Nic{}
 	err := c.Post(url, nic, ret, http.StatusAccepted)
 
