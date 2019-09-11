@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+
+	"github.com/go-resty/resty"
 )
 
 type tokenHeader struct {
@@ -30,8 +32,8 @@ func ExtractIDFromToken(token string) (string, error) {
 // TokenID returns the client's token's key ID if a token is set.
 // Returns an empty string when using basic auth.
 func (c *Client) TokenID() (string, error) {
-	if c.client.token != "" {
-		return ExtractIDFromToken(c.client.token)
+	if c.Token != "" {
+		return ExtractIDFromToken(c.Token)
 	}
 	return "", nil
 }
@@ -39,7 +41,7 @@ func (c *Client) TokenID() (string, error) {
 // DeleteTokenByID deletes the token with the given key ID
 func (c *Client) DeleteTokenByID(tokenID string) error {
 	url := tokenPath(tokenID)
-	return c.client.do(c.client.authApiUrl+url, http.MethodDelete, nil, nil, http.StatusOK)
+	return c.Do(c.AuthApiUrl+url, resty.MethodDelete, nil, nil, http.StatusOK)
 }
 
 // DeleteToken deletes the given token
@@ -54,8 +56,8 @@ func (c *Client) DeleteToken(token string) error {
 // DeleteCurrentToken deletes the client's token if a token is set.
 // Noop when using basic auth.
 func (c *Client) DeleteCurrentToken() error {
-	if c.client.token != "" {
-		return c.DeleteToken(c.client.token)
+	if c.Token != "" {
+		return c.DeleteToken(c.Token)
 	}
 	return nil
 }

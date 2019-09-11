@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -56,39 +55,39 @@ type Datacenters struct {
 
 //ListDatacenters lists all data centers
 func (c *Client) ListDatacenters() (*Datacenters, error) {
-	url := dcColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := datacentersPath()
 	ret := &Datacenters{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 //CreateDatacenter creates a data center
 func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
-	url := dcColPath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := datacentersPath()
 	ret := &Datacenter{}
-	err := c.client.Post(url, dc, ret, http.StatusAccepted)
+	err := c.Post(url, dc, ret, http.StatusAccepted)
 	return ret, err
 }
 
 //GetDatacenter gets a datacenter
 func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
-	url := dcPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := datacenterPath(dcid)
 	ret := &Datacenter{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 //UpdateDataCenter updates a data center
 func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datacenter, error) {
-	url := dcPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := datacenterPath(dcid)
 	ret := &Datacenter{}
-	err := c.client.Patch(url, obj, ret, http.StatusAccepted)
+	err := c.Patch(url, obj, ret, http.StatusAccepted)
 	return ret, err
 }
 
 //DeleteDatacenter deletes a data center
 func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
-	url := dcPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := datacenterPath(dcid)
 	ret := &http.Header{}
-	return ret, c.client.Delete(url, ret, http.StatusAccepted)
+	return ret, c.Delete(url, ret, http.StatusAccepted)
 }

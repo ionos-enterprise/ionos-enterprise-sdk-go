@@ -4,6 +4,9 @@ import (
 	"os"
 	"testing"
 
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/suite"
+
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,6 +15,20 @@ func TestNewClientParams(t *testing.T) {
 
 	pbc.SetDepth(5)
 	pbc.SetUserAgent("blah")
-	assert.Equal(t, pbc.client.depth, "5")
-	assert.Equal(t, pbc.client.agentHeader, pbc.GetUserAgent())
+	assert.Equal(t, "blah", pbc.GetUserAgent())
+	assert.Equal(t, "5", pbc.QueryParam.Get("depth"))
+}
+
+type ClientBaseSuite struct {
+	suite.Suite
+	c *Client
+}
+
+func (s *ClientBaseSuite) SetupTest() {
+	s.c = NewClient("", "")
+	httpmock.ActivateNonDefault(s.c.Client.GetClient())
+}
+
+func (s *ClientBaseSuite) TearDownTest() {
+	httpmock.Reset()
 }

@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"strconv"
 )
 
 //ContractResources object
@@ -45,9 +44,9 @@ type ResourcesLimits struct {
 
 // GetContractResources returns list of contract resources
 func (c *Client) GetContractResources() (*ContractResources, error) {
-	url := contractResourcePath() + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := contractsPath()
 	ret := &ContractResources{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 
 }

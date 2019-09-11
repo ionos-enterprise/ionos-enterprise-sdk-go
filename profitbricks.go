@@ -1,50 +1,111 @@
 package profitbricks
 
-import "strconv"
+import (
+	"net/http"
+	"strconv"
+	"time"
 
-//Client object
+	"github.com/go-resty/resty"
+)
+
 type Client struct {
-	client *client
+	*resty.Client
+	// AuthApiUrl will be used by methods talking to the auth api by sending absolute urls
+	AuthApiUrl  string
+	CloudApiUrl string
 }
 
-//NewClient is a constructor for Client object
-func NewClient(username, password string) *Client {
-	c := newPBRestClient(username, password, "", "", "", true)
-	return &Client{
-		client: c,
+const (
+	DefaultApiUrl  = "https://api.ionos.com/cloudapi/v5"
+	DefaultAuthUrl = "https://api.ionos.com/auth/v1"
+	Version        = "5.0.2"
+)
+
+func RestyClient(username, password, token string) *Client {
+	c := &Client{
+		Client:      resty.New(),
+		AuthApiUrl:  DefaultAuthUrl,
+		CloudApiUrl: DefaultApiUrl,
 	}
+	if token == "" {
+		c.SetBasicAuth(username, password)
+	} else {
+		c.SetAuthToken(token)
+	}
+	c.SetHostURL(DefaultApiUrl)
+	c.SetDepth(10)
+	c.SetTimeout(3 * time.Minute)
+	c.SetUserAgent("ionos-enterprise-sdk-go " + Version)
+	c.SetRetryCount(1)
+	c.AddRetryCondition(
+		func(r *resty.Response, err error) bool {
+			if r.StatusCode() == http.StatusTooManyRequests {
+				retryAfter := r.Header().Get("Retry-After")
+				dur := 1 * time.Second
+				var err error
+				if retryAfter != "" {
+					dur, err = time.ParseDuration(retryAfter + "s")
+					if err != nil {
+						return false
+					}
+				}
+				c.SetRetryWaitTime(dur)
+				c.SetRetryCount(1)
+				return true
+			}
+			return false
+		})
+	return c
+}
+
+// SetDebug activates/deactivates resty's debug mode. For better readability
+// the pretty print feature is also enabled.
+func (c *Client) SetDebug(debug bool) {
+	c.Client.SetDebug(debug)
+	c.SetPretty(debug)
+}
+
+// SetDepth sets the depth of information that will be retrieved by api calls. The
+// API accepts values from 0 to 10, a low depth means mostly only IDs and hrefs will be
+// returned. Therefore nested structures may be nil.
+func (c *Client) SetDepth(depth int) {
+	c.Client.SetQueryParam("depth", strconv.Itoa(depth))
+}
+
+// SetPretty toggles if the data retrieved from the api will be delivered pretty printed.
+// Usually this does not make sense from an sdk perspective, but for debugging it's nice
+// therefore it is also set to true, if debug is enabled.
+func (c *Client) SetPretty(pretty bool) {
+	c.Client.SetQueryParam("pretty", strconv.FormatBool(pretty))
+}
+
+// NewClient is a constructor for Client object
+func NewClient(username, password string) *Client {
+	return RestyClient(username, password, "")
 }
 
 // NewClientbyToken is a constructor for Client object using bearer tokens for
 // authentication instead of username, password
 func NewClientbyToken(token string) *Client {
-	c := newPBRestClientbyToken(token, "", "", "", true)
-	return &Client{
-		client: c,
-	}
+	return RestyClient("", "", token)
 }
 
-// SetDepth sets depth parameter for api calls
-func (c *Client) SetDepth(depth int) {
-	c.client.depth = strconv.Itoa(depth)
-}
-
-//SetUserAgent sets User-Agent request header for all API calls
+// SetUserAgent sets User-Agent request header for all API calls
 func (c *Client) SetUserAgent(agent string) {
-	c.client.agentHeader = agent
+	c.Client.SetHeader("User-Agent", agent)
 }
 
-//GetUserAgent gets User-Agent header
+// GetUserAgent gets User-Agent header
 func (c *Client) GetUserAgent() string {
-	return c.client.agentHeader
+	return c.Client.Header.Get("User-Agent")
 }
 
-//SetCloudApiUrl sets Cloud API URL
-func (c *Client) SetCloudApiUrl(url string) {
-	c.client.cloudApiUrl = url
+// SetCloudApiURL sets Cloud API url
+func (c *Client) SetCloudApiURL(url string) {
+	c.Client.SetHostURL(url)
 }
 
-//SetAuthApiUrl sets Auth API URL
+// SetAuthApiUrl sets the Auth API url
 func (c *Client) SetAuthApiUrl(url string) {
-	c.client.authApiUrl = url
+	c.AuthApiUrl = url
 }

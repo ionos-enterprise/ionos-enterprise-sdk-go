@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"strconv"
 )
 
 //Lan object
@@ -57,34 +56,34 @@ type Lans struct {
 
 // ListLans returns a Collection for lans in the Datacenter
 func (c *Client) ListLans(dcid string) (*Lans, error) {
-	url := lanColPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := lansPath(dcid)
 	ret := &Lans{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // CreateLan creates a lan in the datacenter
 // from a jason []byte and returns a Instance struct
 func (c *Client) CreateLan(dcid string, request Lan) (*Lan, error) {
-	url := lanColPath(dcid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := lansPath(dcid)
 	ret := &Lan{}
-	err := c.client.Post(url, request, ret, http.StatusAccepted)
+	err := c.Post(url, request, ret, http.StatusAccepted)
 	return ret, err
 }
 
 // GetLan pulls data for the lan where id = lanid returns an Instance struct
 func (c *Client) GetLan(dcid, lanid string) (*Lan, error) {
-	url := lanPath(dcid, lanid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := lanPath(dcid, lanid)
 	ret := &Lan{}
-	err := c.client.Get(url, ret, http.StatusOK)
+	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
 }
 
 // UpdateLan does a partial update to a lan using json from []byte json returns a Instance struct
 func (c *Client) UpdateLan(dcid string, lanid string, obj LanProperties) (*Lan, error) {
-	url := lanPath(dcid, lanid) + `?depth=` + c.client.depth + `&pretty=` + strconv.FormatBool(c.client.pretty)
+	url := lanPath(dcid, lanid)
 	ret := &Lan{}
-	err := c.client.Patch(url, obj, ret, http.StatusAccepted)
+	err := c.Patch(url, obj, ret, http.StatusAccepted)
 	return ret, err
 }
 
@@ -92,6 +91,6 @@ func (c *Client) UpdateLan(dcid string, lanid string, obj LanProperties) (*Lan, 
 func (c *Client) DeleteLan(dcid, lanid string) (*http.Header, error) {
 	url := lanPath(dcid, lanid)
 	ret := &http.Header{}
-	err := c.client.Delete(url, ret, http.StatusAccepted)
+	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
 }

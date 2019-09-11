@@ -53,7 +53,7 @@ func boolAddr(v bool) *bool {
 func setupTestEnv() sdk.Client {
 	client := *sdk.NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
 	if val, ok := os.LookupEnv("PROFITBRICKS_API_URL"); ok {
-		client.SetCloudApiUrl(val)
+		client.SetCloudApiURL(val)
 	}
 
 	return client
