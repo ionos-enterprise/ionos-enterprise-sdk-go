@@ -219,7 +219,7 @@ func (c *Client) GetShare(groupid string, resourceid string) (*Share, error) {
 
 // AddShare adds a share
 func (c *Client) AddShare(groupid string, resourceid string, share Share) (*Share, error) {
-	url := resourcePath(groupid, resourceid)
+	url := sharePath(groupid, resourceid)
 	ret := &Share{}
 	err := c.Post(url, share, ret, http.StatusAccepted)
 	return ret, err
@@ -227,7 +227,7 @@ func (c *Client) AddShare(groupid string, resourceid string, share Share) (*Shar
 
 // UpdateShare updates a share
 func (c *Client) UpdateShare(groupid string, resourceid string, obj Share) (*Share, error) {
-	url := resourcePath(groupid, resourceid)
+	url := sharePath(groupid, resourceid)
 	ret := &Share{}
 	err := c.Put(url, obj, ret, http.StatusAccepted)
 	return ret, err
@@ -235,7 +235,7 @@ func (c *Client) UpdateShare(groupid string, resourceid string, obj Share) (*Sha
 
 // DeleteShare deletes a share
 func (c *Client) DeleteShare(groupid string, resourceid string) (*http.Header, error) {
-	url := resourcePath(groupid, resourceid)
+	url := sharePath(groupid, resourceid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err

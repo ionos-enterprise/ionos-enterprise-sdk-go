@@ -80,12 +80,12 @@ func lanPath(datacenterID, lanID string) string {
 	return safeJoin(lansPath(datacenterID), url.QueryEscape(lanID))
 }
 
-//  loadbalancersPath: "loadbalancers"
+//  loadbalancersPath: "datacenters/<datacenterID>/loadbalancers"
 func loadbalancersPath(datacenterID string) string {
 	return safeJoin(datacenterPath(datacenterID), "loadbalancers")
 }
 
-// loadbalancerPath: "loadbalancers/<loadbalancerID>"
+// loadbalancerPath: "datacenters/<datacenterID>/loadbalancers/<loadbalancerID>"
 func loadbalancerPath(datacenterID, loadbalancerID string) string {
 	return safeJoin(loadbalancersPath(datacenterID), url.QueryEscape(loadbalancerID))
 }
@@ -135,12 +135,12 @@ func restoreSnapshotPath(datacenterID, volumeID string) string {
 	return safeJoin(volumePath(datacenterID, volumeID), "restore-snapshot")
 }
 
-//  balancedNicsPath: "loadbalancers/<loadbalancerID>/balancednics"
+//  balancedNicsPath: "datacenters/<datacenterID>/loadbalancers/<loadbalancerID>/balancednics"
 func balancedNicsPath(datacenterID, loadbalancerID string) string {
 	return safeJoin(loadbalancerPath(datacenterID, loadbalancerID), "balancednics")
 }
 
-//  balancedNicPath: "loadbalancers/<loadbalancerID>/balancednics/<balancedNicID>"
+//  balancedNicPath: "datacenters/<datacenterID>/loadbalancers/<loadbalancerID>/balancednics/<balancedNicID>"
 func balancedNicPath(datacenterID, loadbalancerID, balancedNicID string) string {
 	return safeJoin(balancedNicsPath(datacenterID, loadbalancerID), url.QueryEscape(balancedNicID))
 }
@@ -150,9 +150,9 @@ func cdromsPath(datacenterID, serverID string) string {
 	return safeJoin(serverPath(datacenterID, serverID), "cdroms")
 }
 
-// cdromPath: "datacenters/<datacenterID>/servers/<serverID>/cdroms/<cdid>"
-func cdromPath(datacenterID, serverID, cdid string) string {
-	return safeJoin(cdromsPath(datacenterID, serverID), url.QueryEscape(cdid))
+// cdromPath: "datacenters/<datacenterID>/servers/<serverID>/cdroms/<cdID>"
+func cdromPath(datacenterID, serverID, cdID string) string {
+	return safeJoin(cdromsPath(datacenterID, serverID), url.QueryEscape(cdID))
 }
 
 // attachedVolumesPath: "datacenters/<datacenterID>/servers/<serverID>/volumes"
@@ -221,12 +221,12 @@ func groupPath(groupID string) string {
 	return safeJoin(groupsPath(), url.QueryEscape(groupID))
 }
 
-// sharesPath: "um/groups/<groupID>}/shares"
+// sharesPath: "um/groups/<groupID>/shares"
 func sharesPath(groupID string) string {
 	return safeJoin(groupPath(groupID), "shares")
 }
 
-// sharePath: "um/groups/{groupID}/shares/{resourceID}"
+// sharePath: "um/groups/<groupID>/shares/<resourceID>"
 func sharePath(groupID string, resourceID string) string {
 	return safeJoin(sharesPath(groupID), url.QueryEscape(resourceID))
 }
@@ -246,7 +246,7 @@ func usersPath() string {
 	return safeJoin(um(), "users")
 }
 
-// userPath: "um/users/userID"
+// userPath: "um/users/<userID>"
 func userPath(userID string) string {
 	return safeJoin(usersPath(), url.QueryEscape(userID))
 }
@@ -261,17 +261,17 @@ func resourcesTypePath(resourceType string) string {
 	return safeJoin(resourcesPath(), url.QueryEscape(resourceType))
 }
 
-// resourcePath "um/resources/{resourceType}/{resourceID}"
+// resourcePath: "um/resources/<resourceType>/<resourceID>"
 func resourcePath(resourceType string, resourceID string) string {
 	return safeJoin(resourcesTypePath(resourceType), url.QueryEscape(resourceID))
 }
 
-// tokenColPath returns the string "/tokens"
-func tokenColPath() string {
+// tokensPath: "tokens"
+func tokensPath() string {
 	return "tokens"
 }
 
-// tokenPath returns the string "/tokens/<tokenid>"
-func tokenPath(tokenid string) string {
-	return safeJoin(tokenColPath(), tokenid)
+// tokenPath: "/tokens/<tokenID>"
+func tokenPath(tokenID string) string {
+	return safeJoin(tokensPath(), url.QueryEscape(tokenID))
 }
