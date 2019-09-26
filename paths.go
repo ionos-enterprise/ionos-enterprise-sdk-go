@@ -271,7 +271,32 @@ func tokensPath() string {
 	return "tokens"
 }
 
-// tokenPath: "/tokens/<tokenID>"
+// tokenPath: "tokens/<tokenID>"
 func tokenPath(tokenID string) string {
 	return safeJoin(tokensPath(), url.QueryEscape(tokenID))
+}
+
+// kubernetesClustersPath: "k8s"
+func kubernetesClustersPath() string {
+	return "k8s"
+}
+
+// kubernetesClusterPath: "k8s/<clusterID>"
+func kubernetesClusterPath(clusterId string) string {
+	return safeJoin(kubernetesClustersPath(), clusterId)
+}
+
+// kubeConfigPath: "k8s/<clusterID>/kubeconfig"
+func kubeConfigPath(clusterId string) string {
+	return safeJoin(kubernetesClusterPath(clusterId), "kubeconfig")
+}
+
+// kubernetesNodePoolsPath: "k8s/<clusterID>/nodepools"
+func kubernetesNodePoolsPath(clusterId string) string {
+	return safeJoin(kubernetesClusterPath(clusterId), "nodepools")
+}
+
+// kubernetesNodePoolPath: "k8s/<clusterID>/nodepools/<nodepoolID>"
+func kubernetesNodePoolPath(clusterId, nodepoolId string) string {
+	return safeJoin(kubernetesNodePoolsPath(clusterId), nodepoolId)
 }

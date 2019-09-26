@@ -1,7 +1,7 @@
 module github.com/profitbricks/profitbricks-sdk-go
 
 require (
-	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/go-openapi/strfmt v0.19.3
 	github.com/go-resty/resty v0.0.0-20190619084753-e284be3e6edc
 	github.com/jarcoal/httpmock v1.0.4
 	github.com/kr/pretty v0.1.0 // indirect
