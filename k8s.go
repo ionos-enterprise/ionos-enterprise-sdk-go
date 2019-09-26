@@ -178,31 +178,37 @@ type KubernetesNodePools struct {
 	Type string `json:"type,omitempty"`
 }
 
+// ListKubernetesClusters gets a list of all clusters
 func (c *Client) ListKubernetesClusters() (*KubernetesClusters, error) {
 	rsp := &KubernetesClusters{}
 	return rsp, c.GetOK(kubernetesClustersPath(), rsp)
 }
 
+// GetKubernetesCluster gets cluster with given id
 func (c *Client) GetKubernetesCluster(clusterId string) (*KubernetesCluster, error) {
 	rsp := &KubernetesCluster{}
 	return rsp, c.GetOK(kubernetesClusterPath(clusterId), rsp)
 }
 
+// CreateKubernetesCluster creates a cluster
 func (c *Client) CreateKubernetesCluster(cluster KubernetesCluster) (*KubernetesCluster, error) {
 	rsp := &KubernetesCluster{}
 	return rsp, c.PostAcc(kubernetesClustersPath(), cluster, rsp)
 }
 
+// DeleteKubernetesCluster deletes cluster
 func (c *Client) DeleteKubernetesCluster(clusterId string) (*http.Header, error) {
 	h := &http.Header{}
 	return h, c.Delete(kubernetesClusterPath(clusterId), h, http.StatusOK)
 }
 
+// UpdateKubernetesCluster updates cluster
 func (c *Client) UpdateKubernetesCluster(clusterId string, cluster KubernetesCluster) (*KubernetesCluster, error) {
 	rsp := &KubernetesCluster{}
 	return rsp, c.Put(kubernetesClusterPath(clusterId), cluster, rsp, http.StatusOK)
 }
 
+// GetKubeconfig returns the kubeconfig of cluster
 func (c *Client) GetKubeconfig(clusterId string) (string, error) {
 	rsp := &KubernetesConfig{}
 	if err := c.GetOK(kubeConfigPath(clusterId), rsp); err != nil {
@@ -211,25 +217,30 @@ func (c *Client) GetKubeconfig(clusterId string) (string, error) {
 	return rsp.Properties.KubeConfig, nil
 }
 
+// GetKubernetesNodePools gets all node pools of cluster
 func (c *Client) GetKubernetesNodePools(clusterId string) (*KubernetesNodePools, error) {
 	rsp := &KubernetesNodePools{}
 	return rsp, c.GetOK(kubernetesNodePoolsPath(clusterId), rsp)
 }
 
+// CreateKubernetesNodePool creates a new node pool for cluster
 func (c *Client) CreateKubernetesNodePool(clusterId string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
 	rsp := &KubernetesNodePool{}
 	return rsp, c.PostAcc(kubernetesNodePoolsPath(clusterId), nodePool, rsp)
 }
 
+// DeleteKubernetesNodePool deletes node pool from cluster
 func (c *Client) DeleteKubernetesNodePool(clusterId, nodePoolId string) (*http.Header, error) {
 	return c.DeleteAcc(kubernetesNodePoolPath(clusterId, nodePoolId))
 }
 
+// GetKubernetesNodePool gets node pool of the cluster
 func (c *Client) GetKubernetesNodePool(clusterId, nodePoolId string) (*KubernetesNodePool, error) {
 	rsp := &KubernetesNodePool{}
 	return rsp, c.GetOK(kubernetesNodePoolPath(clusterId, nodePoolId), rsp)
 }
 
+// Update KubernetesNodePool updates node pool
 func (c *Client) UpdateKubernetesNodePool(clusterId, nodePoolId string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
 	rsp := &KubernetesNodePool{}
 	return rsp, c.PutAcc(kubernetesNodePoolPath(clusterId, nodePoolId), nodePool, rsp)
