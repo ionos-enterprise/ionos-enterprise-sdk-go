@@ -282,21 +282,21 @@ func kubernetesClustersPath() string {
 }
 
 // kubernetesClusterPath: "k8s/<clusterID>"
-func kubernetesClusterPath(clusterId string) string {
-	return safeJoin(kubernetesClustersPath(), clusterId)
+func kubernetesClusterPath(clusterID string) string {
+	return safeJoin(kubernetesClustersPath(), clusterID)
 }
 
 // kubeConfigPath: "k8s/<clusterID>/kubeconfig"
-func kubeConfigPath(clusterId string) string {
-	return safeJoin(kubernetesClusterPath(clusterId), "kubeconfig")
+func kubeConfigPath(clusterID string) string {
+	return safeJoin(kubernetesClusterPath(clusterID), "kubeconfig")
 }
 
 // kubernetesNodePoolsPath: "k8s/<clusterID>/nodepools"
-func kubernetesNodePoolsPath(clusterId string) string {
-	return safeJoin(kubernetesClusterPath(clusterId), "nodepools")
+func kubernetesNodePoolsPath(clusterID string) string {
+	return safeJoin(kubernetesClusterPath(clusterID), "nodepools")
 }
 
 // kubernetesNodePoolPath: "k8s/<clusterID>/nodepools/<nodepoolID>"
-func kubernetesNodePoolPath(clusterId, nodepoolId string) string {
-	return safeJoin(kubernetesNodePoolsPath(clusterId), nodepoolId)
+func kubernetesNodePoolPath(clusterID, nodepoolID string) string {
+	return safeJoin(kubernetesNodePoolsPath(clusterID), nodepoolID)
 }

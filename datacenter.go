@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-//Datacenter represents Virtual Data Center
+// Datacenter represents Virtual Data Center
 type Datacenter struct {
 	ID         string               `json:"id,omitempty"`
 	PBType     string               `json:"type,omitempty"`
@@ -17,17 +17,19 @@ type Datacenter struct {
 	Headers    *http.Header         `json:"headers,omitempty"`
 }
 
-//Metadata represents metadata recieved from Cloud API
+// Metadata represents metadata recieved from Cloud API
 type Metadata struct {
-	CreatedDate      time.Time `json:"createdDate,omitempty"`
-	CreatedBy        string    `json:"createdBy,omitempty"`
-	Etag             string    `json:"etag,omitempty"`
-	LastModifiedDate time.Time `json:"lastModifiedDate,omitempty"`
-	LastModifiedBy   string    `json:"lastModifiedBy,omitempty"`
-	State            string    `json:"state,omitempty"`
+	CreatedDate          time.Time `json:"createdDate,omitempty"`
+	CreatedBy            string    `json:"createdBy,omitempty"`
+	CreatedByUserID      string    `json:"createdByUserId,omitempty"`
+	Etag                 string    `json:"etag,omitempty"`
+	LastModifiedDate     time.Time `json:"lastModifiedDate,omitempty"`
+	LastModifiedBy       string    `json:"lastModifiedBy,omitempty"`
+	LastModifiedByUserID string    `json:"lastModifiedByUserId,omitempty"`
+	State                string    `json:"state,omitempty"`
 }
 
-//DatacenterProperties represents Virtual Data Center properties
+// DatacenterProperties represents Virtual Data Center properties
 type DatacenterProperties struct {
 	Name        string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
@@ -35,7 +37,7 @@ type DatacenterProperties struct {
 	Version     int32  `json:"version,omitempty"`
 }
 
-//DatacenterEntities represents Virtual Data Center entities
+// DatacenterEntities represents Virtual Data Center entities
 type DatacenterEntities struct {
 	Servers       *Servers       `json:"servers,omitempty"`
 	Volumes       *Volumes       `json:"volumes,omitempty"`
@@ -43,7 +45,7 @@ type DatacenterEntities struct {
 	Lans          *Lans          `json:"lans,omitempty"`
 }
 
-//Datacenters is a list of Virtual Data Centers
+// Datacenters is a list of Virtual Data Centers
 type Datacenters struct {
 	ID       string       `json:"id,omitempty"`
 	PBType   string       `json:"type,omitempty"`
@@ -53,7 +55,7 @@ type Datacenters struct {
 	Headers  *http.Header `json:"headers,omitempty"`
 }
 
-//ListDatacenters lists all data centers
+// ListDatacenters lists all data centers
 func (c *Client) ListDatacenters() (*Datacenters, error) {
 	url := datacentersPath()
 	ret := &Datacenters{}
@@ -61,7 +63,7 @@ func (c *Client) ListDatacenters() (*Datacenters, error) {
 	return ret, err
 }
 
-//CreateDatacenter creates a data center
+// CreateDatacenter creates a data center
 func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
 	url := datacentersPath()
 	ret := &Datacenter{}
@@ -69,7 +71,7 @@ func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
 	return ret, err
 }
 
-//GetDatacenter gets a datacenter
+// GetDatacenter gets a datacenter
 func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
 	url := datacenterPath(dcid)
 	ret := &Datacenter{}
@@ -77,7 +79,7 @@ func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
 	return ret, err
 }
 
-//UpdateDataCenter updates a data center
+// UpdateDataCenter updates a data center
 func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datacenter, error) {
 	url := datacenterPath(dcid)
 	ret := &Datacenter{}
@@ -85,7 +87,7 @@ func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datac
 	return ret, err
 }
 
-//DeleteDatacenter deletes a data center
+// DeleteDatacenter deletes a data center
 func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
 	url := datacenterPath(dcid)
 	ret := &http.Header{}

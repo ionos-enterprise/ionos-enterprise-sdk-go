@@ -12,13 +12,13 @@ type KubernetesClusters struct {
 	// Read Only: true
 	ID string `json:"id,omitempty"`
 
-	// Array of items in that collection
+	// Slice of items in that collection
 	// Read Only: true
-	Items []*KubernetesCluster `json:"items"`
+	Items []KubernetesCluster `json:"items"`
 
 	// The type of resource within a collection
 	// Read Only: true
-	// Enum: [k8s]
+	// Enum: [collection]
 	PBType string `json:"type,omitempty"`
 }
 
@@ -34,11 +34,11 @@ type KubernetesCluster struct {
 	ID string `json:"id,omitempty"`
 
 	// metadata
-	Metadata *NoStateMetaData `json:"metadata,omitempty"`
+	Metadata *Metadata `json:"metadata,omitempty"`
 
 	// properties
 	// Required: true
-	Properties *KubernetesClusterProperties `json:"properties"`
+	Properties KubernetesClusterProperties `json:"properties"`
 
 	// The type of object
 	// Read Only: true
@@ -56,8 +56,8 @@ type KubernetesClusterEntities struct {
 
 // KubernetesClusterProperties kubernetes cluster properties
 type KubernetesClusterProperties struct {
-	// A Kubernetes Cluster Name. Valid Kubernetes Cluster name must be 63 characters or less and must be empty
-	// or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.),
+	// A Kubernetes Cluster Name. Valid Kubernetes Cluster name must be 63 characters or less and must not be empty
+	// and begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), dots (.),
 	// and alphanumerics between.
 	// Required: true
 	Name string `json:"name"`
@@ -104,7 +104,7 @@ type KubernetesNodePool struct {
 
 	// properties
 	// Required: true
-	Properties *KubernetesNodePoolProperties `json:"properties"`
+	Properties KubernetesNodePoolProperties `json:"properties"`
 
 	// The type of object
 	// Read Only: true
@@ -115,25 +115,25 @@ type KubernetesNodePool struct {
 // KubernetesNodePoolProperties kubernetes node pool properties
 // swagger:model KubernetesNodePoolProperties
 type KubernetesNodePoolProperties struct {
-	// The availability zone in which the server should exist
+	// The availability zone in which the servers should exist
 	// Required: true
 	// Enum: [AUTO ZONE_1 ZONE_2]
 	AvailabilityZone string `json:"availabilityZone,omitempty"`
 
 	// Number of cores for node
 	// Required: true
-	CoresCount int64 `json:"coresCount,omitempty"`
+	CoresCount uint32 `json:"coresCount,omitempty"`
 
 	// A valid cpu family name
 	// Required: true
 	CPUFamily string `json:"cpuFamily,omitempty"`
 
-	// A valid uuid of the datacenter on which user has access
+	// The unique identifier of the data center where the worker nodes of the node pool will be provisioned.
 	// Required: true
 	DatacenterID string `json:"datacenterId,omitempty"`
 
-	// A Kubernetes Node Pool Name. Valid Kubernetes Node Pool name must be 63 characters or less and must be
-	// empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), underscores (_),
+	// A Kubernetes Node Pool Name. Valid Kubernetes Node Pool name must be 63 characters or less and must not be
+	// empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
 	// dots (.), and alphanumerics between.
 	// Required: true
 	Name string `json:"name,omitempty"`
@@ -168,9 +168,9 @@ type KubernetesNodePools struct {
 	// Read Only: true
 	ID string `json:"id,omitempty"`
 
-	// Array of items in that collection
+	// Slice of items in that collection
 	// Read Only: true
-	Items []*KubernetesNodePool `json:"items"`
+	Items []KubernetesNodePool `json:"items"`
 
 	// The type of resource within a collection
 	// Read Only: true

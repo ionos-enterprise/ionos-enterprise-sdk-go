@@ -18,19 +18,6 @@ func TestKubernetesCluster(t *testing.T) {
 	suite.Run(t, new(SuiteKubernetesCluster))
 }
 
-func validateNoStateMetadata(t *testing.T, m *NoStateMetaData) {
-	if !assert.NotNil(t, m) {
-		return
-	}
-	assert.NotEmpty(t, m.CreatedByUserID)
-	assert.NotEmpty(t, m.CreatedBy)
-	assert.NotEmpty(t, m.CreatedDate)
-	assert.NotEmpty(t, m.Etag)
-	assert.NotEmpty(t, m.LastModifiedBy)
-	assert.NotEmpty(t, m.LastModifiedByUserID)
-	assert.NotEmpty(t, m.LastModifiedDate)
-}
-
 func validateMetadata(t *testing.T, m *Metadata) {
 	if !assert.NotNil(t, m) {
 		return
@@ -38,9 +25,11 @@ func validateMetadata(t *testing.T, m *Metadata) {
 	assert.NotEmpty(t, m.State)
 	assert.NotEmpty(t, m.CreatedBy)
 	assert.NotEmpty(t, m.CreatedDate)
+	assert.NotEmpty(t, m.CreatedByUserID)
 	assert.NotEmpty(t, m.Etag)
 	assert.NotEmpty(t, m.LastModifiedBy)
 	assert.NotEmpty(t, m.LastModifiedDate)
+	assert.NotEmpty(t, m.LastModifiedByUserID)
 }
 
 func (s *SuiteKubernetesCluster) Test_ListKubernetesClusters() {
@@ -60,7 +49,7 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesCluster() {
 	cl, err := s.c.GetKubernetesCluster("1")
 	s.NoError(err)
 	s.Len(cl.Entities.NodePools.Items, 1)
-	validateNoStateMetadata(s.T(), cl.Metadata)
+	validateMetadata(s.T(), cl.Metadata)
 	s.NotEmpty(cl.Properties.Name)
 }
 
