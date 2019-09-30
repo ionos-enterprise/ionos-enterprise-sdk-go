@@ -266,9 +266,10 @@ func resourcePath(resourceType string, resourceID string) string {
 	return safeJoin(resourcesTypePath(resourceType), url.QueryEscape(resourceID))
 }
 
-// tokensPath: "tokens"
+// tokensPath: "/tokens"
 func tokensPath() string {
-	return "tokens"
+	// comes with leading slash, as it is used for calls to a different api.
+	return "/tokens"
 }
 
 // tokenPath: "tokens/<tokenID>"

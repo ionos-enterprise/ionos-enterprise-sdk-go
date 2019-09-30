@@ -38,7 +38,7 @@ type KubernetesCluster struct {
 
 	// properties
 	// Required: true
-	Properties KubernetesClusterProperties `json:"properties"`
+	Properties *KubernetesClusterProperties `json:"properties"`
 
 	// The type of object
 	// Read Only: true
@@ -76,7 +76,7 @@ type KubernetesConfig struct {
 
 	// properties
 	// Required: true
-	Properties *KubernetesConfigProperties `json:"properties"`
+	Properties KubernetesConfigProperties `json:"properties"`
 
 	// The type of object
 	// Read Only: true
@@ -104,7 +104,7 @@ type KubernetesNodePool struct {
 
 	// properties
 	// Required: true
-	Properties KubernetesNodePoolProperties `json:"properties"`
+	Properties *KubernetesNodePoolProperties `json:"properties"`
 
 	// The type of object
 	// Read Only: true
@@ -113,7 +113,6 @@ type KubernetesNodePool struct {
 }
 
 // KubernetesNodePoolProperties kubernetes node pool properties
-// swagger:model KubernetesNodePoolProperties
 type KubernetesNodePoolProperties struct {
 	// The availability zone in which the servers should exist
 	// Required: true
@@ -130,7 +129,7 @@ type KubernetesNodePoolProperties struct {
 
 	// The unique identifier of the data center where the worker nodes of the node pool will be provisioned.
 	// Required: true
-	DatacenterID string `json:"datacenterId,omitempty"`
+	DatacenterID string `json:"datacenterID,omitempty"`
 
 	// A Kubernetes Node Pool Name. Valid Kubernetes Node Pool name must be 63 characters or less and must not be
 	// empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
@@ -140,15 +139,15 @@ type KubernetesNodePoolProperties struct {
 
 	// Number of nodes part of the Node Pool
 	// Required: true
-	NodeCount int64 `json:"nodeCount,omitempty"`
+	NodeCount uint32 `json:"nodeCount,omitempty"`
 
 	// RAM size for node, minimum size 2048MB is recommended
 	// Required: true
-	RAMSize int64 `json:"ramSize,omitempty"`
+	RAMSize uint32 `json:"ramSize,omitempty"`
 
 	// The size of the volume in GB. The size should be greater than 10GB.
 	// Required: true
-	StorageSize int64 `json:"storageSize,omitempty"`
+	StorageSize uint32 `json:"storageSize,omitempty"`
 
 	// Hardware type of the volume
 	// Required: true
@@ -157,7 +156,6 @@ type KubernetesNodePoolProperties struct {
 }
 
 // KubernetesNodePools kubernetes node pools
-// swagger:model KubernetesNodePools
 type KubernetesNodePools struct {
 	// URL to the collection representation (absolute path)
 	// Read Only: true
@@ -185,9 +183,9 @@ func (c *Client) ListKubernetesClusters() (*KubernetesClusters, error) {
 }
 
 // GetKubernetesCluster gets cluster with given id
-func (c *Client) GetKubernetesCluster(clusterId string) (*KubernetesCluster, error) {
+func (c *Client) GetKubernetesCluster(clusterID string) (*KubernetesCluster, error) {
 	rsp := &KubernetesCluster{}
-	return rsp, c.GetOK(kubernetesClusterPath(clusterId), rsp)
+	return rsp, c.GetOK(kubernetesClusterPath(clusterID), rsp)
 }
 
 // CreateKubernetesCluster creates a cluster
@@ -203,45 +201,45 @@ func (c *Client) DeleteKubernetesCluster(clusterId string) (*http.Header, error)
 }
 
 // UpdateKubernetesCluster updates cluster
-func (c *Client) UpdateKubernetesCluster(clusterId string, cluster KubernetesCluster) (*KubernetesCluster, error) {
+func (c *Client) UpdateKubernetesCluster(clusterID string, cluster KubernetesCluster) (*KubernetesCluster, error) {
 	rsp := &KubernetesCluster{}
-	return rsp, c.Put(kubernetesClusterPath(clusterId), cluster, rsp, http.StatusOK)
+	return rsp, c.Put(kubernetesClusterPath(clusterID), cluster, rsp, http.StatusOK)
 }
 
 // GetKubeconfig returns the kubeconfig of cluster
-func (c *Client) GetKubeconfig(clusterId string) (string, error) {
+func (c *Client) GetKubeconfig(clusterID string) (string, error) {
 	rsp := &KubernetesConfig{}
-	if err := c.GetOK(kubeConfigPath(clusterId), rsp); err != nil {
+	if err := c.GetOK(kubeConfigPath(clusterID), rsp); err != nil {
 		return "", err
 	}
 	return rsp.Properties.KubeConfig, nil
 }
 
 // GetKubernetesNodePools gets all node pools of cluster
-func (c *Client) GetKubernetesNodePools(clusterId string) (*KubernetesNodePools, error) {
+func (c *Client) GetKubernetesNodePools(clusterID string) (*KubernetesNodePools, error) {
 	rsp := &KubernetesNodePools{}
-	return rsp, c.GetOK(kubernetesNodePoolsPath(clusterId), rsp)
+	return rsp, c.GetOK(kubernetesNodePoolsPath(clusterID), rsp)
 }
 
 // CreateKubernetesNodePool creates a new node pool for cluster
-func (c *Client) CreateKubernetesNodePool(clusterId string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
+func (c *Client) CreateKubernetesNodePool(clusterID string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
 	rsp := &KubernetesNodePool{}
-	return rsp, c.PostAcc(kubernetesNodePoolsPath(clusterId), nodePool, rsp)
+	return rsp, c.PostAcc(kubernetesNodePoolsPath(clusterID), nodePool, rsp)
 }
 
 // DeleteKubernetesNodePool deletes node pool from cluster
-func (c *Client) DeleteKubernetesNodePool(clusterId, nodePoolId string) (*http.Header, error) {
-	return c.DeleteAcc(kubernetesNodePoolPath(clusterId, nodePoolId))
+func (c *Client) DeleteKubernetesNodePool(clusterID, nodePoolID string) (*http.Header, error) {
+	return c.DeleteAcc(kubernetesNodePoolPath(clusterID, nodePoolID))
 }
 
 // GetKubernetesNodePool gets node pool of the cluster
-func (c *Client) GetKubernetesNodePool(clusterId, nodePoolId string) (*KubernetesNodePool, error) {
+func (c *Client) GetKubernetesNodePool(clusterID, nodePoolID string) (*KubernetesNodePool, error) {
 	rsp := &KubernetesNodePool{}
-	return rsp, c.GetOK(kubernetesNodePoolPath(clusterId, nodePoolId), rsp)
+	return rsp, c.GetOK(kubernetesNodePoolPath(clusterID, nodePoolID), rsp)
 }
 
 // Update KubernetesNodePool updates node pool
-func (c *Client) UpdateKubernetesNodePool(clusterId, nodePoolId string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
+func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
 	rsp := &KubernetesNodePool{}
-	return rsp, c.PutAcc(kubernetesNodePoolPath(clusterId, nodePoolId), nodePool, rsp)
+	return rsp, c.PutAcc(kubernetesNodePoolPath(clusterID, nodePoolID), nodePool, rsp)
 }

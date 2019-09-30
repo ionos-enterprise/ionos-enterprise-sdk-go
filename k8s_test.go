@@ -53,7 +53,7 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesCluster() {
 	s.NotEmpty(cl.Properties.Name)
 }
 
-func (s *SuiteKubernetesCluster) Test_GetKubeConfig() {
+func (s *SuiteKubernetesCluster) Test_GetKubeconfig() {
 	rsp := loadTestData(s.T(), "get_kubeconfig.json")
 	mResp := makeJsonResponse(http.StatusOK, rsp)
 	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/kubeconfig`,
