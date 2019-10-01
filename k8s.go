@@ -57,8 +57,8 @@ type KubernetesClusterEntities struct {
 // KubernetesClusterProperties kubernetes cluster properties
 type KubernetesClusterProperties struct {
 	// A Kubernetes Cluster Name. Valid Kubernetes Cluster name must be 63 characters or less and must not be empty
-	// and begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-), dots (.),
-	// and alphanumerics between.
+	// and begin and end with an alphanumeric character ([a-z0-9]) with dashes (-), dots (.) and alphanumerics
+	// between.
 	// Required: true
 	Name string `json:"name"`
 }
@@ -129,11 +129,11 @@ type KubernetesNodePoolProperties struct {
 
 	// The unique identifier of the data center where the worker nodes of the node pool will be provisioned.
 	// Required: true
-	DatacenterID string `json:"datacenterID,omitempty"`
+	DatacenterID string `json:"datacenterId,omitempty"`
 
 	// A Kubernetes Node Pool Name. Valid Kubernetes Node Pool name must be 63 characters or less and must not be
-	// empty or begin and end with an alphanumeric character ([a-z0-9A-Z]) with dashes (-),
-	// dots (.), and alphanumerics between.
+	// empty or begin and end with an alphanumeric character ([a-z0-9]) with dashes (-), dots (.) and alphanumerics
+	// between.
 	// Required: true
 	Name string `json:"name,omitempty"`
 
