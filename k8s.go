@@ -22,7 +22,6 @@ type KubernetesClusters struct {
 	PBType string `json:"type,omitempty"`
 }
 
-// KubernetesCluster kubernetes cluster
 type KubernetesCluster struct {
 	// URL to the object representation (absolute path)
 	// Read Only: true
@@ -54,7 +53,6 @@ type KubernetesClusterEntities struct {
 	NodePools *KubernetesNodePools `json:"nodepools,omitempty"`
 }
 
-// KubernetesClusterProperties kubernetes cluster properties
 type KubernetesClusterProperties struct {
 	// A Kubernetes Cluster Name. Valid Kubernetes Cluster name must be 63 characters or less and must not be empty
 	// and begin and end with an alphanumeric character ([a-z0-9]) with dashes (-), dots (.) and alphanumerics
@@ -63,7 +61,6 @@ type KubernetesClusterProperties struct {
 	Name string `json:"name"`
 }
 
-// KubernetesConfig kubernetes config
 type KubernetesConfig struct {
 	// URL to the object representation (absolute path)
 	// Read Only: true
@@ -112,7 +109,6 @@ type KubernetesNodePool struct {
 	PBType string `json:"type,omitempty"`
 }
 
-// KubernetesNodePoolProperties kubernetes node pool properties
 type KubernetesNodePoolProperties struct {
 	// The availability zone in which the servers should exist
 	// Required: true
@@ -155,7 +151,6 @@ type KubernetesNodePoolProperties struct {
 	StorageType string `json:"storageType,omitempty"`
 }
 
-// KubernetesNodePools kubernetes node pools
 type KubernetesNodePools struct {
 	// URL to the collection representation (absolute path)
 	// Read Only: true
