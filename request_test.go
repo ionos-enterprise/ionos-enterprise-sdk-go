@@ -57,7 +57,7 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 	}
 	query := url.Values{
 		"filter.url": []string{"volumes"},
-		"depth":      []string{"5"},
+		"depth":      []string{"10"},
 	}
 	listCalled := 0
 	statusCalled := 0

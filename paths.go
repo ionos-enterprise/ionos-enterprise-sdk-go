@@ -266,12 +266,38 @@ func resourcePath(resourceType string, resourceID string) string {
 	return safeJoin(resourcesTypePath(resourceType), url.QueryEscape(resourceID))
 }
 
-// tokensPath: "tokens"
+// tokensPath: "/tokens"
 func tokensPath() string {
-	return "tokens"
+	// comes with leading slash, as it is used for calls to a different api.
+	return "/tokens"
 }
 
-// tokenPath: "/tokens/<tokenID>"
+// tokenPath: "tokens/<tokenID>"
 func tokenPath(tokenID string) string {
 	return safeJoin(tokensPath(), url.QueryEscape(tokenID))
+}
+
+// kubernetesClustersPath: "k8s"
+func kubernetesClustersPath() string {
+	return "k8s"
+}
+
+// kubernetesClusterPath: "k8s/<clusterID>"
+func kubernetesClusterPath(clusterID string) string {
+	return safeJoin(kubernetesClustersPath(), clusterID)
+}
+
+// kubeConfigPath: "k8s/<clusterID>/kubeconfig"
+func kubeConfigPath(clusterID string) string {
+	return safeJoin(kubernetesClusterPath(clusterID), "kubeconfig")
+}
+
+// kubernetesNodePoolsPath: "k8s/<clusterID>/nodepools"
+func kubernetesNodePoolsPath(clusterID string) string {
+	return safeJoin(kubernetesClusterPath(clusterID), "nodepools")
+}
+
+// kubernetesNodePoolPath: "k8s/<clusterID>/nodepools/<nodepoolID>"
+func kubernetesNodePoolPath(clusterID, nodepoolID string) string {
+	return safeJoin(kubernetesNodePoolsPath(clusterID), nodepoolID)
 }
