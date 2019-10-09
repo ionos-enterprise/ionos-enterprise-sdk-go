@@ -3,7 +3,7 @@ package profitbricks
 import (
 	"net/http"
 
-	"github.com/go-resty/resty"
+	resty "github.com/go-resty/resty/v2"
 )
 
 // Volume object

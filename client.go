@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/go-resty/resty"
+	resty "github.com/go-resty/resty/v2"
 )
 
 func (c *Client) Do(url, method string, body, result interface{}, expectedStatus int) error {
