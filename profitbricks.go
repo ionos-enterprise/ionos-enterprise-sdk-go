@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-resty/resty"
+	resty "github.com/go-resty/resty/v2"
 )
 
 type Client struct {

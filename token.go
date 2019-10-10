@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/go-resty/resty"
+	resty "github.com/go-resty/resty/v2"
 )
 
 type tokenHeader struct {

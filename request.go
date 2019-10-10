@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/go-resty/resty"
+	resty "github.com/go-resty/resty/v2"
 )
 
 // RequestStatus object
