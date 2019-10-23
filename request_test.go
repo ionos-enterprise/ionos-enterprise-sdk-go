@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"testing"
+	"time"
 
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
@@ -107,4 +108,26 @@ func (s *SuiteWaitTillRequests) Test_Err_GetStatusError() {
 	err := s.client.WaitTillRequestsFinished(context.Background(), nil)
 	s.Error(err)
 	s.Equal(2, httpmock.GetTotalCallCount())
+}
+
+func TestRequestListFilter_AddCreatedAfter(t *testing.T) {
+	r := NewRequestListFilter()
+	tm, err := time.Parse(timeFormat, "2019-03-25 10:40:00")
+	assert.NoError(t, err)
+	r.AddCreatedAfter(tm)
+	assert.Equal(t, "2019-03-25 10:40:00", r.Get("filter.createdAfter"))
+}
+
+func TestRequestListFilter_AddCreatedBefore(t *testing.T) {
+	r := NewRequestListFilter()
+	tm, err := time.Parse(timeFormat, "2019-03-25 10:40:00")
+	assert.NoError(t, err)
+	r.AddCreatedBefore(tm)
+	assert.Equal(t, "2019-03-25 10:40:00", r.Get("filter.createdBefore"))
+}
+
+func TestRequestListFilter_AddRequestStatus(t *testing.T) {
+	r := NewRequestListFilter()
+	r.AddRequestStatus("DONE")
+	assert.Equal(t, "DONE", r.Get("filter.status"))
 }

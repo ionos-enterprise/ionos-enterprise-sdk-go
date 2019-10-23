@@ -139,7 +139,32 @@ func (f *RequestListFilter) AddRequestStatus(requestStatus string) {
 
 // WithRequestStatus adds a requestStatus filter to the request list filter returning the filter for chaining
 func (f *RequestListFilter) WithRequestStatus(requestStatus string) *RequestListFilter {
-	f.Add("filter.requestStatus", requestStatus)
+	f.Add("filter.status", requestStatus)
+	return f
+}
+
+const timeFormat = "2006-01-02 15:04:05"
+
+// AddCreatedAfter adds a createdAfter filter to the request list filter
+func (f *RequestListFilter) AddCreatedAfter(t time.Time) {
+	f.WithCreatedAfter(t)
+}
+
+// WithCreatedAfter adds a createdAfter filter to the request list filter returning the filter for chaining
+func (f *RequestListFilter) WithCreatedAfter(t time.Time) *RequestListFilter {
+	f.Add("filter.createdAfter", t.Format(timeFormat))
+	return f
+}
+
+// AddCreatedBefore adds a createdBefore filter to the request list filter
+func (f *RequestListFilter) AddCreatedBefore(t time.Time) *RequestListFilter {
+	f.WithCreatedBefore(t)
+	return f
+}
+
+// WithCreatedBefore adds a createdBefore filter to the request list filter returning the filter for chaining
+func (f *RequestListFilter) WithCreatedBefore(t time.Time) *RequestListFilter {
+	f.Add("filter.createdBefore", t.Format(timeFormat))
 	return f
 }
 
