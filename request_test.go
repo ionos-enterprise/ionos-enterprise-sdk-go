@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"path/filepath"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/assert"
@@ -107,4 +109,53 @@ func (s *SuiteWaitTillRequests) Test_Err_GetStatusError() {
 	err := s.client.WaitTillRequestsFinished(context.Background(), nil)
 	s.Error(err)
 	s.Equal(2, httpmock.GetTotalCallCount())
+}
+
+type SuiteRequestListFilter struct {
+	SuiteRequest
+}
+
+func TestRequestListFilters(t *testing.T) {
+	suite.Run(t, new(SuiteRequestListFilter))
+}
+
+func (s *SuiteRequestListFilter) TestAddAndWith() {
+
+	t := time.Now().Format("2006-01-02")
+
+	filter1 := NewRequestListFilter()
+	filter2 := NewRequestListFilter()
+
+	filter1.AddUrl("unit.test")
+	filter1.AddCreatedDate(t)
+	filter1.AddMethod("POST")
+	filter1.AddBody(`test`)
+	filter1.AddRequestStatus("RUNNING")
+	filter1.AddStatus("RUNNING")
+	filter1.AddCreatedBefore(t)
+	filter1.AddCreatedAfter(t)
+
+	filter2.WithUrl("unit.test").
+		WithCreatedDate(t).
+		WithMethod("POST").
+		WithBody(`test`).
+		WithRequestStatus("RUNNING").
+		WithStatus("RUNNING").
+		WithCreatedBefore(t).
+		WithCreatedAfter(t)
+
+	s.Equal(filter1, filter2)
+
+	expect := []string{
+		"filter.body=test",
+		"filter.createdAfter=" + t,
+		"filter.createdBefore=" + t,
+		"filter.createdDate=" + t,
+		"filter.method=POST",
+		"filter.requestStatus=RUNNING",
+		"filter.status=RUNNING",
+		"filter.url=unit.test",
+	}
+
+	s.ElementsMatch(expect, strings.Split(filter1.Encode(), "&"))
 }

@@ -100,11 +100,13 @@ func (f *RequestListFilter) WithUrl(url string) *RequestListFilter {
 }
 
 // AddCreatedDate adds a createdDate filter to the request list filter
+// DEPRECATED: Use AddCreatedBefore or AddCreatedAfter instead
 func (f *RequestListFilter) AddCreatedDate(createdDate string) {
 	f.WithCreatedDate(createdDate)
 }
 
 // WithCreatedDate adds a createdDate filter to the request list filter returning the filter for chaining
+// DEPRECATED: Use WithCreatedBefore or WithCreatedAfter instead
 func (f *RequestListFilter) WithCreatedDate(createdDate string) *RequestListFilter {
 	f.Add("filter.createdDate", createdDate)
 	return f
@@ -133,13 +135,53 @@ func (f *RequestListFilter) WithBody(body string) *RequestListFilter {
 }
 
 // AddRequestStatus adds a requestStatus filter to the request list filter
+// DEPRECATED: Use AddStatus instead
 func (f *RequestListFilter) AddRequestStatus(requestStatus string) {
 	f.WithRequestStatus(requestStatus)
 }
 
 // WithRequestStatus adds a requestStatus filter to the request list filter returning the filter for chaining
+// DEPRECATED: Use WithStatus instead
 func (f *RequestListFilter) WithRequestStatus(requestStatus string) *RequestListFilter {
 	f.Add("filter.requestStatus", requestStatus)
+	return f
+}
+
+// AddStatus adds a status filter to the request list filter.
+// Valid values for status are [QUEUED, RUNNING, DONE, FAILED]
+func (f *RequestListFilter) AddStatus(status string) *RequestListFilter {
+	f.Add("filter.status", status)
+	return f
+}
+
+// WithStatus adds a status filter to the request list filter.
+// Valid values for status are [QUEUED, RUNNING, DONE, FAILED]
+func (f *RequestListFilter) WithStatus(status string) *RequestListFilter {
+	f.Add("filter.status", status)
+	return f
+}
+
+// AddCreatedBefore adds a createdBefore filter to the request list filter.
+func (f *RequestListFilter) AddCreatedBefore(createdBefore string) *RequestListFilter {
+	f.Add("filter.createdBefore", createdBefore)
+	return f
+}
+
+// WithCreatedBefore adds a createdBefore filter to the request list filter.
+func (f *RequestListFilter) WithCreatedBefore(createdBefore string) *RequestListFilter {
+	f.Add("filter.createdBefore", createdBefore)
+	return f
+}
+
+// AddCreatedAfter adds a createdAfter filter to the request list filter.
+func (f *RequestListFilter) AddCreatedAfter(createdAfter string) *RequestListFilter {
+	f.Add("filter.createdAfter", createdAfter)
+	return f
+}
+
+// WithCreatedAfter adds a createdAfter filter to the request list filter.
+func (f *RequestListFilter) WithCreatedAfter(createdAfter string) *RequestListFilter {
+	f.Add("filter.createdAfter", createdAfter)
 	return f
 }
 
