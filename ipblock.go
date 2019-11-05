@@ -18,10 +18,21 @@ type IPBlock struct {
 
 //IPBlockProperties object
 type IPBlockProperties struct {
-	Name     string   `json:"name,omitempty"`
-	IPs      []string `json:"ips,omitempty"`
-	Location string   `json:"location,omitempty"`
-	Size     int      `json:"size,omitempty"`
+	Name        string       `json:"name,omitempty"`
+	IPs         []string     `json:"ips,omitempty"`
+	IPConsumers []IPConsumer `json:"ipConsumers,omitempty"`
+	Location    string       `json:"location,omitempty"`
+	Size        int          `json:"size,omitempty"`
+}
+
+type IPConsumer struct {
+	IP             string `json:"ip,omitempty"`
+	Mac            string `json:"mac,omitempty"`
+	NicID          string `json:"nicId,omitempty"`
+	ServerID       string `json:"serverId,omitempty"`
+	ServerName     string `json:"serverName,omitempty"`
+	DatacenterID   string `json:"datacenterId,omitempty"`
+	DatacenterName string `json:"datacenterName,omitempty"`
 }
 
 //IPBlocks object
