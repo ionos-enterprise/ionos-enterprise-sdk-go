@@ -301,3 +301,28 @@ func kubernetesNodePoolsPath(clusterID string) string {
 func kubernetesNodePoolPath(clusterID, nodepoolID string) string {
 	return safeJoin(kubernetesNodePoolsPath(clusterID), nodepoolID)
 }
+
+// backupUnitsPath: "backupunits"
+func backupUnitsPath() string {
+	return "backupunits"
+}
+
+// backupUnitsPath: "backupunits/<backupUnitID>"
+func backupUnitPath(backupUnitID string) string {
+	return safeJoin(backupUnitsPath(), backupUnitID)
+}
+
+// backupUnitSSOURLPath: "backupunits/backupUnitID/ssourl"
+func backupUnitSSOURLPath(backupUnitID string) string {
+	return safeJoin(backupUnitsPath(), backupUnitID, "ssourl")
+}
+
+// s3KeysPath: "um/users/<userID>/s3keys"
+func s3KeysPath(userID string) string {
+	return safeJoin(userPath(userID), "s3keys")
+}
+
+// s3KeyPath: "um/users/<userID>/s3keys/<s3KeyID>"
+func s3KeyPath(userID string, s3KeyID string) string {
+	return safeJoin(s3KeysPath(userID), s3KeyID)
+}
