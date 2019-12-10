@@ -322,6 +322,11 @@ func s3KeysPath(userID string) string {
 	return safeJoin(userPath(userID), "s3keys")
 }
 
+// s3KeysListPath: "um/users/<userID>/s3keys?depth=1"
+func s3KeysListPath(userID string) string {
+	return safeJoin(userPath(userID), "s3keys?depth=1")
+}
+
 // s3KeyPath: "um/users/<userID>/s3keys/<s3KeyID>"
 func s3KeyPath(userID string, s3KeyID string) string {
 	return safeJoin(s3KeysPath(userID), s3KeyID)

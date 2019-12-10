@@ -31,10 +31,12 @@ type S3Key struct {
 	// Read Only: true
 	Type string `json:"type,omitempty"`
 
-	// The metadata for the backup unit
+	// The metadata for the S3 key
 	// Read Only: true
 	Metadata *Metadata `json:"metadata,omitempty"`
 
+	// The properties of the S3 key
+	// Read Only: false
 	Properties *S3KeyProperties `json:"properties,omitempty"`
 }
 
@@ -44,22 +46,24 @@ type S3KeyProperties struct {
 	SecretKey string `json:"secretKey,omitempty"`
 	// Required: yes
 	// Read only: no
-	Active bool `json:"active,omitempty"`
+	Active bool `json:"active"`
 }
 
 // CreateS3Key creates an S3 Key for an user
-func (c *Client) CreateS3Key(userID string, s3key S3Key) (*S3Key, error) {
+func (c *Client) CreateS3Key(userID string) (*S3Key, error) {
 	rsp := &S3Key{}
-	return rsp, c.PostAcc(s3KeysPath(userID), s3key, rsp)
+	var requestBody interface{}
+	err := c.Post(s3KeysPath(userID), requestBody, rsp, http.StatusCreated)
+	return rsp, err
 }
 
-// ListS3Keys lists all available s3 keys for an user
+// ListS3Keys lists all available S3 keys for an user
 func (c *Client) ListS3Keys(userID string) (*S3Keys, error) {
 	rsp := &S3Keys{}
-	return rsp, c.GetOK(s3KeysPath(userID), rsp)
+	return rsp, c.GetOK(s3KeysListPath(userID), rsp)
 }
 
-// UpdateS3Key updates an existing s3 key
+// UpdateS3Key updates an existing S3 key
 func (c *Client) UpdateS3Key(userID string, s3KeyID string, s3Key S3Key) (*S3Key, error) {
 	rsp := &S3Key{}
 	return rsp, c.PutAcc(s3KeyPath(userID, s3KeyID), s3Key, rsp)

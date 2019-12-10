@@ -2673,7 +2673,7 @@ if err != nil {
 
 | Name   | Required | Type   | Description                                   |
 | ------ | :------: | ------ | --------------------------------------------- |
-| S3Key  |  **no**  | string | The S3 Key's ID                               |
+| S3Key  |  **no**  | string | The S3 secret key                             |
 | Active |  **no**  | bool   | Indicates whether the S3 key is active or not |
 
 ```markdown
@@ -2687,11 +2687,121 @@ if err != nil {
 
 ### Create S3 Key
 
+Creates a new S3 Key
+
+The following table describes the request arguments:
+
+| Name   | Type   | Description                                        | Required |
+| ------ | ------ | -------------------------------------------------- | -------- |
+| userID | string | The UUID of the user the key should be assigned to | **yes**  |
+
+```golang
+
+createdS3Key, err := client.CreateS3Key("d4246339-9c0f-41fb-a96d-1c640ae4501x")
+
+if err != nil {
+    fmt.Printf("Error creating S3 Key: \n%+v", err)
+} else {
+    fmt.Printf("Successfully created S3 Key: \n%+v", createdS3Key)
+}
+
+```
+
 ### Read S3 Key
+
+Retrieves an existing S3 Key from the API
+
+The following table describes the request arguments:
+
+| Name    | Type   | Description                             | Required |
+| ------- | ------ | --------------------------------------- | -------- |
+| userID  | string | The UUID of the user the key belongs to | **yes**  |
+| s3KeyID | string | The UUID of the existing S3 key         | **yes**  |
+
+```golang
+s3Key, err := client.GetS3Key("d4246339-9c0f-41fb-a96d-1c640ae4501x", "00ddbdff682631d4c0f8")
+
+if err != nil {
+    fmt.Printf("Error retrieving S3 Key: \n%+v", err)
+} else {
+    fmt.Printf("Existing S3 Key: \n%+v", s3Key)
+}
+```
 
 ### List S3 Keys
 
+Retrieves the existing S3 Keys for an user
+
+The following table describes the request arguments:
+
+| Name   | Type   | Description                                  | Required |
+| ------ | ------ | -------------------------------------------- | -------- |
+| userID | string | The UUID of the user to list the S3 keys for | **yes**  |
+
+```golang
+
+s3Keys, err := client.ListS3Keys("d4246339-9c0f-41fb-a96d-1c640ae4501x")
+
+if err != nil {
+    fmt.Printf("Error retrieving S3 Keys: \n%+v", err)
+} else {
+    fmt.Printf("Successfully retrieved S3 Keys: \n%+v", s3Keys)
+}
+
+```
+
 ### Update S3 Key
+
+Updates the state of an existing S3 Key
+
+The following table describes the request arguments:
+
+| Name    | Type                              | Description                                | Required |
+| ------- | --------------------------------- | ------------------------------------------ | -------- |
+| userID  | string                            | The UUID of the user the S3 key belongs to | **yes**  |
+| s3KeyID | string                            | The UUID of the existing S3 key            | **yes**  |
+| s3Key   | \*[S3Key](#S3Key-resource-object) | The updated S3 Key Object                  | **yes**  |
+
+```golang
+
+s3Key := profitbricks.S3Key{
+    Properties: &profitbricks.S3KeyProperties{
+        Active: false,
+    },
+}
+
+updatedS3Key, err := client.UpdateS3Key("d4246339-9c0f-41fb-a96d-1c640ae4501x", "00ddbdff682631d4c0f8", s3Key)
+
+if err != nil {
+    fmt.Printf("Error updating S3 Key: \n%+v\n", err)
+} else {
+    fmt.Printf("Successfully updated S3 Key: \n%+v\n", updatedS3Key)
+}
+
+```
+
+### Delete S3 Key
+
+Deletes an existing S3 Key
+
+The following table describes the request arguments:
+
+| Name    | Type   | Description                                | Required |
+| ------- | ------ | ------------------------------------------ | -------- |
+| userID  | string | The UUID of the user the S3 key belongs to | **yes**  |
+| s3KeyID | string | The UUID of the existing S3 key            | **yes**  |
+
+```golang
+
+deletedS3KeyResponse, err := client.DeleteS3Key("d4246339-9c0f-41fb-a96d-1c640ae4501a", "00ddbdff682631d4c0f8")
+
+if err != nil {
+    fmt.Printf("Error deleting S3 Key: \n%+v\n", err)
+} else {
+    fmt.Printf("Successfully deleted S3 Key: \n%+v\n", deletedS3KeyResponse)
+}
+
+```
 
 ## Example
 

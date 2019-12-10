@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"time"
 )
 
 // Datacenter represents Virtual Data Center
@@ -19,14 +18,14 @@ type Datacenter struct {
 
 // Metadata represents metadata recieved from Cloud API
 type Metadata struct {
-	CreatedDate          time.Time `json:"createdDate,omitempty"`
-	CreatedBy            string    `json:"createdBy,omitempty"`
-	CreatedByUserID      string    `json:"createdByUserId,omitempty"`
-	Etag                 string    `json:"etag,omitempty"`
-	LastModifiedDate     time.Time `json:"lastModifiedDate,omitempty"`
-	LastModifiedBy       string    `json:"lastModifiedBy,omitempty"`
-	LastModifiedByUserID string    `json:"lastModifiedByUserId,omitempty"`
-	State                string    `json:"state,omitempty"`
+	CreatedDate          string `json:"createdDate,omitempty"`
+	CreatedBy            string `json:"createdBy,omitempty"`
+	CreatedByUserID      string `json:"createdByUserId,omitempty"`
+	Etag                 string `json:"etag,omitempty"`
+	LastModifiedDate     string `json:"lastModifiedDate,omitempty"`
+	LastModifiedBy       string `json:"lastModifiedBy,omitempty"`
+	LastModifiedByUserID string `json:"lastModifiedByUserId,omitempty"`
+	State                string `json:"state,omitempty"`
 }
 
 // DatacenterProperties represents Virtual Data Center properties
