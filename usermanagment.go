@@ -29,11 +29,16 @@ type Group struct {
 
 // GroupProperties object
 type GroupProperties struct {
-	Name              string `json:"name,omitempty"`
-	CreateDataCenter  *bool  `json:"createDataCenter,omitempty"`
-	CreateSnapshot    *bool  `json:"createSnapshot,omitempty"`
-	ReserveIP         *bool  `json:"reserveIp,omitempty"`
-	AccessActivityLog *bool  `json:"accessActivityLog,omitempty"`
+	Name                 string `json:"name,omitempty"`
+	CreateDataCenter     *bool  `json:"createDataCenter,omitempty"`
+	CreateSnapshot       *bool  `json:"createSnapshot,omitempty"`
+	ReserveIP            *bool  `json:"reserveIp,omitempty"`
+	AccessActivityLog    *bool  `json:"accessActivityLog,omitempty"`
+	CreateBackupUnit     *bool  `json:"createBackupUnit,omitempty"`
+	CreateInternetAccess *bool  `json:"createInternetAccess,omitempty"`
+	CreateK8sCluster     *bool  `json:"createK8sCluster,omitempty"`
+	CreatePcc            *bool  `json:"createPcc,omitempty"`
+	S3Privilege          *bool  `json:"s3Privilege,omitempty"`
 }
 
 // GroupEntities object
