@@ -2674,16 +2674,7 @@ if err != nil {
 | Name   | Required | Type   | Description                                   |
 | ------ | :------: | ------ | --------------------------------------------- |
 | S3Key  |  **no**  | string | The S3 secret key                             |
-| Active |  **no**  | bool   | Indicates whether the S3 key is active or not |
-
-```markdown
-- [User S3 Keys](#user-s3-keys)
-  - [Create S3 Key](#create-s3-key)
-  - [Read S3 Key](#create-s3-key)
-  - [List S3 Keys](#list-s3-keys)
-  - [Update S3 Key](#update-s3-key)
-  - [Delete S3 Key](#delete-s3-key)
-```
+| Active | **yes**  | bool   | Indicates whether the S3 key is active or not |
 
 ### Create S3 Key
 
