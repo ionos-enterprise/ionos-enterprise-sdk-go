@@ -45,7 +45,7 @@ type KubernetesCluster struct {
 	PBType string `json:"type,omitempty"`
 
 	// Entities of a cluster
-	Entities KubernetesClusterEntities `json:"-"`
+	Entities KubernetesClusterEntities `json:"entities:omitempty"`
 }
 
 type KubernetesClusterEntities struct {
