@@ -18,7 +18,7 @@ type Client struct {
 const (
 	DefaultApiUrl  = "https://api.ionos.com/cloudapi/v5"
 	DefaultAuthUrl = "https://api.ionos.com/auth/v1"
-	Version        = "5.0.2"
+	Version        = "5.0.3"
 )
 
 func RestyClient(username, password, token string) *Client {
