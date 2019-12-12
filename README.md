@@ -2335,7 +2335,7 @@ The following table describes the request arguments:
 
 ```golang
 
-cluster := profitbricks.KubernetesCluster{
+cluster := profitbricks.UpdatedKubernetesCluster{
     Properties: &profitbricks.KubernetesClusterProperties{
         Name: "demo-renamed",
     },
