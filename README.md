@@ -2225,6 +2225,12 @@ GetResourceByType(resourcetype, resourceId)
 | ---------- | :------: | ----------------------------------------------------------------------------- | ----------------------------------------- |
 | Properties | **yes**  | \*[KubernetesClusterProperties](#KubernetesClusterProperties-resource-object) | The properties of the Kubernetes Cluster. |
 
+##### UpdatedKubernetesCluster Resource Object
+
+| Name       | Required | Type                                                                          | Description                               |
+| ---------- | :------: | ----------------------------------------------------------------------------- | ----------------------------------------- |
+| Properties | **yes**  | \*[KubernetesClusterProperties](#KubernetesClusterProperties-resource-object) | The properties of the Kubernetes Cluster. |
+
 ##### KubernetesClusterProperties Resource Object
 
 | Name | Required | Type   | Description                                 |
@@ -2322,10 +2328,10 @@ Updates an existing Kubernetes cluster
 
 The following table describes the request arguments:
 
-| Name      | Type                                                      | Description                                      | Required |
-| --------- | --------------------------------------------------------- | ------------------------------------------------ | -------- |
-| clusterID | string                                                    | The UUID of the Kubernetes cluster to be updated | **yes**  |
-| cluster   | \*[KubernetesCluster](#kubernetescluster-resource-object) | An Kubernetes cluster resource object            | **yes**  |
+| Name      | Type                                                                    | Description                                      | Required |
+| --------- | ----------------------------------------------------------------------- | ------------------------------------------------ | -------- |
+| clusterID | string                                                                  | The UUID of the Kubernetes cluster to be updated | **yes**  |
+| cluster   | \*[UpdatedKubernetesCluster](#UpdatedKubernetesCluster-resource-object) | An Kubernetes cluster resource object            | **yes**  |
 
 ```golang
 
