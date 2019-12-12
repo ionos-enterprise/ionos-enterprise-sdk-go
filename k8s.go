@@ -45,6 +45,32 @@ type KubernetesCluster struct {
 	PBType string `json:"type,omitempty"`
 
 	// Entities of a cluster
+	Entities KubernetesClusterEntities `json:"entities,omitempty"`
+}
+
+type UpdatedKubernetesCluster struct {
+	// URL to the object representation (absolute path)
+	// Read Only: true
+	// Format: uri
+	Href string `json:"href,omitempty"`
+
+	// The resource's unique identifier.
+	// Read Only: true
+	ID string `json:"id,omitempty"`
+
+	// metadata
+	Metadata *Metadata `json:"metadata,omitempty"`
+
+	// properties
+	// Required: true
+	Properties *KubernetesClusterProperties `json:"properties"`
+
+	// The type of object
+	// Read Only: true
+	// Enum: [k8s]
+	PBType string `json:"type,omitempty"`
+
+	// Entities of a cluster
 	Entities KubernetesClusterEntities `json:"-"`
 }
 
@@ -196,7 +222,7 @@ func (c *Client) DeleteKubernetesCluster(clusterId string) (*http.Header, error)
 }
 
 // UpdateKubernetesCluster updates cluster
-func (c *Client) UpdateKubernetesCluster(clusterID string, cluster KubernetesCluster) (*KubernetesCluster, error) {
+func (c *Client) UpdateKubernetesCluster(clusterID string, cluster UpdatedKubernetesCluster) (*KubernetesCluster, error) {
 	rsp := &KubernetesCluster{}
 	return rsp, c.Put(kubernetesClusterPath(clusterID), cluster, rsp, http.StatusOK)
 }

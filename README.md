@@ -1,6 +1,6 @@
 # Go SDK
 
-Version: profitbricks-sdk-go **5.0.2**
+Version: profitbricks-sdk-go **5.0.3**
 
 The ProfitBricks Client Library for [Go](https://www.golang.org/) provides you with access to the ProfitBricks Cloud API. It is designed for developers who are building applications in Go.
 
@@ -2225,6 +2225,12 @@ GetResourceByType(resourcetype, resourceId)
 | ---------- | :------: | ----------------------------------------------------------------------------- | ----------------------------------------- |
 | Properties | **yes**  | \*[KubernetesClusterProperties](#KubernetesClusterProperties-resource-object) | The properties of the Kubernetes Cluster. |
 
+##### UpdatedKubernetesCluster Resource Object
+
+| Name       | Required | Type                                                                          | Description                               |
+| ---------- | :------: | ----------------------------------------------------------------------------- | ----------------------------------------- |
+| Properties | **yes**  | \*[KubernetesClusterProperties](#KubernetesClusterProperties-resource-object) | The properties of the Kubernetes Cluster. |
+
 ##### KubernetesClusterProperties Resource Object
 
 | Name | Required | Type   | Description                                 |
@@ -2322,14 +2328,14 @@ Updates an existing Kubernetes cluster
 
 The following table describes the request arguments:
 
-| Name      | Type                                                      | Description                                      | Required |
-| --------- | --------------------------------------------------------- | ------------------------------------------------ | -------- |
-| clusterID | string                                                    | The UUID of the Kubernetes cluster to be updated | **yes**  |
-| cluster   | \*[KubernetesCluster](#kubernetescluster-resource-object) | An Kubernetes cluster resource object            | **yes**  |
+| Name      | Type                                                                    | Description                                      | Required |
+| --------- | ----------------------------------------------------------------------- | ------------------------------------------------ | -------- |
+| clusterID | string                                                                  | The UUID of the Kubernetes cluster to be updated | **yes**  |
+| cluster   | \*[UpdatedKubernetesCluster](#UpdatedKubernetesCluster-resource-object) | An Kubernetes cluster resource object            | **yes**  |
 
 ```golang
 
-cluster := profitbricks.KubernetesCluster{
+cluster := profitbricks.UpdatedKubernetesCluster{
     Properties: &profitbricks.KubernetesClusterProperties{
         Name: "demo-renamed",
     },
