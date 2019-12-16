@@ -1,4 +1,4 @@
-module github.com/profitbricks/profitbricks-sdk-go
+module github.com/profitbricks/profitbricks-sdk-go/v5
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
