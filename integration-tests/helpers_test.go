@@ -6,7 +6,7 @@ import (
 	"strings"
 	"sync"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go"
+	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
 )
 
 var (

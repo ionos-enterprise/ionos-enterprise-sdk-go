@@ -175,7 +175,7 @@ export PATH=$PATH:$GOBIN
 The following `go` command will download `profitbricks-sdk-go` to your configured `GOPATH`:
 
 ```go
-go get "github.com/profitbricks/profitbricks-sdk-go"
+go get "github.com/profitbricks/profitbricks-sdk-go/v5"
 ```
 
 The source code of the package will be located here:
@@ -199,8 +199,9 @@ Include the ProfitBricks SDK for Go under the list of imports.
 
 ```go
 import(
-    "fmt"
-	"github.com/profitbricks/profitbricks-sdk-go"
+	"fmt"
+
+	"github.com/profitbricks/profitbricks-sdk-go/v5"
 )
 ```
 
@@ -217,9 +218,9 @@ It might be necessary to accept credentials through environment variables in a c
 ```go
 import (
 	"fmt"
-    "os"
+	"os"
 
-	"github.com/profitbricks/profitbricks-sdk-go"
+	"github.com/profitbricks/profitbricks-sdk-go/v5"
 )
 
 func main() {
@@ -294,7 +295,7 @@ client.SetDepth(3)
 Set Cloud API URL:
 
 ```go
-client.SetURL("https://api.profitbricks.com/cloudapi/v4")
+client.SetURL("https://api.profitbricks.com/cloudapi/v5")
 ```
 
 #### SetUserAgent
@@ -2809,7 +2810,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/profitbricks/profitbricks-sdk-go"
+	"github.com/profitbricks/profitbricks-sdk-go/v5"
 )
 
 func main() {

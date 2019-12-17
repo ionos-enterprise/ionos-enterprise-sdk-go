@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go"
+	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
 	"github.com/stretchr/testify/assert"
 )
 
