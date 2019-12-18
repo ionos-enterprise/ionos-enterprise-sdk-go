@@ -1,6 +1,6 @@
 # Go SDK
 
-Version: profitbricks-sdk-go **5.0.3**
+Version: profitbricks-sdk-go **5.0**
 
 The ProfitBricks Client Library for [Go](https://www.golang.org/) provides you with access to the ProfitBricks Cloud API. It is designed for developers who are building applications in Go.
 
@@ -1159,7 +1159,7 @@ The following table describes the request arguments:
 | ipblkid | **yes**  | string | The ID of the IP Block you want to update. |
 | Name    |    no    | string | A descriptive name for the IP Block.       |
 
-Build a [IpBlockProperties] object:
+Build an [IpBlockProperties] object:
 
     var ipblock = IPBlockProperties{
     	Name: "GO SDK Test RENAME",
