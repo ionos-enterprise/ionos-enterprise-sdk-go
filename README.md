@@ -1104,13 +1104,13 @@ Retrieves the attributes of a specific IP block.
 
 The following table describes the request arguments:
 
-| Name       | Required | Type   | Description             |
-| ---------- | :------: | ------ | ----------------------- |
-| ipblock_id | **yes**  | string | The ID of the IP block. |
+| Name      | Required | Type   | Description             |
+| --------- | :------: | ------ | ----------------------- |
+| ipblockid | **yes**  | string | The ID of the IP block. |
 
-Pass the arguments to `get_ipblock`:
+Pass the arguments to `GetIPBlock`:
 
-    response = client.get_ipblock('UUID')
+    response = client.GetIPBlock('UUID')
 
 ---
 
@@ -1120,10 +1120,9 @@ Creates an IP block. Creating an IP block is a bit different than some of the ot
 
 The following table describes the request arguments:
 
-| Name          | Required | Type   | Description                                                       |
-| ------------- | :------: | ------ | ----------------------------------------------------------------- |
-| datacenter_id | **yes**  | string | The ID of the VDC.                                                |
-| ipblock       | **yes**  | object | An [IPBlock object](#ipblock-resource-object) you wish to create. |
+| Name    | Required | Type   | Description                                                       |
+| ------- | :------: | ------ | ----------------------------------------------------------------- |
+| ipblock | **yes**  | object | An [IPBlock object](#ipblock-resource-object) you wish to create. |
 
 To create an IP block, define the `IPBlock` resource object:
 
@@ -1149,7 +1148,7 @@ Pass it to `ReserveIpBlock`:
 
 ---
 
-#### Update a IPBlock
+#### Update an IPBlock
 
 Perform updates to the attributes of a ipblock.
 
@@ -1160,7 +1159,7 @@ The following table describes the request arguments:
 | ipblkid | **yes**  | string | The ID of the IP Block you want to update. |
 | Name    |    no    | string | A descriptive name for the IP Block.       |
 
-Build a [ServerProperties](#serverproperties) object:
+Build a [IpBlockProperties] object:
 
     var ipblock = IPBlockProperties{
     	Name: "GO SDK Test RENAME",
