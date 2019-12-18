@@ -1195,13 +1195,13 @@ Retrieve a list of LANs within the VDC.
 
 The following table describes the request arguments:
 
-| Name        | Required | Type   | Description        |
-| ----------- | :------: | ------ | ------------------ |
-| datacenterd | **yes**  | string | The ID of the VDC. |
+| Name         | Required | Type   | Description        |
+| ------------ | :------: | ------ | ------------------ |
+| datacenterId | **yes**  | string | The ID of the VDC. |
 
 Pass the arguments to `ListLans`:
 
-    ListLans(datacenterd)
+    ListLans(datacenterId)
 
 ---
 
@@ -1286,7 +1286,7 @@ Pass the arguments to `update_lan`:
     		Name:   "GO SDK Test with failover",
     		IPFailover: &[]IPFailover {
     			IPFailover {
-    				IP: "192.168.10.2",
+    				IP: "1.1.1.1",
     				NicUUID: ".....",
     			}
     		},
