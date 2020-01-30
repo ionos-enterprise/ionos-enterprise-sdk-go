@@ -4,12 +4,12 @@ import (
 	"net/http"
 )
 
-//Snapshot object
+// Snapshot object
 type Snapshot struct {
-	ID         string             `json:"id,omitempty"`
-	PBType     string             `json:"type,omitempty"`
-	Href       string             `json:"href,omitempty"`
-	Metadata   Metadata           `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Properties SnapshotProperties `json:"properties,omitempty"`
 	Response   string             `json:"Response,omitempty"`
 	Headers    *http.Header       `json:"headers,omitempty"`
@@ -35,7 +35,7 @@ type SnapshotProperties struct {
 	LicenceType         string `json:"licenceType,omitempty"`
 }
 
-//Snapshots object
+// Snapshots object
 type Snapshots struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`
@@ -46,7 +46,7 @@ type Snapshots struct {
 	StatusCode int          `json:"statuscode,omitempty"`
 }
 
-//ListSnapshots lists all snapshots
+// ListSnapshots lists all snapshots
 func (c *Client) ListSnapshots() (*Snapshots, error) {
 	url := snapshotsPath()
 	ret := &Snapshots{}
@@ -54,7 +54,7 @@ func (c *Client) ListSnapshots() (*Snapshots, error) {
 	return ret, err
 }
 
-//GetSnapshot gets a specific snapshot
+// GetSnapshot gets a specific snapshot
 func (c *Client) GetSnapshot(snapshotID string) (*Snapshot, error) {
 	url := snapshotPath(snapshotID)
 	ret := &Snapshot{}

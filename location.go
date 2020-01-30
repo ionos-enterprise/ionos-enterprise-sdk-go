@@ -10,7 +10,6 @@ type Location struct {
 	ID         string             `json:"id,omitempty"`
 	PBType     string             `json:"type,omitempty"`
 	Href       string             `json:"href,omitempty"`
-	Metadata   Metadata           `json:"metadata,omitempty"`
 	Properties LocationProperties `json:"properties,omitempty"`
 	Response   string             `json:"Response,omitempty"`
 	Headers    *http.Header       `json:"headers,omitempty"`

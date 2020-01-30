@@ -4,12 +4,12 @@ import (
 	"net/http"
 )
 
-//Lan object
+// Lan object
 type Lan struct {
-	ID         string        `json:"id,omitempty"`
-	PBType     string        `json:"type,omitempty"`
-	Href       string        `json:"href,omitempty"`
-	Metadata   *Metadata     `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Properties LanProperties `json:"properties,omitempty"`
 	Entities   *LanEntities  `json:"entities,omitempty"`
 	Response   string        `json:"Response,omitempty"`
@@ -17,25 +17,25 @@ type Lan struct {
 	StatusCode int           `json:"statuscode,omitempty"`
 }
 
-//LanProperties object
+// LanProperties object
 type LanProperties struct {
 	Name       string        `json:"name,omitempty"`
 	Public     bool          `json:"public,omitempty"`
 	IPFailover *[]IPFailover `json:"ipFailover,omitempty"`
 }
 
-//LanEntities object
+// LanEntities object
 type LanEntities struct {
 	Nics *LanNics `json:"nics,omitempty"`
 }
 
-//IPFailover object
+// IPFailover object
 type IPFailover struct {
 	NicUUID string `json:"nicUuid,omitempty"`
 	IP      string `json:"ip,omitempty"`
 }
 
-//LanNics object
+// LanNics object
 type LanNics struct {
 	ID     string `json:"id,omitempty"`
 	PBType string `json:"type,omitempty"`
@@ -43,7 +43,7 @@ type LanNics struct {
 	Items  []Nic  `json:"items,omitempty"`
 }
 
-//Lans object
+// Lans object
 type Lans struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`

@@ -33,7 +33,7 @@ type KubernetesCluster struct {
 	ID string `json:"id,omitempty"`
 
 	// metadata
-	Metadata *Metadata `json:"metadata,omitempty"`
+	*Metadata `json:"metadata,omitempty"`
 
 	// properties
 	// Required: true
@@ -59,7 +59,7 @@ type UpdatedKubernetesCluster struct {
 	ID string `json:"id,omitempty"`
 
 	// metadata
-	Metadata *Metadata `json:"metadata,omitempty"`
+	*Metadata `json:"metadata,omitempty"`
 
 	// properties
 	// Required: true
@@ -123,7 +123,7 @@ type KubernetesNodePool struct {
 	ID string `json:"id,omitempty"`
 
 	// metadata
-	Metadata *Metadata `json:"metadata,omitempty"`
+	*Metadata `json:"metadata,omitempty"`
 
 	// properties
 	// Required: true

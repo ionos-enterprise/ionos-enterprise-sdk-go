@@ -6,21 +6,21 @@ package profitbricks
 
 import "net/http"
 
-type Header struct {
+type Headers struct {
 	Headers *http.Header
 }
 
 // GetHeader to be interfaceable
-func (h *Header) GetHeader() *http.Header {
+func (h *Headers) GetHeader() *http.Header {
 	return h.Headers
 }
 
 // SetHeader to be interfaceable
-func (h *Header) SetHeader(header *http.Header) {
+func (h *Headers) SetHeader(header *http.Header) {
 	h.Headers = header
 }
 
 // Get returns the actual value for given header key
-func (h *Header) Get(key string) string {
+func (h *Headers) Get(key string) string {
 	return h.Headers.Get(key)
 }

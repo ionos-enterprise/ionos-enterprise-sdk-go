@@ -6,26 +6,14 @@ import (
 
 // Datacenter represents Virtual Data Center
 type Datacenter struct {
-	ID         string               `json:"id,omitempty"`
-	PBType     string               `json:"type,omitempty"`
-	Href       string               `json:"href,omitempty"`
-	Metadata   *Metadata            `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Properties DatacenterProperties `json:"properties,omitempty"`
 	Entities   DatacenterEntities   `json:"entities,omitempty"`
 	Response   string               `json:"Response,omitempty"`
 	Headers    *http.Header         `json:"headers,omitempty"`
-}
-
-// Metadata represents metadata recieved from Cloud API
-type Metadata struct {
-	CreatedDate          string `json:"createdDate,omitempty"`
-	CreatedBy            string `json:"createdBy,omitempty"`
-	CreatedByUserID      string `json:"createdByUserId,omitempty"`
-	Etag                 string `json:"etag,omitempty"`
-	LastModifiedDate     string `json:"lastModifiedDate,omitempty"`
-	LastModifiedBy       string `json:"lastModifiedBy,omitempty"`
-	LastModifiedByUserID string `json:"lastModifiedByUserId,omitempty"`
-	State                string `json:"state,omitempty"`
 }
 
 // DatacenterProperties represents Virtual Data Center properties

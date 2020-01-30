@@ -4,12 +4,12 @@ import (
 	"net/http"
 )
 
-//Server object
+// Server object
 type Server struct {
-	ID         string           `json:"id,omitempty"`
-	PBType     string           `json:"type,omitempty"`
-	Href       string           `json:"href,omitempty"`
-	Metadata   *Metadata        `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Properties ServerProperties `json:"properties,omitempty"`
 	Entities   *ServerEntities  `json:"entities,omitempty"`
 	Response   string           `json:"Response,omitempty"`
@@ -17,7 +17,7 @@ type Server struct {
 	StatusCode int              `json:"statuscode,omitempty"`
 }
 
-//ServerProperties object
+// ServerProperties object
 type ServerProperties struct {
 	Name             string             `json:"name,omitempty"`
 	Cores            int                `json:"cores,omitempty"`
@@ -29,14 +29,14 @@ type ServerProperties struct {
 	CPUFamily        string             `json:"cpuFamily,omitempty"`
 }
 
-//ServerEntities object
+// ServerEntities object
 type ServerEntities struct {
 	Cdroms  *Cdroms  `json:"cdroms,omitempty"`
 	Volumes *Volumes `json:"volumes,omitempty"`
 	Nics    *Nics    `json:"nics,omitempty"`
 }
 
-//Servers collection
+// Servers collection
 type Servers struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`
@@ -47,7 +47,7 @@ type Servers struct {
 	StatusCode int          `json:"statuscode,omitempty"`
 }
 
-//ResourceReference object
+// ResourceReference object
 type ResourceReference struct {
 	ID     string `json:"id,omitempty"`
 	PBType string `json:"type,omitempty"`
@@ -94,7 +94,7 @@ func (c *Client) DeleteServer(dcid, srvid string) (*http.Header, error) {
 	return ret, err
 }
 
-//ListAttachedCdroms returns list of attached cd roms
+// ListAttachedCdroms returns list of attached cd roms
 func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 	url := cdromsPath(dcid, srvid)
 	ret := &Images{}
@@ -102,7 +102,7 @@ func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 	return ret, err
 }
 
-//AttachCdrom attaches a CD rom
+// AttachCdrom attaches a CD rom
 func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, error) {
 	data := struct {
 		ID string `json:"id,omitempty"`
@@ -115,7 +115,7 @@ func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, er
 	return ret, err
 }
 
-//GetAttachedCdrom gets attached cd roms
+// GetAttachedCdrom gets attached cd roms
 func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 	url := cdromPath(dcid, srvid, cdid)
 	ret := &Image{}
@@ -123,7 +123,7 @@ func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 	return ret, err
 }
 
-//DetachCdrom detaches a CD rom
+// DetachCdrom detaches a CD rom
 func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 	url := cdromPath(dcid, srvid, cdid)
 	ret := &http.Header{}
@@ -131,7 +131,7 @@ func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 	return ret, err
 }
 
-//ListAttachedVolumes lists attached volumes
+// ListAttachedVolumes lists attached volumes
 func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 	url := attachedVolumesPath(dcid, srvid)
 	ret := &Volumes{}
@@ -139,7 +139,7 @@ func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 	return ret, err
 }
 
-//AttachVolume attaches a volume
+// AttachVolume attaches a volume
 func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume, error) {
 	data := struct {
 		ID string `json:"id,omitempty"`
@@ -153,7 +153,7 @@ func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume,
 	return ret, err
 }
 
-//GetAttachedVolume gets an attached volume
+// GetAttachedVolume gets an attached volume
 func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 	url := attachedVolumePath(dcid, srvid, volid)
 	ret := &Volume{}
@@ -162,7 +162,7 @@ func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 	return ret, err
 }
 
-//DetachVolume detaches a volume
+// DetachVolume detaches a volume
 func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
 	url := attachedVolumePath(dcid, srvid, volid)
 	ret := &http.Header{}
@@ -173,7 +173,7 @@ func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
 // StartServer starts a server
 func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
 	url := serverStartPath(dcid, srvid)
-	ret := &Header{}
+	ret := &Headers{}
 	err := c.Post(url, nil, ret, http.StatusAccepted)
 	return ret.GetHeader(), err
 }
@@ -181,7 +181,7 @@ func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
 // StopServer stops a server
 func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
 	url := serverStopPath(dcid, srvid)
-	ret := &Header{}
+	ret := &Headers{}
 	err := c.Post(url, nil, ret, http.StatusAccepted)
 	return ret.GetHeader(), err
 }
@@ -189,7 +189,7 @@ func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
 // RebootServer reboots a server
 func (c *Client) RebootServer(dcid, srvid string) (*http.Header, error) {
 	url := serverRebootPath(dcid, srvid)
-	ret := &Header{}
+	ret := &Headers{}
 	err := c.Post(url, nil, ret, http.StatusAccepted)
 	return ret.GetHeader(), err
 }

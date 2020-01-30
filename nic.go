@@ -6,10 +6,10 @@ import (
 
 // Nic object
 type Nic struct {
-	ID         string         `json:"id,omitempty"`
-	PBType     string         `json:"type,omitempty"`
-	Href       string         `json:"href,omitempty"`
-	Metadata   *Metadata      `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Properties *NicProperties `json:"properties,omitempty"`
 	Entities   *NicEntities   `json:"entities,omitempty"`
 	Response   string         `json:"Response,omitempty"`

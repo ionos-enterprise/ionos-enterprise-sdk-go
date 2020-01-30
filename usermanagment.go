@@ -60,10 +60,10 @@ type Users struct {
 
 // User object
 type User struct {
-	ID         string          `json:"id,omitempty"`
-	PBType     string          `json:"type,omitempty"`
-	Href       string          `json:"href,omitempty"`
-	Metadata   *Metadata       `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Properties *UserProperties `json:"properties,omitempty"`
 	Entities   *UserEntities   `json:"entities,omitempty"`
 	Response   string          `json:"Response,omitempty"`
@@ -101,10 +101,10 @@ type Resources struct {
 
 // Resource object
 type Resource struct {
-	ID         string            `json:"id,omitempty"`
-	PBType     string            `json:"type,omitempty"`
-	Href       string            `json:"href,omitempty"`
-	Metadata   *Metadata         `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Entities   *ResourceEntities `json:"entities,omitempty"`
 	Response   string            `json:"Response,omitempty"`
 	Headers    *http.Header      `json:"headers,omitempty"`
@@ -129,10 +129,10 @@ type Owns struct {
 
 // Entity object
 type Entity struct {
-	ID         string       `json:"id,omitempty"`
-	PBType     string       `json:"type,omitempty"`
-	Href       string       `json:"href,omitempty"`
-	Metadata   *Metadata    `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Response   string       `json:"Response,omitempty"`
 	Headers    *http.Header `json:"headers,omitempty"`
 	StatusCode int          `json:"statuscode,omitempty"`
@@ -166,7 +166,7 @@ type ShareProperties struct {
 	SharePrivilege *bool `json:"sharePrivilege,omitempty"`
 }
 
-//ListGroups lists all groups
+// ListGroups lists all groups
 func (c *Client) ListGroups() (*Groups, error) {
 	url := groupsPath()
 	ret := &Groups{}
@@ -174,7 +174,7 @@ func (c *Client) ListGroups() (*Groups, error) {
 	return ret, err
 }
 
-//GetGroup gets a group
+// GetGroup gets a group
 func (c *Client) GetGroup(groupid string) (*Group, error) {
 	url := groupPath(groupid)
 	ret := &Group{}
@@ -182,7 +182,7 @@ func (c *Client) GetGroup(groupid string) (*Group, error) {
 	return ret, err
 }
 
-//CreateGroup creates a group
+// CreateGroup creates a group
 func (c *Client) CreateGroup(grp Group) (*Group, error) {
 	url := groupsPath()
 	ret := &Group{}
@@ -190,7 +190,7 @@ func (c *Client) CreateGroup(grp Group) (*Group, error) {
 	return ret, err
 }
 
-//UpdateGroup updates a group
+// UpdateGroup updates a group
 func (c *Client) UpdateGroup(groupid string, obj Group) (*Group, error) {
 	url := groupPath(groupid)
 	ret := &Group{}
@@ -198,7 +198,7 @@ func (c *Client) UpdateGroup(groupid string, obj Group) (*Group, error) {
 	return ret, err
 }
 
-//DeleteGroup deletes a group
+// DeleteGroup deletes a group
 func (c *Client) DeleteGroup(groupid string) (*http.Header, error) {
 	url := groupPath(groupid)
 	ret := &http.Header{}
@@ -206,7 +206,7 @@ func (c *Client) DeleteGroup(groupid string) (*http.Header, error) {
 	return ret, err
 }
 
-//ListShares lists all shares
+// ListShares lists all shares
 func (c *Client) ListShares(grpid string) (*Shares, error) {
 	url := sharesPath(grpid)
 	ret := &Shares{}
@@ -246,7 +246,7 @@ func (c *Client) DeleteShare(groupid string, resourceid string) (*http.Header, e
 	return ret, err
 }
 
-//ListGroupUsers lists Users in a group
+// ListGroupUsers lists Users in a group
 func (c *Client) ListGroupUsers(groupid string) (*Users, error) {
 	url := groupUsersPath(groupid)
 	ret := &Users{}
@@ -272,7 +272,7 @@ func (c *Client) DeleteUserFromGroup(groupid string, userid string) (*http.Heade
 	return ret, err
 }
 
-//ListUsers lists all users
+// ListUsers lists all users
 func (c *Client) ListUsers() (*Users, error) {
 	url := usersPath()
 	ret := &Users{}
@@ -288,7 +288,7 @@ func (c *Client) GetUser(usrid string) (*User, error) {
 	return ret, err
 }
 
-//CreateUser creates a user
+// CreateUser creates a user
 func (c *Client) CreateUser(usr User) (*User, error) {
 	url := usersPath()
 	ret := &User{}
@@ -296,7 +296,7 @@ func (c *Client) CreateUser(usr User) (*User, error) {
 	return ret, err
 }
 
-//UpdateUser updates user information
+// UpdateUser updates user information
 func (c *Client) UpdateUser(userid string, obj User) (*User, error) {
 	url := userPath(userid)
 	ret := &User{}
@@ -304,7 +304,7 @@ func (c *Client) UpdateUser(userid string, obj User) (*User, error) {
 	return ret, err
 }
 
-//DeleteUser deletes the specified user
+// DeleteUser deletes the specified user
 func (c *Client) DeleteUser(userid string) (*http.Header, error) {
 	url := userPath(userid)
 	ret := &http.Header{}
@@ -312,7 +312,7 @@ func (c *Client) DeleteUser(userid string) (*http.Header, error) {
 	return ret, err
 }
 
-//ListResources lists all resources
+// ListResources lists all resources
 func (c *Client) ListResources() (*Resources, error) {
 	url := resourcesPath()
 	ret := &Resources{}
@@ -320,7 +320,7 @@ func (c *Client) ListResources() (*Resources, error) {
 	return ret, err
 }
 
-//GetResourceByType gets a resource by type
+// GetResourceByType gets a resource by type
 func (c *Client) GetResourceByType(resourcetype string, resourceid string) (*Resource, error) {
 	url := resourcePath(resourcetype, resourceid)
 	ret := &Resource{}
@@ -328,7 +328,7 @@ func (c *Client) GetResourceByType(resourcetype string, resourceid string) (*Res
 	return ret, err
 }
 
-//ListResourcesByType list resources by type
+// ListResourcesByType list resources by type
 func (c *Client) ListResourcesByType(resourcetype string) (*Resources, error) {
 	url := resourcesTypePath(resourcetype)
 	ret := &Resources{}

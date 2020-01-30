@@ -8,10 +8,10 @@ import (
 
 // Volume object
 type Volume struct {
-	ID         string           `json:"id,omitempty"`
-	PBType     string           `json:"type,omitempty"`
-	Href       string           `json:"href,omitempty"`
-	Metadata   *Metadata        `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Properties VolumeProperties `json:"properties,omitempty"`
 	Response   string           `json:"Response,omitempty"`
 	Headers    *http.Header     `json:"headers,omitempty"`
@@ -94,7 +94,7 @@ func (c *Client) CreateSnapshot(dcid string, volid string, name string, descript
 
 // RestoreSnapshot restores a volume with provided snapshot
 func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (*http.Header, error) {
-	ret := &Header{}
+	ret := &Headers{}
 	req := c.Client.R().
 		SetFormData(map[string]string{"snapshotId": snapshotID}).
 		SetResult(ret)

@@ -33,7 +33,7 @@ type S3Key struct {
 
 	// The metadata for the S3 key
 	// Read Only: true
-	Metadata *Metadata `json:"metadata,omitempty"`
+	*Metadata `json:"metadata,omitempty"`
 
 	// The properties of the S3 key
 	// Read Only: false

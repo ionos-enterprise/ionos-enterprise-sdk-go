@@ -4,19 +4,19 @@ import (
 	"net/http"
 )
 
-//IPBlock object
+// IPBlock object
 type IPBlock struct {
-	ID         string            `json:"id,omitempty"`
-	PBType     string            `json:"type,omitempty"`
-	Href       string            `json:"href,omitempty"`
-	Metadata   *Metadata         `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Properties IPBlockProperties `json:"properties,omitempty"`
 	Response   string            `json:"Response,omitempty"`
 	Headers    *http.Header      `json:"headers,omitempty"`
 	StatusCode int               `json:"statuscode,omitempty"`
 }
 
-//IPBlockProperties object
+// IPBlockProperties object
 type IPBlockProperties struct {
 	Name        string       `json:"name,omitempty"`
 	IPs         []string     `json:"ips,omitempty"`
@@ -35,7 +35,7 @@ type IPConsumer struct {
 	DatacenterName string `json:"datacenterName,omitempty"`
 }
 
-//IPBlocks object
+// IPBlocks object
 type IPBlocks struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`
@@ -46,7 +46,7 @@ type IPBlocks struct {
 	StatusCode int          `json:"statuscode,omitempty"`
 }
 
-//ListIPBlocks lists all IP blocks
+// ListIPBlocks lists all IP blocks
 func (c *Client) ListIPBlocks() (*IPBlocks, error) {
 	url := ipblocksPath()
 	ret := &IPBlocks{}
@@ -54,7 +54,7 @@ func (c *Client) ListIPBlocks() (*IPBlocks, error) {
 	return ret, err
 }
 
-//ReserveIPBlock creates an IP block
+// ReserveIPBlock creates an IP block
 func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
 	url := ipblocksPath()
 	ret := &IPBlock{}
@@ -62,7 +62,7 @@ func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
 	return ret, err
 }
 
-//GetIPBlock gets an IP blocks
+// GetIPBlock gets an IP blocks
 func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
 	url := ipblockPath(ipblockid)
 	ret := &IPBlock{}
@@ -78,7 +78,7 @@ func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBl
 	return ret, err
 }
 
-//ReleaseIPBlock deletes an IP block
+// ReleaseIPBlock deletes an IP block
 func (c *Client) ReleaseIPBlock(ipblockid string) (*http.Header, error) {
 	url := ipblockPath(ipblockid)
 	ret := &http.Header{}

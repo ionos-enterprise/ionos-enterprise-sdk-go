@@ -4,19 +4,19 @@ import (
 	"net/http"
 )
 
-//Image object
+// Image object
 type Image struct {
-	ID         string          `json:"id,omitempty"`
-	PBType     string          `json:"type,omitempty"`
-	Href       string          `json:"href,omitempty"`
-	Metadata   *Metadata       `json:"metadata,omitempty"`
+	ID         string `json:"id,omitempty"`
+	PBType     string `json:"type,omitempty"`
+	Href       string `json:"href,omitempty"`
+	*Metadata  `json:"metadata,omitempty"`
 	Properties ImageProperties `json:"properties,omitempty"`
 	Response   string          `json:"Response,omitempty"`
 	Headers    *http.Header    `json:"headers,omitempty"`
 	StatusCode int             `json:"statuscode,omitempty"`
 }
 
-//ImageProperties object
+// ImageProperties object
 type ImageProperties struct {
 	Name                string       `json:"name,omitempty"`
 	Description         string       `json:"description,omitempty"`
@@ -41,7 +41,7 @@ type ImageProperties struct {
 	StatusCode          int          `json:"statuscode,omitempty"`
 }
 
-//Images object
+// Images object
 type Images struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`
@@ -52,7 +52,7 @@ type Images struct {
 	StatusCode int          `json:"statuscode,omitempty"`
 }
 
-//Cdroms object
+// Cdroms object
 type Cdroms struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`

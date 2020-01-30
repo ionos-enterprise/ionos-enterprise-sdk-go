@@ -33,7 +33,7 @@ type BackupUnit struct {
 
 	// The metadata for the backup unit
 	// Read Only: true
-	Metadata *Metadata `json:"metadata,omitempty"`
+	*Metadata `json:"metadata,omitempty"`
 
 	Properties *BackupUnitProperties `json:"properties,omitempty"`
 }
