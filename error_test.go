@@ -2,12 +2,11 @@ package profitbricks
 
 import (
 	"bytes"
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"net/http"
 	"testing"
-
-	"github.com/jarcoal/httpmock"
-	"github.com/stretchr/testify/suite"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -105,6 +104,7 @@ func (s *ErrorSuite) Test_BadGatewayError() {
 		Status:     http.StatusText(http.StatusBadGateway),
 	}
 	mRsp.Header.Set("Content-Type", "text/html")
+	s.c.SetRetryCount(0)
 	httpmock.RegisterResponder(http.MethodGet, "=~/datacenters", httpmock.ResponderFromResponse(mRsp))
 	_, err := s.c.ListDatacenters()
 	s.Error(err)
