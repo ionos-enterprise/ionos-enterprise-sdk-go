@@ -1,26 +1,25 @@
 package profitbricks
 
-import "testing"
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
-func Test_cache_Add(t *testing.T) {
-	type fields struct {
-		typeCache map[string]map[string]cachable
+func Test_Cache_DeepCopy(t *testing.T) {
+	c := newCache()
+	vol := &Volume{
+		ID: "132",
+		Metadata: &Metadata{
+			CreatedBy: "ntr0",
+		},
 	}
-	type args struct {
-		obj cachable
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := &cache{
-				typeCache: tt.fields.typeCache,
-			}
-		})
-	}
+	c.Add("vol", 2, vol)
+	nVol := c.Get("vol", 2)
+
+	assert.Equal(t, vol, nVol)
+
+	// modify metadata
+	vol.Metadata.CreatedBy = "0rtn"
+	nVol = c.Get("vol", 2)
+	assert.Equal(t, vol, nVol)
 }

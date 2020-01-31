@@ -54,6 +54,17 @@ type Volumes struct {
 	StatusCode int          `json:"statuscode,omitempty"`
 }
 
+func (v *Volume) DeepCopy() *Volume {
+	newV := &(*v)
+	if v.Metadata != nil {
+		*newV.Metadata = *v.Metadata
+	}
+	if v.Headers != nil {
+		*newV.Headers = *v.Headers
+	}
+	return v
+}
+
 // ListVolumes returns a Collection struct for volumes in the Datacenter
 func (c *Client) ListVolumes(dcid string) (*Volumes, error) {
 	ret := &Volumes{}

@@ -13,6 +13,8 @@ type Client struct {
 	// AuthApiUrl will be used by methods talking to the auth api by sending absolute urls
 	AuthApiUrl  string
 	CloudApiUrl string
+	cache       *cache
+	cacheHits   int
 }
 
 const (
@@ -55,6 +57,7 @@ func RestyClient(username, password, token string) *Client {
 			}
 			return false
 		})
+	c.cache = newCache()
 	return c
 }
 
@@ -70,6 +73,11 @@ func (c *Client) SetDebug(debug bool) {
 // returned. Therefore nested structures may be nil.
 func (c *Client) SetDepth(depth int) {
 	c.Client.SetQueryParam("depth", strconv.Itoa(depth))
+}
+
+// GetDepth returns the currently configured setting for the depth query parameter
+func (c *Client) GetDepth() (int, error) {
+	return strconv.Atoi(c.Client.QueryParam.Get("depth"))
 }
 
 // SetPretty toggles if the data retrieved from the api will be delivered pretty printed.

@@ -32,13 +32,44 @@ func (c *Client) DoWithRequest(request *resty.Request, method, url string, expec
 	}
 	return validateResponse(rsp, expectedStatus)
 }
+func (c *Client) Get(url string, item interface{}, expectedStatus int) error {
+	req := c.R().SetResult(item)
+	var cached cachable
+	if _, ok := item.(cachable); ok {
 
-func (c *Client) GetOK(url string, result interface{}) error {
-	return c.Do(url, resty.MethodGet, nil, result, http.StatusOK)
+		// if someone messed with depth, we simply do not use the cached entries
+		if depth, err := c.GetDepth(); err == nil {
+			cached = c.cache.Get(url, depth)
+		}
+		if cached != nil {
+			if md := cached.GetMetadata(); md != nil {
+				req.SetHeader("If-None-Match", md.Etag)
+			}
+		}
+	}
+
+	rsp, err := req.Get(url)
+	if err != nil {
+		return NewClientError(HttpClientError, fmt.Sprintf("[%s] %s: Client error %s", "GET", url, err))
+	}
+	if rsp.StatusCode() == http.StatusNotModified {
+		reflect.ValueOf(item).Elem().Set(reflect.ValueOf(cached).Elem())
+		c.cacheHits++
+		return nil
+	}
+
+	if err := validateResponse(rsp, expectedStatus); err != nil {
+		return err
+	}
+	// if someone messed with depth, we do not cache the result
+	if depth, err := c.GetDepth(); err == nil {
+		c.cache.Add(url, depth, item.(cachable))
+	}
+
+	return nil
 }
-
-func (c *Client) Get(url string, result interface{}, expectedStatus int) error {
-	return c.Do(url, resty.MethodGet, nil, result, expectedStatus)
+func (c *Client) GetOK(url string, result interface{}) error {
+	return c.Get(url, result, http.StatusOK)
 }
 
 func (c *Client) Post(
