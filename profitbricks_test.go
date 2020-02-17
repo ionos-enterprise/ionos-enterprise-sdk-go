@@ -22,7 +22,9 @@ func (s *SuiteClient) Test_Retry() {
 			called++
 			switch called {
 			case 1:
-				return httpmock.NewBytesResponse(http.StatusTooManyRequests, []byte{}), nil
+				rsp := httpmock.NewBytesResponse(http.StatusTooManyRequests, []byte{})
+				rsp.Header.Set("Retry-After", "1") // Overruled by RetryMaxWaitTime of 2 ns
+				return rsp, nil
 			case 2:
 				return httpmock.NewBytesResponse(http.StatusBadGateway, []byte{}), nil
 			case 3:
