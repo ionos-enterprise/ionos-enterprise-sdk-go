@@ -2,11 +2,12 @@ package profitbricks
 
 import (
 	"bytes"
-	"github.com/jarcoal/httpmock"
-	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/suite"
 
 	"github.com/stretchr/testify/assert"
 )

@@ -1,11 +1,12 @@
 package profitbricks
 
 import (
-	"github.com/jarcoal/httpmock"
-	"github.com/stretchr/testify/suite"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/suite"
 )
 
 type SuiteClient struct {
