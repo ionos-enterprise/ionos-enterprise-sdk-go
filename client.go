@@ -91,6 +91,10 @@ func validateResponse(rsp *resty.Response, expectedStatus ...int) error {
 	if rsp.StatusCode() >= 400 {
 		e := rsp.Error().(*ApiError)
 		e.RawBody = rsp.Body()
+		// if content type was not json, the api error is empty
+		if e.HTTPStatus == 0 {
+			e.HTTPStatus = rsp.StatusCode()
+		}
 		return *e
 
 	}
