@@ -1,7 +1,9 @@
 package profitbricks
 
 import (
+	"context"
 	"net/http"
+	"time"
 
 	resty "github.com/go-resty/resty/v2"
 )
@@ -100,4 +102,31 @@ func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (
 		SetResult(ret)
 	err := c.DoWithRequest(req, resty.MethodPost, restoreSnapshotPath(dcid, volid), http.StatusAccepted)
 	return ret.GetHeader(), err
+}
+
+// CreateSnapshotAndWait creates a volume snapshot and waits for the request to
+// complete. The default timeout is 15 minutes.
+func (c *Client) CreateSnapshotAndWait(dcId, volId, name, description string, timeout time.Duration) (*Snapshot, error) {
+	snapshot, err := c.CreateSnapshot(dcId, volId, name, description)
+	if err != nil {
+		return nil, err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), DurationOrDefault(timeout, 15*time.Minute))
+	defer cancel()
+	if err := c.WaitTillProvisionedOrCanceled(ctx, snapshot.Headers.Get("location")); err != nil {
+		return snapshot, err
+	}
+	return c.GetSnapshot(snapshot.ID)
+}
+
+// RestoreSnapshotAndWait restores a volume with the provided snapshot and
+// waits for the request to complete. The default timeout is 15 minutes.
+func (c *Client) RestoreSnapshotAndWait(dcId, volId, snapshotId string, timeout time.Duration) error {
+	ret, err := c.RestoreSnapshot(dcId, volId, snapshotId)
+	if err != nil {
+		return err
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), DurationOrDefault(timeout, 15*time.Minute))
+	defer cancel()
+	return c.WaitTillProvisionedOrCanceled(ctx, ret.Get("location"))
 }

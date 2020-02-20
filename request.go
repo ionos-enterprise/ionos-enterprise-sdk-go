@@ -11,6 +11,13 @@ import (
 	resty "github.com/go-resty/resty/v2"
 )
 
+const (
+	RequestStatusQueued  = "QUEUED"
+	RequestStatusRunning = "RUNNING"
+	RequestStatusFailed  = "FAILED"
+	RequestStatusDone    = "DONE"
+)
+
 // RequestStatus object
 type RequestStatus struct {
 	ID         string                `json:"id,omitempty"`
@@ -86,6 +93,15 @@ type RequestListFilter struct {
 // NewRequestListFilter creates a new RequestListFilter
 func NewRequestListFilter() *RequestListFilter {
 	return &RequestListFilter{Values: url.Values{}}
+}
+
+// Clone copies the embedded url.Values over to a new RequestListFilter
+func (f *RequestListFilter) Clone() *RequestListFilter {
+	values := make(url.Values, len(f.Values))
+	for k, v := range f.Values {
+		values[k] = v
+	}
+	return &RequestListFilter{Values: values}
 }
 
 // AddUrl adds an url filter to the request list filter

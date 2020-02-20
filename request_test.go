@@ -131,3 +131,11 @@ func TestRequestListFilter_AddRequestStatus(t *testing.T) {
 	r.AddRequestStatus("DONE")
 	assert.Equal(t, "DONE", r.Get("filter.status"))
 }
+
+func TestRequestListFilter_Clone(t *testing.T) {
+	r := NewRequestListFilter()
+	r.AddMethod("POST")
+	r.AddUrl("foo/bar")
+	c := r.Clone()
+	assert.Equal(t, r, c)
+}
