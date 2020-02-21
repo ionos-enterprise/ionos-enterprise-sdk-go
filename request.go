@@ -232,9 +232,9 @@ func (c *Client) IsRequestFinished(path string) (bool, error) {
 		return false, err
 	}
 	switch request.Metadata.Status {
-	case "DONE":
+	case RequestStatusDone:
 		return true, nil
-	case "FAILED":
+	case RequestStatusFailed:
 		return true, NewClientError(
 			RequestFailed,
 			fmt.Sprintf("Request %s failed: %s", request.ID, request.Metadata.Message),
@@ -258,9 +258,9 @@ func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string)
 			return err
 		}
 		switch status.Metadata.Status {
-		case "DONE":
+		case RequestStatusDone:
 			return nil
-		case "FAILED":
+		case RequestStatusFailed:
 			return NewClientError(
 				RequestFailed,
 				fmt.Sprintf("Request %s failed: %s", status.ID, status.Metadata.Message),
@@ -294,7 +294,7 @@ type RequestSelector func(Request) bool
 // IsRequestStatusFinished is true if the requests Status is neither QUEUED or RUNNING.
 func IsRequestStatusFinished(r Request) bool {
 	switch r.Metadata.RequestStatus.Metadata.Status {
-	case "QUEUED", "RUNNING":
+	case RequestStatusQueued, RequestStatusRunning:
 		return false
 	}
 	return true
