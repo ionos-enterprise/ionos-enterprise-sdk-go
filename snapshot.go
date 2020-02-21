@@ -141,10 +141,10 @@ func SnapshotByDescription(description string) SnapshotSelector {
 }
 
 // SelectExactSnapshot concatenates the provided selectors with logical AND.
-func SelectExactSnapshot(matchers ...SnapshotSelector) SnapshotSelector {
+func SelectExactSnapshot(selectors ...SnapshotSelector) SnapshotSelector {
 	return func(snapshot *Snapshot) bool {
-		for _, matcher := range matchers {
-			if !matcher(snapshot) {
+		for _, selector := range selectors {
+			if !selector(snapshot) {
 				return false
 			}
 		}
@@ -153,10 +153,10 @@ func SelectExactSnapshot(matchers ...SnapshotSelector) SnapshotSelector {
 }
 
 // SelectAnySnapshot concatenates the provided selectors with logical OR.
-func SelectAnySnapshot(matchers ...SnapshotSelector) SnapshotSelector {
+func SelectAnySnapshot(selectors ...SnapshotSelector) SnapshotSelector {
 	return func(snapshot *Snapshot) bool {
-		for _, matcher := range matchers {
-			if matcher(snapshot) {
+		for _, selector := range selectors {
+			if selector(snapshot) {
 				return true
 			}
 		}
