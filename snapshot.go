@@ -2,6 +2,7 @@ package profitbricks
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"time"
 )
@@ -179,4 +180,42 @@ func (c *Client) HasDeleteSnapshotInProgress(snapshotID string) (bool, error) {
 		return false, err
 	}
 	return len(result.Items) > 0, nil
+}
+
+// IsSnapshotInUse checks whether a snapshot is being used by either an existing volume or a volume
+// that is in the process being created (has an active request in the queue).
+func (c *Client) IsSnapshotInUse(dcId, volumeId, snapshotId string) (bool, error) {
+	volumes, err := c.ListVolumes(dcId)
+	if err != nil {
+		return false, nil
+	}
+	for _, volume := range volumes.Items {
+		if volume.Properties.Image == snapshotId {
+			return true, nil
+		}
+	}
+
+	var requests []Request
+	f := NewRequestListFilter().WithUrl(volumesPath(dcId)).WithMethod(http.MethodPost)
+	queued, err := c.ListRequestsWithFilter(f.Clone().WithRequestStatus(RequestStatusQueued))
+	if err != nil {
+		return false, err
+	}
+	requests = append(requests, queued.Items...)
+	running, err := c.ListRequestsWithFilter(f.Clone().WithRequestStatus(RequestStatusRunning))
+	if err != nil {
+		return false, err
+	}
+	requests = append(requests, running.Items...)
+
+	for _, request := range requests {
+		// Assume that the request properties contain a valid volume
+		var volume Volume
+		_ = json.Unmarshal([]byte(request.Properties.Body), &volume)
+		if volume.Properties.Image == snapshotId {
+			return true, nil
+		}
+	}
+
+	return false, nil
 }
