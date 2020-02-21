@@ -130,3 +130,24 @@ func (c *Client) RestoreSnapshotAndWait(dcId, volId, snapshotId string, timeout 
 	defer cancel()
 	return c.WaitTillProvisionedOrCanceled(ctx, ret.Get("location"))
 }
+
+// HasCreateSnapshotInProgress tries to find an active create-snapshot request (QUEUED or RUNNING)
+// for the given volume.
+// Even thought the snapshot lock prevents mulitple requests from being processed at the same time,
+// this information is only visible by inspecting the request queue. This method can be used to
+// verify that the snapshot lock is not held by any other client request.
+func (c *Client) HasCreateSnapshotInProgress(dcId, volId string) (bool, error) {
+	f := NewRequestListFilter().WithUrl(createSnapshotPath(dcId, volId)).WithMethod(http.MethodPost)
+	result, err := c.ListRequestsWithFilter(f.Clone().WithRequestStatus(RequestStatusQueued))
+	if err != nil {
+		return false, err
+	}
+	if len(result.Items) > 0 {
+		return true, nil
+	}
+	result, err = c.ListRequestsWithFilter(f.Clone().WithRequestStatus(RequestStatusRunning))
+	if err != nil {
+		return false, err
+	}
+	return len(result.Items) > 0, nil
+}
