@@ -24,3 +24,33 @@ func (s *SnapshotSuite) Test_Delete() {
 	s.NoError(err)
 	s.Equal("status", rsp.Get("location"))
 }
+
+func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Exact() {
+	rsp := loadTestData(s.T(), "list_snapshots.json")
+	mResp := makeJsonResponse(http.StatusOK, rsp)
+	httpmock.RegisterResponder(http.MethodGet, `=~/snapshots`, httpmock.ResponderFromResponse(mResp))
+
+	snapshots, err := s.c.ListSnapshotsWithSelector(
+		SelectExactSnapshot(
+			SnapshotByState(StateAvailable),
+			SnapshotByName("test-snapshot-03"),
+		),
+	)
+	s.NoError(err)
+	s.Len(snapshots, 0)
+}
+
+func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Any() {
+	rsp := loadTestData(s.T(), "list_snapshots.json")
+	mResp := makeJsonResponse(http.StatusOK, rsp)
+	httpmock.RegisterResponder(http.MethodGet, `=~/snapshots`, httpmock.ResponderFromResponse(mResp))
+
+	snapshots, err := s.c.ListSnapshotsWithSelector(
+		SelectAnySnapshot(
+			SnapshotByDescription("some description"),
+			SnapshotByName("test-snapshot-02"),
+		),
+	)
+	s.NoError(err)
+	s.Len(snapshots, 1)
+}
