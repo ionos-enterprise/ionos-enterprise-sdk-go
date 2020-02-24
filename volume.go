@@ -104,6 +104,23 @@ func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (
 	return ret.GetHeader(), err
 }
 
+// CreateVolumeAndWait creates a volume and waits for the request to complete.
+// The default timeout is 5 minutes.
+func (c *Client) CreateVolumeAndWait(dcid string, request Volume, timeout time.Duration) (*Volume, error) {
+	volume, err := c.CreateVolume(dcid, request)
+	if err != nil {
+		return nil, err
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), DurationOrDefault(timeout, 5*time.Minute))
+	defer cancel()
+	if err := c.WaitTillProvisionedOrCanceled(ctx, volume.Headers.Get("location")); err != nil {
+		return volume, err
+	}
+
+	return c.GetVolume(dcid, volume.ID)
+}
+
 // CreateSnapshotAndWait creates a volume snapshot and waits for the request to
 // complete. The default timeout is 15 minutes.
 func (c *Client) CreateSnapshotAndWait(dcId, volId, name, description string, timeout time.Duration) (*Snapshot, error) {
