@@ -1,10 +1,8 @@
 package profitbricks
 
 import (
-	"context"
-	"encoding/json"
 	"net/http"
-	"time"
+	"strings"
 )
 
 //Snapshot object
@@ -180,40 +178,13 @@ func (c *Client) HasDeleteSnapshotInProgress(snapshotID string) (bool, error) {
 	return len(result.Items) > 0, nil
 }
 
-// IsSnapshotInUse checks whether a snapshot is being used by either an existing volume or a volume
-// that is in the process being created (has an active request in the queue).
-func (c *Client) IsSnapshotInUse(dcId, volumeId, snapshotId string) (bool, error) {
-	volumes, err := c.ListVolumes(dcId)
-	if err != nil {
-		return false, nil
+// IsSnapshotInUseError returns true if the given error indicates that a snapshot
+// is being referenced by a volume that is currently being created.
+func IsSnapshotInUseError(err error) bool {
+	apiErr, ok := err.(ApiError)
+	if !ok {
+		return false
 	}
-	for _, volume := range volumes.Items {
-		if volume.Properties.Image == snapshotId {
-			return true, nil
-		}
-	}
-
-	var requests []Request
-	f := NewRequestListFilter().WithUrl(volumesPath(dcId)).WithMethod(http.MethodPost)
-	queued, err := c.ListRequestsWithFilter(f.Clone().WithRequestStatus(RequestStatusQueued))
-	if err != nil {
-		return false, err
-	}
-	requests = append(requests, queued.Items...)
-	running, err := c.ListRequestsWithFilter(f.Clone().WithRequestStatus(RequestStatusRunning))
-	if err != nil {
-		return false, err
-	}
-	requests = append(requests, running.Items...)
-
-	for _, request := range requests {
-		// Assume that the request properties contain a valid volume
-		var volume Volume
-		_ = json.Unmarshal([]byte(request.Properties.Body), &volume)
-		if volume.Properties.Image == snapshotId {
-			return true, nil
-		}
-	}
-
-	return false, nil
+	return apiErr.HTTPStatus == http.StatusUnprocessableEntity &&
+		strings.Contains(apiErr.String(), "[VDC-18-0] An unexpected error occurred.")
 }
