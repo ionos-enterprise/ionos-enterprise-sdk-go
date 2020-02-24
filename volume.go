@@ -150,7 +150,7 @@ func (c *Client) RestoreSnapshotAndWait(dcId, volId, snapshotId string, timeout 
 
 // HasCreateSnapshotInProgress tries to find an active create-snapshot request (QUEUED or RUNNING)
 // for the given volume.
-// Even thought the snapshot lock prevents mulitple requests from being processed at the same time,
+// Even though the snapshot lock prevents mulitple requests from being processed at the same time,
 // this information is only visible by inspecting the request queue. This method can be used to
 // verify that the snapshot lock is not held by any other client request.
 func (c *Client) HasCreateSnapshotInProgress(dcId, volId string) (bool, error) {
