@@ -82,15 +82,13 @@ func (c *Client) UpdateSnapshot(snapshotID string, request SnapshotProperties) (
 }
 
 // DeleteSnapshotAndWait deletes a specified snapshot and waits for the request
-// to complete. The default timeout is 10 minutes.
-func (c *Client) DeleteSnapshotAndWait(snapshotID string, timeout time.Duration) error {
+// to complete.
+func (c *Client) DeleteSnapshotAndWait(snapshotID string) error {
 	ret, err := c.DeleteSnapshot(snapshotID)
 	if err != nil {
 		return err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), DurationOrDefault(timeout, 10*time.Minute))
-	defer cancel()
-	return c.WaitTillProvisionedOrCanceled(ctx, ret.Get("location"))
+	return c.WaitTillProvisioned(ret.Get("location"))
 }
 
 // ListSnapshotsWithSelector retrieves all snapshots and performs client-side
