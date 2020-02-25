@@ -138,4 +138,9 @@ func TestRequestListFilter_Clone(t *testing.T) {
 	r.AddUrl("foo/bar")
 	c := r.Clone()
 	assert.Equal(t, r, c)
+
+	r.AddBody("should not be in copy")
+	assert.NotEqual(t, r, c)
+	assert.Contains(t, r.Values, "filter.body")
+	assert.NotContains(t, c.Values, "filter.body")
 }

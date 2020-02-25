@@ -25,7 +25,22 @@ func (s *SnapshotSuite) Test_Delete() {
 	s.Equal("status", rsp.Get("location"))
 }
 
-func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Exact() {
+func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Exact_Match() {
+	rsp := loadTestData(s.T(), "list_snapshots.json")
+	mResp := makeJsonResponse(http.StatusOK, rsp)
+	httpmock.RegisterResponder(http.MethodGet, `=~/snapshots`, httpmock.ResponderFromResponse(mResp))
+
+	snapshots, err := s.c.ListSnapshotsWithSelector(
+		SelectExactSnapshot(
+			SnapshotByState(StateAvailable),
+			SnapshotByName("test-snapshot-02"),
+		),
+	)
+	s.NoError(err)
+	s.Len(snapshots, 1)
+}
+
+func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Exact_NoMatch() {
 	rsp := loadTestData(s.T(), "list_snapshots.json")
 	mResp := makeJsonResponse(http.StatusOK, rsp)
 	httpmock.RegisterResponder(http.MethodGet, `=~/snapshots`, httpmock.ResponderFromResponse(mResp))
@@ -40,7 +55,7 @@ func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Exact() {
 	s.Len(snapshots, 0)
 }
 
-func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Any() {
+func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Any_Match() {
 	rsp := loadTestData(s.T(), "list_snapshots.json")
 	mResp := makeJsonResponse(http.StatusOK, rsp)
 	httpmock.RegisterResponder(http.MethodGet, `=~/snapshots`, httpmock.ResponderFromResponse(mResp))
@@ -53,4 +68,19 @@ func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Any() {
 	)
 	s.NoError(err)
 	s.Len(snapshots, 1)
+}
+
+func (s *SnapshotSuite) Test_ListSnapshotsWithSelector_Any_NoMatch() {
+	rsp := loadTestData(s.T(), "list_snapshots.json")
+	mResp := makeJsonResponse(http.StatusOK, rsp)
+	httpmock.RegisterResponder(http.MethodGet, `=~/snapshots`, httpmock.ResponderFromResponse(mResp))
+
+	snapshots, err := s.c.ListSnapshotsWithSelector(
+		SelectAnySnapshot(
+			SnapshotByDescription("my custom description"),
+			SnapshotByName("test-snapshot-04"),
+		),
+	)
+	s.NoError(err)
+	s.Len(snapshots, 0)
 }
