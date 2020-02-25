@@ -9,6 +9,8 @@ const (
 	StateBusy = "BUSY"
 	// Resource is ready to be used
 	StateAvailable = "AVAILABLE"
+	// Resource has been de-provisioned
+	StateInactive = "INACTIVE"
 )
 
 // Datacenter represents Virtual Data Center

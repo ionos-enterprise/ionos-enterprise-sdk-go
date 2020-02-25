@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"net/http"
-	"strings"
 )
 
 //Snapshot object
@@ -186,6 +185,5 @@ func IsSnapshotInUseError(err error) bool {
 	if !ok {
 		return false
 	}
-	return apiErr.HTTPStatus == http.StatusUnprocessableEntity &&
-		strings.Contains(apiErr.String(), "[VDC-18-0] An unexpected error occurred.")
+	return apiErr.HTTPStatus == http.StatusUnprocessableEntity && apiErr.HasErrorCode("VDC-18-0")
 }

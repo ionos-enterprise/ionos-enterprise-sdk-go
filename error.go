@@ -7,6 +7,7 @@ package profitbricks
 import (
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 type ClientErrorType int
@@ -139,4 +140,13 @@ func (e ApiError) HttpStatusCode() int {
 
 func (e ApiError) Body() []byte {
 	return e.RawBody
+}
+
+func (e ApiError) HasErrorCode(code string) bool {
+	for _, m := range e.Messages {
+		if strings.Contains(m.ErrorCode, code) {
+			return true
+		}
+	}
+	return false
 }
