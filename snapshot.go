@@ -96,15 +96,13 @@ func (c *Client) ListSnapshotsWithSelector(selector SnapshotSelector) ([]Snapsho
 		return nil, fmt.Errorf("missing selector")
 	}
 
-	url := snapshotsPath()
-	ret := &Snapshots{}
-	err := c.Get(url, ret, http.StatusOK)
+	snapshots, err := c.ListSnapshots()
 	if err != nil {
 		return nil, err
 	}
 
 	var result []Snapshot
-	for _, snapshot := range ret.Items {
+	for _, snapshot := range snapshots.Items {
 		if !selector(&snapshot) {
 			continue
 		}
