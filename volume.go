@@ -3,7 +3,6 @@ package profitbricks
 import (
 	"context"
 	"net/http"
-	"time"
 
 	resty "github.com/go-resty/resty/v2"
 )
@@ -131,7 +130,7 @@ func (c *Client) CreateSnapshotAndWait(ctx context.Context, dcId, volId, name, d
 
 // RestoreSnapshotAndWait restores a volume with the provided snapshot and
 // waits for the request to complete.
-func (c *Client) RestoreSnapshotAndWait(ctx context.Context, dcId, volId, snapshotId string, timeout time.Duration) error {
+func (c *Client) RestoreSnapshotAndWait(ctx context.Context, dcId, volId, snapshotId string) error {
 	ret, err := c.RestoreSnapshot(dcId, volId, snapshotId)
 	if err != nil {
 		return err
