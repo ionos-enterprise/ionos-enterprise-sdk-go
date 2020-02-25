@@ -95,7 +95,7 @@ func NewRequestListFilter() *RequestListFilter {
 	return &RequestListFilter{Values: url.Values{}}
 }
 
-// Clone copies the embedded url.Values over to a new RequestListFilter
+// Clone clones the RequestListFilter
 func (f *RequestListFilter) Clone() *RequestListFilter {
 	values := make(url.Values, len(f.Values))
 	for k, v := range f.Values {

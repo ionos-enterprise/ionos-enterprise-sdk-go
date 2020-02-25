@@ -105,31 +105,24 @@ func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (
 }
 
 // CreateVolumeAndWait creates a volume and waits for the request to complete.
-// The default timeout is 5 minutes.
-func (c *Client) CreateVolumeAndWait(dcid string, request Volume, timeout time.Duration) (*Volume, error) {
+func (c *Client) CreateVolumeAndWait(ctx context.Context, dcid string, request Volume) (*Volume, error) {
 	volume, err := c.CreateVolume(dcid, request)
 	if err != nil {
 		return nil, err
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), DurationOrDefault(timeout, 5*time.Minute))
-	defer cancel()
 	if err := c.WaitTillProvisionedOrCanceled(ctx, volume.Headers.Get("location")); err != nil {
 		return volume, err
 	}
-
 	return c.GetVolume(dcid, volume.ID)
 }
 
 // CreateSnapshotAndWait creates a volume snapshot and waits for the request to
-// complete. The default timeout is 15 minutes.
-func (c *Client) CreateSnapshotAndWait(dcId, volId, name, description string, timeout time.Duration) (*Snapshot, error) {
+// complete.
+func (c *Client) CreateSnapshotAndWait(ctx context.Context, dcId, volId, name, description string) (*Snapshot, error) {
 	snapshot, err := c.CreateSnapshot(dcId, volId, name, description)
 	if err != nil {
 		return nil, err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), DurationOrDefault(timeout, 15*time.Minute))
-	defer cancel()
 	if err := c.WaitTillProvisionedOrCanceled(ctx, snapshot.Headers.Get("location")); err != nil {
 		return snapshot, err
 	}
@@ -137,23 +130,21 @@ func (c *Client) CreateSnapshotAndWait(dcId, volId, name, description string, ti
 }
 
 // RestoreSnapshotAndWait restores a volume with the provided snapshot and
-// waits for the request to complete. The default timeout is 15 minutes.
-func (c *Client) RestoreSnapshotAndWait(dcId, volId, snapshotId string, timeout time.Duration) error {
+// waits for the request to complete.
+func (c *Client) RestoreSnapshotAndWait(ctx context.Context, dcId, volId, snapshotId string, timeout time.Duration) error {
 	ret, err := c.RestoreSnapshot(dcId, volId, snapshotId)
 	if err != nil {
 		return err
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), DurationOrDefault(timeout, 15*time.Minute))
-	defer cancel()
 	return c.WaitTillProvisionedOrCanceled(ctx, ret.Get("location"))
 }
 
-// HasCreateSnapshotInProgress tries to find an active create-snapshot request (QUEUED or RUNNING)
-// for the given volume.
+// IsSnapshotCreationRequested checks if an active create-snapshot request (QUEUED or RUNNING)
+// exists for the given volume.
 // Even though the snapshot lock prevents mulitple requests from being processed at the same time,
 // this information is only visible by inspecting the request queue. This method can be used to
 // verify that the snapshot lock is not held by any other client request.
-func (c *Client) HasCreateSnapshotInProgress(dcId, volId string) (bool, error) {
+func (c *Client) IsSnapshotCreationRequested(dcId, volId string) (bool, error) {
 	f := NewRequestListFilter().WithUrl(createSnapshotPath(dcId, volId)).WithMethod(http.MethodPost)
 	result, err := c.ListRequestsWithFilter(f.Clone().WithRequestStatus(RequestStatusQueued))
 	if err != nil {

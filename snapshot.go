@@ -161,8 +161,9 @@ func SelectAnySnapshot(selectors ...SnapshotSelector) SnapshotSelector {
 	}
 }
 
-// HasDeleteSnapshotInProgress tries to find an active delete snapshot request (QUEUED or RUNNING).
-func (c *Client) HasDeleteSnapshotInProgress(snapshotID string) (bool, error) {
+// IsSnapshotDeletionRequested checks if there is any active delete snapshot request
+// (QUEUED or RUNNING).
+func (c *Client) IsSnapshotDeletionRequested(snapshotID string) (bool, error) {
 	f := NewRequestListFilter().WithUrl(snapshotPath(snapshotID)).WithMethod(http.MethodDelete)
 	result, err := c.ListRequestsWithFilter(f.Clone().WithRequestStatus(RequestStatusQueued))
 	if err != nil {
