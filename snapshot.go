@@ -186,5 +186,6 @@ func IsSnapshotInUseError(err error) bool {
 	if !ok {
 		return false
 	}
-	return apiErr.HTTPStatus == http.StatusUnprocessableEntity && apiErr.HasErrorCode("VDC-18-0")
+	return apiErr.HTTPStatus == http.StatusUnprocessableEntity &&
+		apiErr.HasErrorCode(SnapshotInUseErrorCode)
 }

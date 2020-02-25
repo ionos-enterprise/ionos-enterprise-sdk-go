@@ -7,7 +7,10 @@ package profitbricks
 import (
 	"fmt"
 	"net/http"
-	"strings"
+)
+
+const (
+	SnapshotInUseErrorCode = "200"
 )
 
 type ClientErrorType int
@@ -144,7 +147,7 @@ func (e ApiError) Body() []byte {
 
 func (e ApiError) HasErrorCode(code string) bool {
 	for _, m := range e.Messages {
-		if strings.Contains(m.ErrorCode, code) {
+		if m.ErrorCode == code {
 			return true
 		}
 	}
