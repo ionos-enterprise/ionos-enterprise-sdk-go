@@ -1,6 +1,7 @@
 package profitbricks
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -89,9 +90,12 @@ func (c *Client) DeleteSnapshotAndWait(snapshotID string) error {
 }
 
 // ListSnapshotsWithSelector retrieves all snapshots and performs client-side
-// filtering according to the list of selectors. Each selector is concatenated
-// with logical AND.
-func (c *Client) ListSnapshotsWithSelector(selectors ...SnapshotSelector) ([]Snapshot, error) {
+// filtering according to the selector.
+func (c *Client) ListSnapshotsWithSelector(selector SnapshotSelector) ([]Snapshot, error) {
+	if selector == nil {
+		return nil, fmt.Errorf("missing selector")
+	}
+
 	url := snapshotsPath()
 	ret := &Snapshots{}
 	err := c.Get(url, ret, http.StatusOK)
@@ -100,12 +104,9 @@ func (c *Client) ListSnapshotsWithSelector(selectors ...SnapshotSelector) ([]Sna
 	}
 
 	var result []Snapshot
-outerLoop:
 	for _, snapshot := range ret.Items {
-		for _, selector := range selectors {
-			if !selector(&snapshot) {
-				continue outerLoop
-			}
+		if !selector(&snapshot) {
+			continue
 		}
 		result = append(result, snapshot)
 	}
