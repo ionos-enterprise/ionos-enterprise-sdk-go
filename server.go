@@ -80,10 +80,15 @@ func (c *Client) CreateServerAndWait(ctx context.Context, dcid string, srvid Ser
 	if err != nil {
 		return
 	}
-	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
 		return
 	}
-	return c.GetServer(dcid, res.ID)
+	var srv *Server
+	if srv, err = c.GetServer(dcid, res.ID); err != nil {
+		return
+	} else {
+		return srv, nil
+	}
 }
 
 // GetServer pulls data for the server where id = srvid returns a Instance struct
@@ -113,10 +118,12 @@ func (c *Client) UpdateServerAndWait(
 	if err != nil {
 		return
 	}
-	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+
 		return
 	}
-	if srv, err := c.GetServer(dcid, res.ID); err != nil {
+	var srv *Server
+	if srv, err = c.GetServer(dcid, res.ID); err != nil {
 		return
 	} else {
 		return srv, nil

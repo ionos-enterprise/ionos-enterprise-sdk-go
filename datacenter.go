@@ -90,14 +90,15 @@ func (c *Client) CreateDatacenterAndWait(ctx context.Context, dc Datacenter) (re
 	if err != nil {
 		return
 	}
-	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
 		return
 	}
-	if dc, err := c.GetDatacenter(res.ID); err != nil {
+	var rdc *Datacenter
+	rdc, err = c.GetDatacenter(res.ID)
+	if err != nil {
 		return
-	} else {
-		return dc, nil
 	}
+	return rdc, nil
 }
 
 // GetDatacenter gets a datacenter
@@ -125,13 +126,14 @@ func (c *Client) UpdateDatacenterAndWait(ctx context.Context, dcid string, obj D
 	if err != nil {
 		return
 	}
-	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
 		return
 	}
-	if dc, err := c.GetDatacenter(res.ID); err != nil {
+	var rdc *Datacenter
+	if rdc, err = c.GetDatacenter(res.ID); err != nil {
 		return
 	} else {
-		return dc, nil
+		return rdc, nil
 	}
 }
 

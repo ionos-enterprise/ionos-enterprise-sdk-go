@@ -81,10 +81,11 @@ func (c *Client) CreateLanAndWait(ctx context.Context, dcid string, request Lan)
 	if err != nil {
 		return
 	}
-	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
 		return
 	}
-	if lan, err := c.GetLan(dcid, res.ID); err != nil {
+	var lan *Lan
+	if lan, err = c.GetLan(dcid, res.ID); err != nil {
 		return
 	} else {
 		return lan, err
@@ -116,10 +117,11 @@ func (c *Client) UpdateLanAndWait(ctx context.Context, dcid, lanid string, props
 	if err != nil {
 		return
 	}
-	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
 		return
 	}
-	if lan, err := c.GetLan(dcid, res.ID); err != nil {
+	var lan *Lan
+	if lan, err = c.GetLan(dcid, res.ID); err != nil {
 		return
 	} else {
 		return lan, err
