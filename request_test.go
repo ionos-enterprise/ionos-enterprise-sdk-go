@@ -128,6 +128,19 @@ func TestRequestListFilter_AddCreatedBefore(t *testing.T) {
 
 func TestRequestListFilter_AddRequestStatus(t *testing.T) {
 	r := NewRequestListFilter()
-	r.AddRequestStatus("DONE")
-	assert.Equal(t, "DONE", r.Get("filter.status"))
+	r.AddRequestStatus(RequestStatusDone)
+	assert.Equal(t, RequestStatusDone, r.Get("filter.status"))
+}
+
+func TestRequestListFilter_Clone(t *testing.T) {
+	r := NewRequestListFilter()
+	r.AddMethod(http.MethodPost)
+	r.AddUrl("foo/bar")
+	c := r.Clone()
+	assert.Equal(t, r, c)
+
+	r.AddBody("should not be in copy")
+	assert.NotEqual(t, r, c)
+	assert.Contains(t, r.Values, "filter.body")
+	assert.NotContains(t, c.Values, "filter.body")
 }

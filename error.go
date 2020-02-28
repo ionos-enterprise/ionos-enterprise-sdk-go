@@ -9,6 +9,10 @@ import (
 	"net/http"
 )
 
+const (
+	SnapshotInUseErrorCode = "200"
+)
+
 type ClientErrorType int
 
 const (
@@ -139,4 +143,13 @@ func (e ApiError) HttpStatusCode() int {
 
 func (e ApiError) Body() []byte {
 	return e.RawBody
+}
+
+func (e ApiError) HasErrorCode(code string) bool {
+	for _, m := range e.Messages {
+		if m.ErrorCode == code {
+			return true
+		}
+	}
+	return false
 }
