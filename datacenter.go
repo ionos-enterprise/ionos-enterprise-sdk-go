@@ -1,6 +1,7 @@
 package profitbricks
 
 import (
+	"context"
 	"net/http"
 )
 
@@ -79,6 +80,19 @@ func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
 	return ret, err
 }
 
+// CreateDatacenterAndWait creates a data center, waits for the request to finish and returns a refreshed
+// result.
+func (c *Client) CreateDatacenterAndWait(ctx context.Context, dc Datacenter) (*Datacenter, error) {
+	rsp, err := c.CreateDatacenter(dc)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.WaitTillProvisionedOrCanceled(ctx, rsp.Headers.Get("location")); err != nil {
+		return nil, err
+	}
+	return c.GetDatacenter(rsp.ID)
+}
+
 // GetDatacenter gets a datacenter
 func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
 	url := datacenterPath(dcid)
@@ -95,9 +109,30 @@ func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datac
 	return ret, err
 }
 
+// UpdateDatacenter updates a data center, waits for the request to finish and returns a refreshed result.
+func (c *Client) UpdateDatacenterAndWait(ctx context.Context, dcid string, obj DatacenterProperties) (*Datacenter, error) {
+	rsp, err := c.UpdateDataCenter(dcid, obj)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.WaitTillProvisionedOrCanceled(ctx, rsp.Headers.Get("location")); err != nil {
+		return nil, err
+	}
+	return c.GetDatacenter(dcid)
+}
+
 // DeleteDatacenter deletes a data center
 func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
 	url := datacenterPath(dcid)
 	ret := &http.Header{}
 	return ret, c.Delete(url, ret, http.StatusAccepted)
+}
+
+// DeleteDatacenterAndWait deletes given datacenter and waits for the request to finish
+func (c *Client) DeleteDatacenterAndWait(ctx context.Context, dcid string) error {
+	rsp, err := c.DeleteDatacenter(dcid)
+	if err != nil {
+		return err
+	}
+	return c.WaitTillProvisionedOrCanceled(ctx, rsp.Get("location"))
 }

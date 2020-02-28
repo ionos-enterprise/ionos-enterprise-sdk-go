@@ -1,10 +1,11 @@
 package profitbricks
 
 import (
+	"context"
 	"net/http"
 )
 
-//Server object
+// Server object
 type Server struct {
 	ID         string           `json:"id,omitempty"`
 	PBType     string           `json:"type,omitempty"`
@@ -17,7 +18,7 @@ type Server struct {
 	StatusCode int              `json:"statuscode,omitempty"`
 }
 
-//ServerProperties object
+// ServerProperties object
 type ServerProperties struct {
 	Name             string             `json:"name,omitempty"`
 	Cores            int                `json:"cores,omitempty"`
@@ -29,14 +30,14 @@ type ServerProperties struct {
 	CPUFamily        string             `json:"cpuFamily,omitempty"`
 }
 
-//ServerEntities object
+// ServerEntities object
 type ServerEntities struct {
 	Cdroms  *Cdroms  `json:"cdroms,omitempty"`
 	Volumes *Volumes `json:"volumes,omitempty"`
 	Nics    *Nics    `json:"nics,omitempty"`
 }
 
-//Servers collection
+// Servers collection
 type Servers struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`
@@ -47,7 +48,7 @@ type Servers struct {
 	StatusCode int          `json:"statuscode,omitempty"`
 }
 
-//ResourceReference object
+// ResourceReference object
 type ResourceReference struct {
 	ID     string `json:"id,omitempty"`
 	PBType string `json:"type,omitempty"`
@@ -70,6 +71,18 @@ func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
 	return ret, err
 }
 
+// CreateServerAndWait creates a server, waits for the request to finish and returns a refreshed resource
+func (c *Client) CreateServerAndWait(ctx context.Context, dcid string, srvid Server) (*Server, error) {
+	res, err := c.CreateServer(dcid, srvid)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+		return nil, err
+	}
+	return c.GetServer(dcid, res.ID)
+}
+
 // GetServer pulls data for the server where id = srvid returns a Instance struct
 func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
 	url := serverPath(dcid, srvid)
@@ -79,12 +92,25 @@ func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
 }
 
 // UpdateServer partial update of server properties passed in as jason []byte
-// Returns Instance struct
+// returns instance struct
 func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties) (*Server, error) {
 	url := serverPath(dcid, srvid)
 	ret := &Server{}
 	err := c.Patch(url, props, ret, http.StatusAccepted)
 	return ret, err
+}
+
+// UpdateServerAndWait updates a server, waits for the request to finish and
+// returns a refreshed instance.
+func (c *Client) UpdateServerAndWait(ctx context.Context, dcid, srvid string, props ServerProperties) (*Server, error) {
+	res, err := c.UpdateServer(dcid, srvid, props)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+		return nil, err
+	}
+	return c.GetServer(dcid, res.ID)
 }
 
 // DeleteServer deletes the server where id=srvid and returns Resp struct
@@ -94,7 +120,16 @@ func (c *Client) DeleteServer(dcid, srvid string) (*http.Header, error) {
 	return ret, err
 }
 
-//ListAttachedCdroms returns list of attached cd roms
+// DeleteServerAndWait deletes a server and waits for the request to finish
+func (c *Client) DeleteServerAndWait(ctx context.Context, dcid, srvid string) error {
+	rsp, err := c.DeleteServer(dcid, srvid)
+	if err != nil {
+		return err
+	}
+	return c.WaitTillProvisionedOrCanceled(ctx, rsp.Get("location"))
+}
+
+// ListAttachedCdroms returns list of attached cd roms
 func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 	url := cdromsPath(dcid, srvid)
 	ret := &Images{}
@@ -102,7 +137,7 @@ func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 	return ret, err
 }
 
-//AttachCdrom attaches a CD rom
+// AttachCdrom attaches a CD rom
 func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, error) {
 	data := struct {
 		ID string `json:"id,omitempty"`
@@ -115,7 +150,7 @@ func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, er
 	return ret, err
 }
 
-//GetAttachedCdrom gets attached cd roms
+// GetAttachedCdrom gets attached cd roms
 func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 	url := cdromPath(dcid, srvid, cdid)
 	ret := &Image{}
@@ -123,7 +158,7 @@ func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 	return ret, err
 }
 
-//DetachCdrom detaches a CD rom
+// DetachCdrom detaches a CD rom
 func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 	url := cdromPath(dcid, srvid, cdid)
 	ret := &http.Header{}
@@ -131,7 +166,7 @@ func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 	return ret, err
 }
 
-//ListAttachedVolumes lists attached volumes
+// ListAttachedVolumes lists attached volumes
 func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 	url := attachedVolumesPath(dcid, srvid)
 	ret := &Volumes{}
@@ -139,7 +174,7 @@ func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 	return ret, err
 }
 
-//AttachVolume attaches a volume
+// AttachVolume attaches a volume
 func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume, error) {
 	data := struct {
 		ID string `json:"id,omitempty"`
@@ -153,7 +188,7 @@ func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume,
 	return ret, err
 }
 
-//GetAttachedVolume gets an attached volume
+// GetAttachedVolume gets an attached volume
 func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 	url := attachedVolumePath(dcid, srvid, volid)
 	ret := &Volume{}
@@ -162,7 +197,7 @@ func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 	return ret, err
 }
 
-//DetachVolume detaches a volume
+// DetachVolume detaches a volume
 func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
 	url := attachedVolumePath(dcid, srvid, volid)
 	ret := &http.Header{}

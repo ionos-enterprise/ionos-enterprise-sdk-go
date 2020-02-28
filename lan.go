@@ -1,6 +1,7 @@
 package profitbricks
 
 import (
+	"context"
 	"net/http"
 )
 
@@ -71,6 +72,18 @@ func (c *Client) CreateLan(dcid string, request Lan) (*Lan, error) {
 	return ret, err
 }
 
+// CreateLanAndWait creates a lan, waits for the request to finish and returns a refreshed lan
+func (c *Client) CreateLanAndWait(ctx context.Context, dcid string, request Lan) (*Lan, error) {
+	rsp, err := c.CreateLan(dcid, request)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.WaitTillProvisionedOrCanceled(ctx, rsp.Headers.Get("location")); err != nil {
+		return nil, err
+	}
+	return c.GetLan(dcid, rsp.ID)
+}
+
 // GetLan pulls data for the lan where id = lanid returns an Instance struct
 func (c *Client) GetLan(dcid, lanid string) (*Lan, error) {
 	url := lanPath(dcid, lanid)
@@ -87,10 +100,31 @@ func (c *Client) UpdateLan(dcid string, lanid string, obj LanProperties) (*Lan, 
 	return ret, err
 }
 
+// UpdateLanAndWait creates a lan, waits for the request to finish and returns a refreshed lan
+func (c *Client) UpdateLanAndWait(ctx context.Context, dcid, lanid string, props LanProperties) (*Lan, error) {
+	rsp, err := c.UpdateLan(dcid, lanid, props)
+	if err != nil {
+		return nil, err
+	}
+	if err := c.WaitTillProvisionedOrCanceled(ctx, rsp.Headers.Get("location")); err != nil {
+		return nil, err
+	}
+	return c.GetLan(dcid, rsp.ID)
+}
+
 // DeleteLan deletes a lan where id == lanid
 func (c *Client) DeleteLan(dcid, lanid string) (*http.Header, error) {
 	url := lanPath(dcid, lanid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
+}
+
+// DeleteLanAndWait deletes given lan and waits for the request to finish
+func (c *Client) DeleteLanAndWait(ctx context.Context, dcid, lanid string) error {
+	rsp, err := c.DeleteLan(dcid, lanid)
+	if err != nil {
+		return err
+	}
+	return c.WaitTillProvisionedOrCanceled(ctx, rsp.Get("location"))
 }
