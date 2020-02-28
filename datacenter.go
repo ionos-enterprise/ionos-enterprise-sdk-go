@@ -82,15 +82,22 @@ func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
 
 // CreateDatacenterAndWait creates a data center, waits for the request to finish and returns a refreshed
 // result.
-func (c *Client) CreateDatacenterAndWait(ctx context.Context, dc Datacenter) (*Datacenter, error) {
-	rsp, err := c.CreateDatacenter(dc)
+// Note that an error does not necessarily means that the resource has not been created.
+// If err & res are not nil, a resource with res.ID exists, but an error occurred either while waiting for
+// the request or when refreshing the resource.
+func (c *Client) CreateDatacenterAndWait(ctx context.Context, dc Datacenter) (res *Datacenter, err error) {
+	res, err = c.CreateDatacenter(dc)
 	if err != nil {
-		return nil, err
+		return
 	}
-	if err := c.WaitTillProvisionedOrCanceled(ctx, rsp.Headers.Get("location")); err != nil {
-		return nil, err
+	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+		return
 	}
-	return c.GetDatacenter(rsp.ID)
+	if dc, err := c.GetDatacenter(res.ID); err != nil {
+		return
+	} else {
+		return dc, nil
+	}
 }
 
 // GetDatacenter gets a datacenter
@@ -110,15 +117,22 @@ func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datac
 }
 
 // UpdateDatacenter updates a data center, waits for the request to finish and returns a refreshed result.
-func (c *Client) UpdateDatacenterAndWait(ctx context.Context, dcid string, obj DatacenterProperties) (*Datacenter, error) {
-	rsp, err := c.UpdateDataCenter(dcid, obj)
+// Note that an error does not necessarily means that the resource has not been updated.
+// If err & res are not nil, a resource with res.ID exists, but an error occurred either while waiting for
+// the request or when refreshing the resource.
+func (c *Client) UpdateDatacenterAndWait(ctx context.Context, dcid string, obj DatacenterProperties) (res *Datacenter, err error) {
+	res, err = c.UpdateDataCenter(dcid, obj)
 	if err != nil {
-		return nil, err
+		return
 	}
-	if err := c.WaitTillProvisionedOrCanceled(ctx, rsp.Headers.Get("location")); err != nil {
-		return nil, err
+	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+		return
 	}
-	return c.GetDatacenter(dcid)
+	if dc, err := c.GetDatacenter(res.ID); err != nil {
+		return
+	} else {
+		return dc, nil
+	}
 }
 
 // DeleteDatacenter deletes a data center

@@ -63,7 +63,7 @@ func (c *Client) ListServers(dcid string) (*Servers, error) {
 	return ret, err
 }
 
-// CreateServer creates a server from a jason []byte and returns a Instance struct
+// CreateServer creates a server in given datacenter
 func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
 	url := serversPath(dcid)
 	ret := &Server{}
@@ -72,13 +72,16 @@ func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
 }
 
 // CreateServerAndWait creates a server, waits for the request to finish and returns a refreshed resource
-func (c *Client) CreateServerAndWait(ctx context.Context, dcid string, srvid Server) (*Server, error) {
-	res, err := c.CreateServer(dcid, srvid)
+// Note that an error does not necessarily means that the resource has not been created.
+// If err & res are not nil, a resource with res.ID exists, but an error occurred either while waiting for
+// the request or when refreshing the resource.
+func (c *Client) CreateServerAndWait(ctx context.Context, dcid string, srvid Server) (res *Server, err error) {
+	res, err = c.CreateServer(dcid, srvid)
 	if err != nil {
-		return nil, err
+		return
 	}
 	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
-		return nil, err
+		return
 	}
 	return c.GetServer(dcid, res.ID)
 }
@@ -91,8 +94,7 @@ func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
 	return ret, err
 }
 
-// UpdateServer partial update of server properties passed in as jason []byte
-// returns instance struct
+// UpdateServer updates server with given properties and returns instance
 func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties) (*Server, error) {
 	url := serverPath(dcid, srvid)
 	ret := &Server{}
@@ -102,15 +104,23 @@ func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties)
 
 // UpdateServerAndWait updates a server, waits for the request to finish and
 // returns a refreshed instance.
-func (c *Client) UpdateServerAndWait(ctx context.Context, dcid, srvid string, props ServerProperties) (*Server, error) {
-	res, err := c.UpdateServer(dcid, srvid, props)
+// Note that an error does not necessarily means that the resource has not been updated.
+// If err & res are not nil, a resource with res.ID exists, but an error occurred either while waiting for
+// the request or when refreshing the resource.
+func (c *Client) UpdateServerAndWait(
+	ctx context.Context, dcid, srvid string, props ServerProperties) (res *Server, err error) {
+	res, err = c.UpdateServer(dcid, srvid, props)
 	if err != nil {
-		return nil, err
+		return
 	}
 	if err := c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
-		return nil, err
+		return
 	}
-	return c.GetServer(dcid, res.ID)
+	if srv, err := c.GetServer(dcid, res.ID); err != nil {
+		return
+	} else {
+		return srv, nil
+	}
 }
 
 // DeleteServer deletes the server where id=srvid and returns Resp struct
