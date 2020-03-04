@@ -1,0 +1,17 @@
+{
+  "id" : "95aa7df8-64c2-480b-9b4b-528055be3b81",
+  "type" : "node",
+  "href" : "https://api.ionos.com/cloudapi/v5/k8s/834d1e84-451d-48d6-8535-f6864b528a52/nodepools/7f2f99f9-3589-41aa-9a8b-9c42b569813d/nodes/95aa7df8-64c2-480b-9b4b-528055be3b81",
+  "metadata" : {
+    "etag" : "5616c0a3b88458dd7538f6e98fee3108",
+    "state" : "READY",
+    "createdDate" : "2020-02-11T20:16:24Z",
+    "lastModifiedDate" : "2020-02-11T20:16:24Z",
+    "lastSoftwareUpdatedDate" : "2020-02-11T20:14:15.000Z"
+  },
+  "properties" : {
+    "name" : "node2",
+    "publicIP" : "222.222.222.222",
+    "k8sVersion" : "1.16.4"
+  }
+}
