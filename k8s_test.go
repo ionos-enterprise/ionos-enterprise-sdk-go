@@ -121,9 +121,18 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesNode() {
 
 func (s *SuiteKubernetesCluster) Test_DeleteKubernetesNode() {
 	mRsp := makeJsonResponse(http.StatusAccepted, nil)
-	mRsp.Header.Set("location", "status")
-	httpmock.RegisterResponder(http.MethodDelete, "=~/k8s/1/nodepools/2/nodes/3", httpmock.ResponderFromResponse(mRsp))
+	httpmock.RegisterResponder(
+		http.MethodDelete, "=~/k8s/1/nodepools/2/nodes/3", httpmock.ResponderFromResponse(mRsp))
 	rsp, err := s.c.DeleteKubernetesNode("1", "2", "3")
 	s.NoError(err)
-	s.Equal("status", rsp.Get("location"))
+	s.NotNil(rsp)
+}
+
+func (s *SuiteKubernetesCluster) Test_ReplaceKubernetesNode() {
+	mRsp := makeJsonResponse(http.StatusAccepted, nil)
+	httpmock.RegisterResponder(
+		http.MethodPost, "=~/k8s/1/nodepools/2/nodes/3/replace", httpmock.ResponderFromResponse(mRsp))
+	rsp, err := s.c.ReplaceKubernetesNode("1", "2", "3")
+	s.NoError(err)
+	s.NotNil(rsp)
 }

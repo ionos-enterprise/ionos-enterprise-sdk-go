@@ -312,6 +312,11 @@ func kubernetesNodePath(clusterID, nodepoolID, nodeID string) string {
 	return safeJoin(kubernetesNodesPath(clusterID, nodepoolID), nodeID)
 }
 
+// kubernetesNodeReplacePath: "k8s/<clusterID>/nodepools/<nodepoolID>/nodes/<nodeID>/replace"
+func kubernetesNodeReplacePath(clusterID, nodepoolID, nodeID string) string {
+	return safeJoin(kubernetesNodePath(clusterID, nodepoolID, nodeID), "replace")
+}
+
 // backupUnitsPath: "backupunits"
 func backupUnitsPath() string {
 	return "backupunits"

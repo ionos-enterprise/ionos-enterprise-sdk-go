@@ -1,6 +1,9 @@
 package profitbricks
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type KubernetesClusters struct {
 	// URL to the collection representation (absolute path)
@@ -349,7 +352,18 @@ func (c *Client) GetKubernetesNode(clusterID, nodePoolID, nodeID string) (*Kuber
 	return rsp, c.GetOK(kubernetesNodePath(clusterID, nodePoolID, nodeID), rsp)
 }
 
-// DeleteKubernetesNode deletes a node from a node pool, decreasesing its size by 1.
+// DeleteKubernetesNode deletes a node from a node pool, decreasing its size by 1.
 func (c *Client) DeleteKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
 	return c.DeleteAcc(kubernetesNodePath(clusterID, nodePoolID, nodeID))
+}
+
+// ReplaceKubernetesNode replaces a node of a node pool.
+func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
+	url := kubernetesNodeReplacePath(clusterID, nodePoolID, nodeID)
+	rsp, err := c.R().SetError(ApiError{}).Post(url)
+	if err != nil {
+		return nil, NewClientError(HttpClientError, fmt.Sprintf("[POST] %s: Client error: %s", url, err))
+	}
+	h := rsp.Header()
+	return &h, validateResponse(rsp, http.StatusAccepted)
 }
