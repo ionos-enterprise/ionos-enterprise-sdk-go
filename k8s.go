@@ -199,7 +199,7 @@ type KubernetesNodePools struct {
 	// Format: uri
 	Href string `json:"href,omitempty"`
 
-	// Unique representation for Kubernetes Node Pool as a collection on a resource.
+	// Unique representation for Kubernetes Nodes as a collection on a resource.
 	// Read Only: true
 	ID string `json:"id,omitempty"`
 
@@ -246,8 +246,7 @@ type KubernetesNode struct {
 	// metadata
 	Metadata *Metadata `json:"metadata,omitempty"`
 
-	// properties
-	// Required: true
+	// The properties of the node
 	Properties *KubernetesNodeProperties `json:"properties"`
 
 	// The type of object
@@ -266,6 +265,7 @@ type KubernetesNodeProperties struct {
 	PublicIP string `json:"publicIP,omitempty"`
 
 	// The k8s version that the node has.
+	// Read Only: true
 	K8sVersion string `json:"k8sVersion,omitempty"`
 }
 
