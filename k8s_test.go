@@ -70,7 +70,7 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesNodepools() {
 	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools`,
 		httpmock.ResponderFromResponse(mResp))
 
-	nps, err := s.c.GetKubernetesNodePools("1")
+	nps, err := s.c.ListKubernetesNodePools("1")
 	s.NoError(err)
 	s.Len(nps.Items, 1)
 

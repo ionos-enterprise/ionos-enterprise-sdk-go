@@ -302,6 +302,16 @@ func kubernetesNodePoolPath(clusterID, nodepoolID string) string {
 	return safeJoin(kubernetesNodePoolsPath(clusterID), nodepoolID)
 }
 
+// kubernetesNodesPath: "k8s/<clusterID>/nodepools/<nodepoolID>/nodes"
+func kubernetesNodesPath(clusterID, nodepoolID string) string {
+	return safeJoin(kubernetesNodePoolPath(clusterID, nodepoolID), "nodes")
+}
+
+// kubernetesNodePath: "k8s/<clusterID>/nodepools/<nodepoolID>/nodes/<nodeID>"
+func kubernetesNodePath(clusterID, nodepoolID, nodeID string) string {
+	return safeJoin(kubernetesNodesPath(clusterID, nodepoolID), nodeID)
+}
+
 // backupUnitsPath: "backupunits"
 func backupUnitsPath() string {
 	return "backupunits"
