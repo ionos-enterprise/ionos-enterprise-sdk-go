@@ -340,7 +340,7 @@ func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool
 	return rsp, c.PutAcc(kubernetesNodePoolPath(clusterID, nodePoolID), nodePool, rsp)
 }
 
-// ListKubernetesNodes gets a lsit of all nodes of a node pool
+// ListKubernetesNodes gets a list of all nodes of a node pool
 func (c *Client) ListKubernetesNodes(clusterID, nodePoolID string) (*KubernetesNodes, error) {
 	rsp := &KubernetesNodes{}
 	return rsp, c.GetOK(kubernetesNodesPath(clusterID, nodePoolID), rsp)
