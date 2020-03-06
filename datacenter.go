@@ -1,6 +1,7 @@
 package profitbricks
 
 import (
+	"context"
 	"net/http"
 )
 
@@ -79,6 +80,27 @@ func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
 	return ret, err
 }
 
+// CreateDatacenterAndWait creates a data center, waits for the request to finish and returns a refreshed
+// result.
+// Note that an error does not necessarily means that the resource has not been created.
+// If err & res are not nil, a resource with res.ID exists, but an error occurred either while waiting for
+// the request or when refreshing the resource.
+func (c *Client) CreateDatacenterAndWait(ctx context.Context, dc Datacenter) (res *Datacenter, err error) {
+	res, err = c.CreateDatacenter(dc)
+	if err != nil {
+		return
+	}
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+		return
+	}
+	var rdc *Datacenter
+	rdc, err = c.GetDatacenter(res.ID)
+	if err != nil {
+		return
+	}
+	return rdc, nil
+}
+
 // GetDatacenter gets a datacenter
 func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
 	url := datacenterPath(dcid)
@@ -95,9 +117,38 @@ func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datac
 	return ret, err
 }
 
+// UpdateDatacenter updates a data center, waits for the request to finish and returns a refreshed result.
+// Note that an error does not necessarily means that the resource has not been updated.
+// If err & res are not nil, a resource with res.ID exists, but an error occurred either while waiting for
+// the request or when refreshing the resource.
+func (c *Client) UpdateDatacenterAndWait(ctx context.Context, dcid string, obj DatacenterProperties) (res *Datacenter, err error) {
+	res, err = c.UpdateDataCenter(dcid, obj)
+	if err != nil {
+		return
+	}
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+		return
+	}
+	var rdc *Datacenter
+	if rdc, err = c.GetDatacenter(res.ID); err != nil {
+		return
+	} else {
+		return rdc, nil
+	}
+}
+
 // DeleteDatacenter deletes a data center
 func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
 	url := datacenterPath(dcid)
 	ret := &http.Header{}
 	return ret, c.Delete(url, ret, http.StatusAccepted)
+}
+
+// DeleteDatacenterAndWait deletes given datacenter and waits for the request to finish
+func (c *Client) DeleteDatacenterAndWait(ctx context.Context, dcid string) error {
+	rsp, err := c.DeleteDatacenter(dcid)
+	if err != nil {
+		return err
+	}
+	return c.WaitTillProvisionedOrCanceled(ctx, rsp.Get("location"))
 }

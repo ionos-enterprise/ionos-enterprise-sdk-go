@@ -1,10 +1,11 @@
 package profitbricks
 
 import (
+	"context"
 	"net/http"
 )
 
-//Lan object
+// Lan object
 type Lan struct {
 	ID         string        `json:"id,omitempty"`
 	PBType     string        `json:"type,omitempty"`
@@ -17,25 +18,25 @@ type Lan struct {
 	StatusCode int           `json:"statuscode,omitempty"`
 }
 
-//LanProperties object
+// LanProperties object
 type LanProperties struct {
 	Name       string        `json:"name,omitempty"`
 	Public     bool          `json:"public,omitempty"`
 	IPFailover *[]IPFailover `json:"ipFailover,omitempty"`
 }
 
-//LanEntities object
+// LanEntities object
 type LanEntities struct {
 	Nics *LanNics `json:"nics,omitempty"`
 }
 
-//IPFailover object
+// IPFailover object
 type IPFailover struct {
 	NicUUID string `json:"nicUuid,omitempty"`
 	IP      string `json:"ip,omitempty"`
 }
 
-//LanNics object
+// LanNics object
 type LanNics struct {
 	ID     string `json:"id,omitempty"`
 	PBType string `json:"type,omitempty"`
@@ -43,7 +44,7 @@ type LanNics struct {
 	Items  []Nic  `json:"items,omitempty"`
 }
 
-//Lans object
+// Lans object
 type Lans struct {
 	ID         string       `json:"id,omitempty"`
 	PBType     string       `json:"type,omitempty"`
@@ -71,6 +72,26 @@ func (c *Client) CreateLan(dcid string, request Lan) (*Lan, error) {
 	return ret, err
 }
 
+// CreateLanAndWait creates a lan, waits for the request to finish and returns a refreshed lan
+// Note that an error does not necessarily means that the resource has not been created.
+// If err & res are not nil, a resource with res.ID exists, but an error occurred either while waiting for
+// the request or when refreshing the resource.
+func (c *Client) CreateLanAndWait(ctx context.Context, dcid string, request Lan) (res *Lan, err error) {
+	res, err = c.CreateLan(dcid, request)
+	if err != nil {
+		return
+	}
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+		return
+	}
+	var lan *Lan
+	if lan, err = c.GetLan(dcid, res.ID); err != nil {
+		return
+	} else {
+		return lan, err
+	}
+}
+
 // GetLan pulls data for the lan where id = lanid returns an Instance struct
 func (c *Client) GetLan(dcid, lanid string) (*Lan, error) {
 	url := lanPath(dcid, lanid)
@@ -87,10 +108,39 @@ func (c *Client) UpdateLan(dcid string, lanid string, obj LanProperties) (*Lan, 
 	return ret, err
 }
 
+// UpdateLanAndWait creates a lan, waits for the request to finish and returns a refreshed lan
+// Note that an error does not necessarily means that the resource has not been updated.
+// If err & res are not nil, a resource with res.ID exists, but an error occurred either while waiting for
+// the request or when refreshing the resource.
+func (c *Client) UpdateLanAndWait(ctx context.Context, dcid, lanid string, props LanProperties) (res *Lan, err error) {
+	res, err = c.UpdateLan(dcid, lanid, props)
+	if err != nil {
+		return
+	}
+	if err = c.WaitTillProvisionedOrCanceled(ctx, res.Headers.Get("location")); err != nil {
+		return
+	}
+	var lan *Lan
+	if lan, err = c.GetLan(dcid, res.ID); err != nil {
+		return
+	} else {
+		return lan, err
+	}
+}
+
 // DeleteLan deletes a lan where id == lanid
 func (c *Client) DeleteLan(dcid, lanid string) (*http.Header, error) {
 	url := lanPath(dcid, lanid)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
+}
+
+// DeleteLanAndWait deletes given lan and waits for the request to finish
+func (c *Client) DeleteLanAndWait(ctx context.Context, dcid, lanid string) error {
+	rsp, err := c.DeleteLan(dcid, lanid)
+	if err != nil {
+		return err
+	}
+	return c.WaitTillProvisionedOrCanceled(ctx, rsp.Get("location"))
 }
