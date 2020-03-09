@@ -2231,11 +2231,20 @@ GetResourceByType(resourcetype, resourceId)
 | ---------- | :------: | ----------------------------------------------------------------------------- | ----------------------------------------- |
 | Properties | **yes**  | \*[KubernetesClusterProperties](#KubernetesClusterProperties-resource-object) | The properties of the Kubernetes Cluster. |
 
+## MaintenanceWindow Resource Object
+
+| Name         | Required | Type   | Description                                                                                                 |
+| ------------ | :------: | ------ | ----------------------------------------------------------------------------------------------------------- |
+| DayOfTheWeek | **yes**  | string | The english name of the day of the week (One of: Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday). |
+| Time         | **yes**  | string | The time of the day in **HH:mm:ss** format                                                                  |
+
 ##### KubernetesClusterProperties Resource Object
 
-| Name | Required | Type   | Description                                 |
-| ---- | :------: | ------ | ------------------------------------------- |
-| Name | **yes**  | string | The desired name for the Kubernetes Cluster |
+| Name              | Required | Type                                                    | Description                                 |
+| ----------------- | :------: | ------------------------------------------------------- | ------------------------------------------- |
+| Name              | **yes**  | string                                                  | The desired name for the Kubernetes Cluster |
+| K8sVersion        |  **no**  | string                                                  | The desired Kubernetes Version              |
+| MaintenanceWindow |  **no**  | [MaintenanceWindow](#MaintenanceWindow-resource-object) | The desired Maintenance Window              |
 
 ##### KubernetesNodePool Resource Object
 

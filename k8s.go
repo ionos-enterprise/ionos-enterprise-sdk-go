@@ -79,12 +79,28 @@ type KubernetesClusterEntities struct {
 	NodePools *KubernetesNodePools `json:"nodepools,omitempty"`
 }
 
+type MaintenanceWindow struct {
+	// The english name of the day of the week
+	// Required: false
+	DayOfTheWeek string `json:"dayOfTheWeek,omitempty"`
+	// A string of the following format: 08:00:00
+	// Required: false
+	Time string `json:"time,omitempty"`
+}
+
 type KubernetesClusterProperties struct {
 	// A Kubernetes Cluster Name. Valid Kubernetes Cluster name must be 63 characters or less and must not be empty
 	// and begin and end with an alphanumeric character ([a-z0-9]) with dashes (-), dots (.) and alphanumerics
 	// between.
 	// Required: true
 	Name string `json:"name"`
+	// The desired Kubernetes Version
+	// Please consult the API documentation for supported versions
+	// Required: false
+	K8sVersion string `json:"k8sVersion,omitempty"`
+	// The desired Maintanance Window
+	// Required: false
+	MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"`
 }
 
 type KubernetesConfig struct {
