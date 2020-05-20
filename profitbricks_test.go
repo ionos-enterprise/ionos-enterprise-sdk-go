@@ -30,12 +30,16 @@ func (s *SuiteClient) Test_Retry() {
 				return httpmock.NewBytesResponse(http.StatusBadGateway, []byte{}), nil
 			case 3:
 				return httpmock.NewBytesResponse(http.StatusGatewayTimeout, []byte{}), nil
+			case 4:
+				// Regression test for missing Retry-After in header
+				rsp := httpmock.NewBytesResponse(http.StatusTooManyRequests, []byte{})
+				return rsp, nil
 			}
 			// More response code
 			return httpmock.NewBytesResponse(http.StatusOK, []byte{}), nil
 		},
 	)
-	s.c.SetRetryCount(3)
+	s.c.SetRetryCount(4)
 	// slower that 2 nano seconds will result in a wait time of max int nano seconds (caused by internal normalization
 	// in go resty
 	s.c.SetRetryWaitTime(2 * time.Nanosecond)
@@ -43,5 +47,5 @@ func (s *SuiteClient) Test_Retry() {
 
 	err := s.c.GetOK("/", nil)
 	s.Error(err)
-	s.Equal(3, called)
+	s.Equal(4, called)
 }
