@@ -64,17 +64,17 @@ func (s *SuiteKubernetesCluster) Test_GetKubeconfig() {
 	s.Equal("---probably valid config", cfg)
 }
 
-func (s *SuiteKubernetesCluster) Test_GetKubernetesNodepools() {
+func (s *SuiteKubernetesCluster) Test_ListKubernetesNodepools() {
 	rsp := loadTestData(s.T(), "get_kubernetes_nodepools.json")
 	mResp := makeJsonResponse(http.StatusOK, rsp)
 	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools`,
 		httpmock.ResponderFromResponse(mResp))
 
-	nps, err := s.c.GetKubernetesNodePools("1")
+	nps, err := s.c.ListKubernetesNodePools("1")
 	s.NoError(err)
 	s.Len(nps.Items, 1)
-
 }
+
 func (s *SuiteKubernetesCluster) Test_GetKubernetesNodepool() {
 	rsp := loadTestData(s.T(), "get_kubernetes_nodepool.json")
 	mResp := makeJsonResponse(http.StatusOK, rsp)
@@ -93,4 +93,46 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesNodepool() {
 	s.NotEmpty(np.Properties.RAMSize)
 	s.NotEmpty(np.Properties.StorageSize)
 	s.NotEmpty(np.Properties.StorageType)
+}
+
+func (s *SuiteKubernetesCluster) Test_ListKubernetesNodes() {
+	rsp := loadTestData(s.T(), "list_kubernetes_nodes.json")
+	mResp := makeJsonResponse(http.StatusOK, rsp)
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools/2/nodes`,
+		httpmock.ResponderFromResponse(mResp))
+
+	nodes, err := s.c.ListKubernetesNodes("1", "2")
+	s.NoError(err)
+	s.Len(nodes.Items, 2)
+}
+
+func (s *SuiteKubernetesCluster) Test_GetKubernetesNode() {
+	rsp := loadTestData(s.T(), "get_kubernetes_node.json")
+	mResp := makeJsonResponse(http.StatusOK, rsp)
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools/2/nodes/3`,
+		httpmock.ResponderFromResponse(mResp))
+
+	node, err := s.c.GetKubernetesNode("1", "2", "3")
+	s.NoError(err)
+	s.Equal(node.Properties.Name, "node2")
+	s.Equal(node.Properties.PublicIP, "222.222.222.222")
+	s.Equal(node.Properties.K8sVersion, "1.16.4")
+}
+
+func (s *SuiteKubernetesCluster) Test_DeleteKubernetesNode() {
+	mRsp := makeJsonResponse(http.StatusAccepted, nil)
+	httpmock.RegisterResponder(
+		http.MethodDelete, "=~/k8s/1/nodepools/2/nodes/3", httpmock.ResponderFromResponse(mRsp))
+	rsp, err := s.c.DeleteKubernetesNode("1", "2", "3")
+	s.NoError(err)
+	s.NotNil(rsp)
+}
+
+func (s *SuiteKubernetesCluster) Test_ReplaceKubernetesNode() {
+	mRsp := makeJsonResponse(http.StatusAccepted, nil)
+	httpmock.RegisterResponder(
+		http.MethodPost, "=~/k8s/1/nodepools/2/nodes/3/replace", httpmock.ResponderFromResponse(mRsp))
+	rsp, err := s.c.ReplaceKubernetesNode("1", "2", "3")
+	s.NoError(err)
+	s.NotNil(rsp)
 }

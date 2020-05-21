@@ -1,6 +1,9 @@
 package profitbricks
 
-import "net/http"
+import (
+	"fmt"
+	"net/http"
+)
 
 type KubernetesClusters struct {
 	// URL to the collection representation (absolute path)
@@ -199,7 +202,7 @@ type KubernetesNodePools struct {
 	// Format: uri
 	Href string `json:"href,omitempty"`
 
-	// Unique representation for Kubernetes Node Pool as a collection on a resource.
+	// Unique representation for Kubernetes Nodes as a collection on a resource.
 	// Read Only: true
 	ID string `json:"id,omitempty"`
 
@@ -211,6 +214,62 @@ type KubernetesNodePools struct {
 	// Read Only: true
 	// Enum: [nodepool]
 	Type string `json:"type,omitempty"`
+}
+
+type KubernetesNodes struct {
+	// URL to the collection representation (absolute path)
+	// Read Only: true
+	// Format: uri
+	Href string `json:"href,omitempty"`
+
+	// Unique representation for Kubernetes Node Pool as a collection on a resource.
+	// Read Only: true
+	ID string `json:"id,omitempty"`
+
+	// Slice of items in that collection
+	// Read Only: true
+	Items []KubernetesNode `json:"items"`
+
+	// The type of resource within a collection
+	// Read Only: true
+	// Enum: [nodepool]
+	Type string `json:"type,omitempty"`
+}
+
+type KubernetesNode struct {
+	// URL to the object representation (absolute path)
+	// Read Only: true
+	// Format: uri
+	Href string `json:"href,omitempty"`
+
+	// The resource's unique identifier.
+	// Read Only: true
+	ID string `json:"id,omitempty"`
+
+	// metadata
+	Metadata *Metadata `json:"metadata,omitempty"`
+
+	// The properties of the node
+	Properties *KubernetesNodeProperties `json:"properties"`
+
+	// The type of object
+	// Read Only: true
+	// Enum: [nodepool]
+	PBType string `json:"type,omitempty"`
+}
+
+type KubernetesNodeProperties struct {
+	// The generated unique name of the node.
+	// Read Only: true
+	Name string `json:"name,omitempty"`
+
+	// The assigned public IP of the node.
+	// Read Only: true
+	PublicIP string `json:"publicIP,omitempty"`
+
+	// The k8s version that the node has.
+	// Read Only: true
+	K8sVersion string `json:"k8sVersion,omitempty"`
 }
 
 // ListKubernetesClusters gets a list of all clusters
@@ -252,8 +311,8 @@ func (c *Client) GetKubeconfig(clusterID string) (string, error) {
 	return rsp.Properties.KubeConfig, nil
 }
 
-// GetKubernetesNodePools gets all node pools of cluster
-func (c *Client) GetKubernetesNodePools(clusterID string) (*KubernetesNodePools, error) {
+// ListKubernetesNodePools gets a list of all node pools of a cluster
+func (c *Client) ListKubernetesNodePools(clusterID string) (*KubernetesNodePools, error) {
 	rsp := &KubernetesNodePools{}
 	return rsp, c.GetOK(kubernetesNodePoolsPath(clusterID), rsp)
 }
@@ -279,4 +338,32 @@ func (c *Client) GetKubernetesNodePool(clusterID, nodePoolID string) (*Kubernete
 func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
 	rsp := &KubernetesNodePool{}
 	return rsp, c.PutAcc(kubernetesNodePoolPath(clusterID, nodePoolID), nodePool, rsp)
+}
+
+// ListKubernetesNodes gets a list of all nodes of a node pool
+func (c *Client) ListKubernetesNodes(clusterID, nodePoolID string) (*KubernetesNodes, error) {
+	rsp := &KubernetesNodes{}
+	return rsp, c.GetOK(kubernetesNodesPath(clusterID, nodePoolID), rsp)
+}
+
+// GetKubernetesNode gets node of a node pool
+func (c *Client) GetKubernetesNode(clusterID, nodePoolID, nodeID string) (*KubernetesNode, error) {
+	rsp := &KubernetesNode{}
+	return rsp, c.GetOK(kubernetesNodePath(clusterID, nodePoolID, nodeID), rsp)
+}
+
+// DeleteKubernetesNode deletes a node from a node pool, decreasing its size by 1.
+func (c *Client) DeleteKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
+	return c.DeleteAcc(kubernetesNodePath(clusterID, nodePoolID, nodeID))
+}
+
+// ReplaceKubernetesNode replaces a node of a node pool.
+func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
+	url := kubernetesNodeReplacePath(clusterID, nodePoolID, nodeID)
+	rsp, err := c.R().SetError(ApiError{}).Post(url)
+	if err != nil {
+		return nil, NewClientError(HttpClientError, fmt.Sprintf("[POST] %s: Client error: %s", url, err))
+	}
+	h := rsp.Header()
+	return &h, validateResponse(rsp, http.StatusAccepted)
 }

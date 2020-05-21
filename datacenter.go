@@ -6,6 +6,8 @@ import (
 )
 
 const (
+	// Resource state is unknown
+	StateUnknown = "UNKNOWN"
 	// Resource is being provisioned
 	StateBusy = "BUSY"
 	// Resource is ready to be used
