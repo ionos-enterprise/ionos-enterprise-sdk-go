@@ -291,9 +291,9 @@ func (c *Client) CreateKubernetesCluster(cluster KubernetesCluster) (*Kubernetes
 }
 
 // DeleteKubernetesCluster deletes cluster
-func (c *Client) DeleteKubernetesCluster(clusterId string) (*http.Header, error) {
+func (c *Client) DeleteKubernetesCluster(clusterID string) (*http.Header, error) {
 	h := &http.Header{}
-	return h, c.Delete(kubernetesClusterPath(clusterId), h, http.StatusOK)
+	return h, c.Delete(kubernetesClusterPath(clusterID), h, http.StatusAccepted)
 }
 
 // UpdateKubernetesCluster updates cluster
