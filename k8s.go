@@ -158,42 +158,50 @@ type KubernetesNodePoolProperties struct {
 	// The availability zone in which the servers should exist
 	// Required: true
 	// Enum: [AUTO ZONE_1 ZONE_2]
-	AvailabilityZone string `json:"availabilityZone,omitempty"`
+	AvailabilityZone string `json:"availabilityZone"`
 
 	// Number of cores for node
 	// Required: true
-	CoresCount uint32 `json:"coresCount,omitempty"`
+	CoresCount uint32 `json:"coresCount"`
 
 	// A valid cpu family name
 	// Required: true
-	CPUFamily string `json:"cpuFamily,omitempty"`
+	CPUFamily string `json:"cpuFamily"`
 
 	// The unique identifier of the data center where the worker nodes of the node pool will be provisioned.
 	// Required: true
-	DatacenterID string `json:"datacenterId,omitempty"`
+	DatacenterID string `json:"datacenterId"`
 
 	// A Kubernetes Node Pool Name. Valid Kubernetes Node Pool name must be 63 characters or less and must not be
 	// empty or begin and end with an alphanumeric character ([a-z0-9]) with dashes (-), dots (.) and alphanumerics
 	// between.
 	// Required: true
-	Name string `json:"name,omitempty"`
+	Name string `json:"name"`
 
 	// Number of nodes part of the Node Pool
 	// Required: true
-	NodeCount uint32 `json:"nodeCount,omitempty"`
+	NodeCount uint32 `json:"nodeCount"`
 
 	// RAM size for node, minimum size 2048MB is recommended
 	// Required: true
-	RAMSize uint32 `json:"ramSize,omitempty"`
+	RAMSize uint32 `json:"ramSize"`
 
 	// The size of the volume in GB. The size should be greater than 10GB.
 	// Required: true
-	StorageSize uint32 `json:"storageSize,omitempty"`
+	StorageSize uint32 `json:"storageSize"`
 
 	// Hardware type of the volume
 	// Required: true
 	// Enum: [HDD SSD]
-	StorageType string `json:"storageType,omitempty"`
+	StorageType string `json:"storageType"`
+
+	// The kubernetes version in which a nodepool is running.
+	// Required: true
+	K8sVersion string `json:"k8sVersion"`
+
+	// The desired Maintanance Window
+	// Required: false
+	MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"`
 }
 
 type KubernetesNodePools struct {
