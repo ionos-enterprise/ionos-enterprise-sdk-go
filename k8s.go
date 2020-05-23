@@ -158,46 +158,46 @@ type KubernetesNodePoolProperties struct {
 	// The availability zone in which the servers should exist
 	// Required: true
 	// Enum: [AUTO ZONE_1 ZONE_2]
-	AvailabilityZone string `json:"availabilityZone"`
+	AvailabilityZone string `json:"availabilityZone,omitempty"`
 
 	// Number of cores for node
 	// Required: true
-	CoresCount uint32 `json:"coresCount"`
+	CoresCount uint32 `json:"coresCount,omitempty"`
 
 	// A valid cpu family name
 	// Required: true
-	CPUFamily string `json:"cpuFamily"`
+	CPUFamily string `json:"cpuFamily,omitempty"`
 
 	// The unique identifier of the data center where the worker nodes of the node pool will be provisioned.
 	// Required: true
-	DatacenterID string `json:"datacenterId"`
+	DatacenterID string `json:"datacenterId,omitempty"`
 
 	// A Kubernetes Node Pool Name. Valid Kubernetes Node Pool name must be 63 characters or less and must not be
 	// empty or begin and end with an alphanumeric character ([a-z0-9]) with dashes (-), dots (.) and alphanumerics
 	// between.
 	// Required: true
-	Name string `json:"name"`
+	Name string `json:"name,omitempty"`
 
 	// Number of nodes part of the Node Pool
 	// Required: true
-	NodeCount uint32 `json:"nodeCount"`
+	NodeCount uint32 `json:"nodeCount,omitempty"`
 
 	// RAM size for node, minimum size 2048MB is recommended
 	// Required: true
-	RAMSize uint32 `json:"ramSize"`
+	RAMSize uint32 `json:"ramSize,omitempty"`
 
 	// The size of the volume in GB. The size should be greater than 10GB.
 	// Required: true
-	StorageSize uint32 `json:"storageSize"`
+	StorageSize uint32 `json:"storageSize,omitempty"`
 
 	// Hardware type of the volume
 	// Required: true
 	// Enum: [HDD SSD]
-	StorageType string `json:"storageType"`
+	StorageType string `json:"storageType,omitempty"`
 
 	// The kubernetes version in which a nodepool is running.
 	// Required: true
-	K8sVersion string `json:"k8sVersion"`
+	K8sVersion string `json:"k8sVersion,omitempty"`
 
 	// The desired Maintanance Window
 	// Required: false
