@@ -91,6 +91,15 @@ type MaintenanceWindow struct {
 	Time string `json:"time,omitempty"`
 }
 
+type Autoscaling struct {
+	// The minimum number of worker nodes that the
+	// managed node group can scale in.
+	MinNodeCount uint32 `json:"minNodeCount,omitempty"`
+	// The maximum number of worker nodes that the
+	// managed node pool can scale-out.
+	MaxNodeCount uint32 `json:"maxNodeCount,omitempty"`
+}
+
 type KubernetesClusterProperties struct {
 	// A Kubernetes Cluster Name. Valid Kubernetes Cluster name must be 63 characters or less and must not be empty
 	// and begin and end with an alphanumeric character ([a-z0-9]) with dashes (-), dots (.) and alphanumerics
@@ -202,6 +211,10 @@ type KubernetesNodePoolProperties struct {
 	// The desired Maintanance Window
 	// Required: false
 	MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"`
+
+	// The desired Autoscaling Limits
+	// Required: false
+	Autoscaling *Autoscaling `json:"autoScaling,omitempty"`
 }
 
 type KubernetesNodePools struct {

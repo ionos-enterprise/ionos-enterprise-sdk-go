@@ -93,6 +93,8 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesNodepool() {
 	s.NotEmpty(np.Properties.RAMSize)
 	s.NotEmpty(np.Properties.StorageSize)
 	s.NotEmpty(np.Properties.StorageType)
+	s.NotEmpty(np.Properties.Autoscaling)
+	s.NotEmpty(np.Properties.MaintenanceWindow)
 }
 
 func (s *SuiteKubernetesCluster) Test_ListKubernetesNodes() {

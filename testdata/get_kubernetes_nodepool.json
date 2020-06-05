@@ -21,6 +21,14 @@
     "ramSize" : 2048,
     "availabilityZone" : "AUTO",
     "storageType" : "HDD",
-    "storageSize" : 10
+    "storageSize" : 10,
+    "autoScaling" : {
+      "minNodeCount": 1,
+      "maxNodeCount": 3
+    },
+    "maintenanceWindow": {
+      "dayOfTheWeek": "Monday",
+      "time": "13:00:00"
+    }
   }
 }
