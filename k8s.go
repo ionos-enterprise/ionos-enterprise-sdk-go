@@ -5,6 +5,39 @@ import (
 	"net/http"
 )
 
+const (
+	// Kubernetes cluster/nodepool resource state is deploying
+	K8sStateDeploying = "DEPLOYING"
+	// Kubernetes cluster/nodepool resource state is active
+	K8sStateAcvtive = "ACTIVE"
+	// Kubernetes cluster/nodepool resource state is failed
+	K8sStateFailed = "FAILED"
+	// Kubernetes cluster/nodepool resource state is suspended
+	K8sStateSuspended = "SUSPENDED"
+	// Kubernetes cluster/nodepool resource state is failed_suspended
+	K8sStateFailedSuspended = "FAILED_SUSPENDED"
+	// Kubernetes cluster/nodepool resource state is updating
+	K8sStateUpdating = "UPDATING"
+	// Kubernetes cluster/nodepool resource state is failed_updating
+	K8sStateFailedUpdating = "FAILED_UPDATING"
+	// Kubernetes cluster/nodepool resource state is destroying
+	K8sStateDestroying = "DESTROYING"
+	// Kubernetes cluster/nodepool resource state is failed_destroying
+	K8sStateFailedDestroying = "FAILED_DESTROYING"
+	// Kubernetes cluster/nodepool resource state is terminated
+	K8sStateTerminated = "TERMINATED"
+	// Kubernetes Node resource state is ready
+	K8sNodeStateReady = "READY"
+	// Kubernetes Node resource state is provisioning
+	K8sNodeStateProvisioning = "PROVISIONING"
+	// Kubernetes Node resource state is provisioned
+	K8sNodeStateProvisioned = "PROVISIONED"
+	// Kubernetes Node resource state is terminating,
+	K8sNodeStateTerminating = "TERMINATING"
+	// Kubernetes Node resource state is rebuilding,
+	K8sNodeStateRebuilding = "REBUILDING"
+)
+
 type KubernetesClusters struct {
 	// URL to the collection representation (absolute path)
 	// Read Only: true
@@ -387,4 +420,11 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 	}
 	h := rsp.Header()
 	return &h, validateResponse(rsp, http.StatusAccepted)
+}
+
+func (n *Autoscaling) Enabled() bool {
+	if n == nil || (n.MinNodeCount == 0 && n.MaxNodeCount == 0) {
+		return false
+	}
+	return true
 }
