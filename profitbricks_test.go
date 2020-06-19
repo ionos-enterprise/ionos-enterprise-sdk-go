@@ -39,7 +39,7 @@ func (s *SuiteClient) Test_Retry() {
 			return httpmock.NewBytesResponse(http.StatusOK, []byte{}), nil
 		},
 	)
-	s.c.SetRetryCount(4)
+	s.c.SetRetryCount(3)
 	// slower that 2 nano seconds will result in a wait time of max int nano seconds (caused by internal normalization
 	// in go resty
 	s.c.SetRetryWaitTime(2 * time.Nanosecond)
