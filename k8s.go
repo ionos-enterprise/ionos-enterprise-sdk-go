@@ -79,16 +79,16 @@ type UpdatedKubernetesCluster struct {
 
 type KubernetesClusterEntities struct {
 	// NodePools of a cluster
-	{NodePools *KubernetesNodePools `json:"nodepools,omitempty"`
+	NodePools *KubernetesNodePools `json:"nodepools,omitempty"`
 }
 
 type AutoScaling struct {
 	// The minimum number of nodes this node pool can be scaled down to
 	// Required: true
-	MinNodeCount uint32 `json:"minNodeCount,omitempty"`,
+	MinNodeCount uint32 `json:"minNodeCount,omitempty"`
 	// The maximum number of nodes this node pool can be scaled up to
 	// Required: true
-	MaxNodeCount uint32 `json:"maxNodeCount,omitempty"`,
+	MaxNodeCount uint32 `json:"maxNodeCount,omitempty"`
 }
 
 type MaintenanceWindow struct {
