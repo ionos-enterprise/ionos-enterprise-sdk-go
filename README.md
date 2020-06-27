@@ -238,7 +238,7 @@ func main() {
 The SDK will raise custom exceptions when the Cloud API returns an error. There are four response types:
 
 | HTTP Code | Description                                         |
-| --------- | --------------------------------------------------- |
+|-----------|-----------------------------------------------------|
 | 400       | Bad request.                                        |
 | 401       | The supplied user credentials are invalid.          |
 | 404       | The requested resource cannot be found.             |
@@ -275,7 +275,7 @@ token_client := profitbricks.NewClientbyToken("token")
 Many of the _List_ or _Get_ operations will accept an optional _depth_ argument. Setting this to a value between 0 and 5 affects the amount of data that is returned. The details returned vary depending on the resource being queried, however, it generally follows this pattern.
 
 | Depth | Description                                                                         |
-| :---: | ----------------------------------------------------------------------------------- |
+|:-----:|-------------------------------------------------------------------------------------|
 |   0   | Only direct properties are included. Children are not included.                     |
 |   1   | Direct properties and children's references are returned.                           |
 |   2   | Direct properties and children's properties are returned.                           |
@@ -329,7 +329,7 @@ Use this to retrieve details about a specific VDC.
 The following table describes the request arguments:
 
 | Name | Required | Type   | Description                |
-| ---- | -------- | ------ | -------------------------- |
+|------|----------|--------|----------------------------|
 | dcid | Yes      | string | The ID of the data center. |
 
 Pass the arguments to `GetDatacenter`:
@@ -345,7 +345,7 @@ Use this operation to create a new VDC. You can create a "simple" VDC by supplyi
 The following table describes the request arguments:
 
 | Name       | Required | Type   | Description                                                                          |
-| ---------- | :------: | ------ | ------------------------------------------------------------------------------------ |
+|------------|:--------:|--------|--------------------------------------------------------------------------------------|
 | datacenter | **yes**  | object | A [Datacenter object](#datacenter-resource-object) describing the VDC being created. |
 
 Build the `Datacenter` resource object:
@@ -365,7 +365,7 @@ Pass the object to `CreateDatacenter`:
 ##### Datacenter Resource Object
 
 | Name          | Required | Type   | Description                                                                                                    |
-| ------------- | :------: | ------ | -------------------------------------------------------------------------------------------------------------- |
+|---------------|:--------:|--------|----------------------------------------------------------------------------------------------------------------|
 | Name          | **yes**  | string | The name of the VDC.                                                                                           |
 | Location      | **yes**  | string | The physical ProfitBricks location where the VDC will be created (Please see [Locations](#locations) section). |
 | Description   |    no    | string | A description for the VDC, e.g. staging, production.                                                           |
@@ -388,7 +388,7 @@ After retrieving a VDC, either by ID or as a create response object, you can cha
 The following table describes the available request arguments:
 
 | Name        | Required | Type   | Description                     |
-| ----------- | :------: | ------ | ------------------------------- |
+|-------------|:--------:|--------|---------------------------------|
 | dcid        | **yes**  | string | The ID of the VDC.              |
 | Name        |    no    | string | The new name of the VDC.        |
 | Description |    no    | string | The new description of the VDC. |
@@ -412,7 +412,7 @@ This will remove all objects within the VDC and remove the VDC object itself.
 The following table describes the available request arguments:
 
 | Name | Required | Type   | Description                                |
-| ---- | :------: | ------ | ------------------------------------------ |
+|------|:--------:|--------|--------------------------------------------|
 | dcid | **yes**  | string | The ID of the VDC that you want to delete. |
 
 Pass the argument to `DeleteDatacenter`:
@@ -428,13 +428,13 @@ Locations are the physical ProfitBricks data centers where you can provision you
 The following table outlines the currently supported locations:
 
 | Value  | Country        | City      | Supported **CPUFamily** values |
-| ------ | -------------- | --------- | ------------------------------ |
+|--------|----------------|-----------|--------------------------------|
 | us/las | United States  | Las Vegas | AMD_OPTERON, INTEL_XEON        |
 | us/ewr | United States  | Newark    | AMD_OPTERON, INTEL_XEON        |
 | de/fra | Germany        | Frankfurt | AMD_OPTERON, INTEL_XEON        |
 | de/fkb | Germany        | Karlsruhe | AMD_OPTERON, INTEL_XEON        |
 | de/txl | Germany        | Berlin    | INTEL_SKYLAKE                  |
-| gb/lhr | United Kingdom | London    | INTEL_SKYLAKE                  |  |
+| gb/lhr | United Kingdom | London    | INTEL_SKYLAKE                  |
 
 #### List Locations
 
@@ -453,7 +453,7 @@ Retrieves the attributes of a specific location.
 The following table describes the request arguments:
 
 | Name       | Required | Type   | Description                        |
-| ---------- | :------: | ------ | ---------------------------------- |
+|------------|:--------:|--------|------------------------------------|
 | locationid | **yes**  | string | The ID consisting of country/city. |
 
 Pass the argument to `GetLocation`:
@@ -469,7 +469,7 @@ Retrieves the locations available in a specific region.
 The following table describes the request arguments:
 
 | Name     | Required | Type   | Description                        |
-| -------- | :------: | ------ | ---------------------------------- |
+|----------|:--------:|--------|------------------------------------|
 | regionid | **yes**  | string | The ID consisting of country/city. |
 
 Pass the argument to `GetRegionalLocations`:
@@ -487,7 +487,7 @@ You can retrieve a list of all the servers provisioned inside a specific VDC.
 The following table describes the request arguments:
 
 | Name | Required | Type   | Description        |
-| ---- | :------: | ------ | ------------------ |
+|------|:--------:|--------|--------------------|
 | dcid | **yes**  | string | The ID of the VDC. |
 
 Pass the arguments to `ListServers`:
@@ -503,7 +503,7 @@ Returns information about a specific server such as its configuration, provision
 The following table describes the request arguments:
 
 | Name     | Required | Type   | Description           |
-| -------- | :------: | ------ | --------------------- |
+|----------|:--------:|--------|-----------------------|
 | dcId     | **yes**  | string | The ID of the VDC.    |
 | serverId | **yes**  | string | The ID of the server. |
 
@@ -520,7 +520,7 @@ Creates a server within an existing VDC. You can configure additional properties
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                                                                     |
-| ------------ | :------: | ------ | ------------------------------------------------------------------------------- |
+|--------------|:--------:|--------|---------------------------------------------------------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.                                                              |
 | server       | **yes**  | object | A [Server object](#server-resource-object) describing the server being created. |
 
@@ -543,7 +543,7 @@ Pass the object and other arguments to `CreateServer`:
 #### Server Resource Object
 
 | Name             | Required | Type   | Description                                                                                                                                                                                                      |
-| ---------------- | :------: | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------------|:--------:|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Name             | **yes**  | string | The name of the server.                                                                                                                                                                                          |
 | Cores            | **yes**  | int    | The total number of cores for the server.                                                                                                                                                                        |
 | RAM              | **yes**  | int    | The amount of memory for the server in MB, e.g. 2048. Size must be specified in multiples of 256 MB with a minimum of 256 MB; however, if you set `RamHotPlug` to _true_ then you must use a minimum of 1024 MB. |
@@ -564,7 +564,7 @@ Perform updates to the attributes of a server.
 The following table describes the request arguments:
 
 | Name             | Required | Type   | Description                                                                                                            |
-| ---------------- | :------: | ------ | ---------------------------------------------------------------------------------------------------------------------- |
+|------------------|:--------:|--------|------------------------------------------------------------------------------------------------------------------------|
 | datacenterId     | **yes**  | string | The ID of the VDC.                                                                                                     |
 | serverId         | **yes**  | string | The ID of the server.                                                                                                  |
 | Name             |    no    | string | The name of the server.                                                                                                |
@@ -594,7 +594,7 @@ This will remove a server from a VDC. **NOTE**: This will not automatically remo
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                                |
-| ------------ | :------: | ------ | ------------------------------------------ |
+|--------------|:--------:|--------|--------------------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.                         |
 | serverId     | **yes**  | string | The ID of the server that will be deleted. |
 
@@ -611,7 +611,7 @@ Retrieves a list of volumes attached to the server.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 
@@ -628,7 +628,7 @@ This will attach a pre-existing storage volume to the server.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                 |
-| ------------ | :------: | ------ | --------------------------- |
+|--------------|:--------:|--------|-----------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.          |
 | serverId     | **yes**  | string | The ID of the server.       |
 | volumeId     | **yes**  | string | The ID of a storage volume. |
@@ -646,7 +646,7 @@ This will retrieve the properties of an attached volume.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                    |
-| ------------ | :------: | ------ | ------------------------------ |
+|--------------|:--------:|--------|--------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.             |
 | serverId     | **yes**  | string | The ID of the server.          |
 | volumeId     | **yes**  | string | The ID of the attached volume. |
@@ -666,7 +666,7 @@ This will **NOT** delete the volume from your VDC. You will need to make a separ
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                    |
-| ------------ | :------: | ------ | ------------------------------ |
+|--------------|:--------:|--------|--------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.             |
 | serverId     | **yes**  | string | The ID of the server.          |
 | volumeId     | **yes**  | string | The ID of the attached volume. |
@@ -684,7 +684,7 @@ Retrieves a list of CD-ROMs attached to a server.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 
@@ -701,7 +701,7 @@ You can attach a CD-ROM to an existing server.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 | cdromId      | **yes**  | string | The ID of a CD-ROM.   |
@@ -719,7 +719,7 @@ You can retrieve a specific CD-ROM attached to the server.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                    |
-| ------------ | :------: | ------ | ------------------------------ |
+|--------------|:--------:|--------|--------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.             |
 | serverId     | **yes**  | string | The ID of the server.          |
 | cdromId      | **yes**  | string | The ID of the attached CD-ROM. |
@@ -737,7 +737,7 @@ This will detach a CD-ROM from the server.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                    |
-| ------------ | :------: | ------ | ------------------------------ |
+|--------------|:--------:|--------|--------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.             |
 | serverId     | **yes**  | string | The ID of the server.          |
 | cdromId      | **yes**  | string | The ID of the attached CD-ROM. |
@@ -755,7 +755,7 @@ This will force a hard reboot of the server. Do not use this method if you want 
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 
@@ -772,7 +772,7 @@ This will start a server. If a DHCP assigned public IP was deallocated when the 
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 
@@ -789,7 +789,7 @@ This will stop a server. The machine will be forcefully powered off, billing wil
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 
@@ -818,7 +818,7 @@ Retrieves the attributes of a specific image.
 The following table describes the request arguments:
 
 | Name  | Required | Type   | Description          |
-| ----- | :------: | ------ | -------------------- |
+|-------|:--------:|--------|----------------------|
 | imgId | **yes**  | string | The ID of the image. |
 
 Pass the arguments to `GetImage`:
@@ -836,7 +836,7 @@ Retrieve a list of volumes within the VDC. If you want to retrieve a list of vol
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description        |
-| ------------ | :------: | ------ | ------------------ |
+|--------------|:--------:|--------|--------------------|
 | datacenterId | **yes**  | string | The ID of the VDC. |
 
 Pass the arguments to `ListVolumes`:
@@ -852,7 +852,7 @@ Retrieves the attributes of a given volume.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | volumeId     | **yes**  | string | The ID of the volume. |
 
@@ -869,7 +869,7 @@ Creates a volume within the VDC. This will NOT attach the volume to a server. Pl
 The following table describes the request arguments:
 
 | Name          | Required | Type   | Description                                                    |
-| ------------- | :------: | ------ | -------------------------------------------------------------- |
+|---------------|:--------:|--------|----------------------------------------------------------------|
 | datacenter_id | **yes**  | string | The ID of the VDC.                                             |
 | volume        | **yes**  | object | A [Volume object](#volume-resource-object) you wish to create. |
 
@@ -895,7 +895,7 @@ Pass the object and arguments to `CreateVolume`:
 #### Volume Resource Object
 
 | Name             | Required | Type   | Description                                                                                                                                                                                                                                                                                                      |
-| ---------------- | :------: | ------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|------------------|:--------:|--------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Name             |    no    | string | The name of the volume.                                                                                                                                                                                                                                                                                          |
 | Size             | **yes**  | int    | The size of the volume in GB.                                                                                                                                                                                                                                                                                    |
 | Bus              |    no    | string | The bus type of the volume (VIRTIO or IDE). Default: VIRTIO.                                                                                                                                                                                                                                                     |
@@ -910,7 +910,7 @@ Pass the object and arguments to `CreateVolume`:
 The following table outlines the various licence types you can define:
 
 | Licence Type | Comment                                                                                                                           |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------|
 | WINDOWS2016  | Use this for the Microsoft Windows Server 2016 operating system.                                                                  |
 | WINDOWS      | Use this for the Microsoft Windows Server 2008 and 2012 operating systems.                                                        |
 | LINUX        | Use this for Linux distributions such as CentOS, Ubuntu, Debian, etc.                                                             |
@@ -920,7 +920,7 @@ The following table outlines the various licence types you can define:
 The following table outlines the storage availability zones currently supported:
 
 | Availability Zone | Comment                     |
-| ----------------- | --------------------------- |
+|-------------------|-----------------------------|
 | AUTO              | Automatically Selected Zone |
 | ZONE_1            | Fire Zone 1                 |
 | ZONE_2            | Fire Zone 2                 |
@@ -941,7 +941,7 @@ Since an existing volume is being modified, none of the request arguments are sp
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                                                                                                                                                                                                                                                                                                         |
-| ------------ | :------: | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|--------------|:--------:|--------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.                                                                                                                                                                                                                                                                                                  |
 | volumeId     | **yes**  | string | The ID of the volume.                                                                                                                                                                                                                                                                                               |
 | Name         |    no    | string | The name of the volume.                                                                                                                                                                                                                                                                                             |
@@ -968,7 +968,7 @@ Deletes the specified volume. This will result in the volume being removed from 
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | volumeId     | **yes**  | string | The ID of the volume. |
 
@@ -985,7 +985,7 @@ Creates a snapshot of a volume within the VDC. You can use a snapshot to create 
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                      |
-| ------------ | :------: | ------ | -------------------------------- |
+|--------------|:--------:|--------|----------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.               |
 | volumeId     | **yes**  | string | The ID of the volume.            |
 | Name         |    no    | string | The name of the snapshot.        |
@@ -1004,7 +1004,7 @@ This will restore a snapshot onto a volume. A snapshot is created as just anothe
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description             |
-| ------------ | :------: | ------ | ----------------------- |
+|--------------|:--------:|--------|-------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.      |
 | volumeId     | **yes**  | string | The ID of the volume.   |
 | snapshotId   | **yes**  | string | The ID of the snapshot. |
@@ -1032,7 +1032,7 @@ Retrieves the attributes of a specific snapshot.
 The following table describes the request arguments:
 
 | Name       | Required | Type   | Description             |
-| ---------- | :------: | ------ | ----------------------- |
+|------------|:--------:|--------|-------------------------|
 | snapshotId | **yes**  | string | The ID of the snapshot. |
 
 Pass the arguments to `GetSnapshot`:
@@ -1048,7 +1048,7 @@ Perform updates to attributes of a snapshot.
 The following table describes the request arguments:
 
 | Name                | Required | Type   | Description                                                            |
-| ------------------- | :------: | ------ | ---------------------------------------------------------------------- |
+|---------------------|:--------:|--------|------------------------------------------------------------------------|
 | snapshotId          | **yes**  | string | The ID of the snapshot.                                                |
 | Name                |    no    | string | The name of the snapshot.                                              |
 | Description         |    no    | string | The description of the snapshot.                                       |
@@ -1077,7 +1077,7 @@ Deletes the specified snapshot.
 The following table describes the request arguments:
 
 | Name       | Required | Type   | Description             |
-| ---------- | :------: | ------ | ----------------------- |
+|------------|:--------:|--------|-------------------------|
 | snapshotId | **yes**  | string | The ID of the snapshot. |
 
 Pass the arguments to `DeleteSnapshot`:
@@ -1105,7 +1105,7 @@ Retrieves the attributes of a specific IP block.
 The following table describes the request arguments:
 
 | Name      | Required | Type   | Description             |
-| --------- | :------: | ------ | ----------------------- |
+|-----------|:--------:|--------|-------------------------|
 | ipblockid | **yes**  | string | The ID of the IP block. |
 
 Pass the arguments to `GetIPBlock`:
@@ -1121,7 +1121,7 @@ Creates an IP block. Creating an IP block is a bit different than some of the ot
 The following table describes the request arguments:
 
 | Name    | Required | Type   | Description                                                       |
-| ------- | :------: | ------ | ----------------------------------------------------------------- |
+|---------|:--------:|--------|-------------------------------------------------------------------|
 | ipblock | **yes**  | object | An [IPBlock object](#ipblock-resource-object) you wish to create. |
 
 To create an IP block, define the `IPBlock` resource object:
@@ -1141,7 +1141,7 @@ Pass it to `ReserveIpBlock`:
 #### IPBlock Resource Object
 
 | Name     | Required | Type   | Description                                                           |
-| -------- | :------: | ------ | --------------------------------------------------------------------- |
+|----------|:--------:|--------|-----------------------------------------------------------------------|
 | Location | **yes**  | string | This must be one of the available locations: [Locations](#locations). |
 | Size     | **yes**  | int    | The size of the IP block you want.                                    |
 | Name     |    no    | string | A descriptive name for the IP block                                   |
@@ -1155,7 +1155,7 @@ Perform updates to the attributes of a ipblock.
 The following table describes the request arguments:
 
 | Name    | Required | Type   | Description                                |
-| ------- | :------: | ------ | ------------------------------------------ |
+|---------|:--------:|--------|--------------------------------------------|
 | ipblkid | **yes**  | string | The ID of the IP Block you want to update. |
 | Name    |    no    | string | A descriptive name for the IP Block.       |
 
@@ -1178,7 +1178,7 @@ Deletes the specified IP Block.
 The following table describes the request arguments:
 
 | Name    | Required | Type   | Description             |
-| ------- | :------: | ------ | ----------------------- |
+|---------|:--------:|--------|-------------------------|
 | ipblkid | **yes**  | string | The ID of the IP block. |
 
 Pass the arguments to `ReleaseIpBlock`:
@@ -1196,7 +1196,7 @@ Retrieve a list of LANs within the VDC.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description        |
-| ------------ | :------: | ------ | ------------------ |
+|--------------|:--------:|--------|--------------------|
 | datacenterId | **yes**  | string | The ID of the VDC. |
 
 Pass the arguments to `ListLans`:
@@ -1212,7 +1212,7 @@ Creates a LAN within a VDC.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                                                        |
-| ------------ | :------: | ------ | ------------------------------------------------------------------ |
+|--------------|:--------:|--------|--------------------------------------------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.                                                 |
 | lan          | **yes**  | object | A [LAN object](#lan-resource-object) describing the LAN to create. |
 
@@ -1235,7 +1235,7 @@ Pass the object and arguments to `create_lan`:
 #### LAN Resource Object
 
 | Name   | Required | Type   | Description                                                     |
-| ------ | :------: | ------ | --------------------------------------------------------------- |
+|--------|:--------:|--------|-----------------------------------------------------------------|
 | Name   |    no    | string | The name of your LAN.                                           |
 | Public | **Yes**  | bool   | Boolean indicating if the LAN faces the public Internet or not. |
 | Nics   |    no    | list   | One or more NIC IDs attached to the LAN.                        |
@@ -1243,7 +1243,7 @@ Pass the object and arguments to `create_lan`:
 #### IPFailover Resource Object
 
 | Name    | Required | Type   | Description             |
-| ------- | -------- | ------ | ----------------------- |
+|---------|----------|--------|-------------------------|
 | IP      | **yes**  | string | The failover IP Address |
 | NicUUID | **yes**  | string | The NIC UUID            |
 
@@ -1254,7 +1254,7 @@ Retrieves the attributes of a given LAN.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description        |
-| ------------ | :------: | ------ | ------------------ |
+|--------------|:--------:|--------|--------------------|
 | datacenterId | **yes**  | string | The ID of the VDC. |
 | lanId        | **yes**  | int    | The ID of the LAN. |
 
@@ -1271,7 +1271,7 @@ Perform updates to attributes of a LAN.
 The following table describes the request arguments:
 
 | Name         | Required | Type                                                           | Description                                                     |
-| ------------ | :------: | -------------------------------------------------------------- | --------------------------------------------------------------- |
+|--------------|:--------:|----------------------------------------------------------------|-----------------------------------------------------------------|
 | datacenterId | **yes**  | string                                                         | The ID of the VDC.                                              |
 | lanId        | **yes**  | int                                                            | The ID of the LAN.                                              |
 | Name         |    no    | string                                                         | A descriptive name for the LAN.                                 |
@@ -1302,7 +1302,7 @@ Deletes the specified LAN.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description        |
-| ------------ | :------: | ------ | ------------------ |
+|--------------|:--------:|--------|--------------------|
 | datacenterId | **yes**  | string | The ID of the VDC. |
 | lanId        | **yes**  | string | The ID of the LAN. |
 
@@ -1321,7 +1321,7 @@ Retrieve a list of LANs within the VDC.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 
@@ -1338,7 +1338,7 @@ Retrieves the attributes of a given NIC.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 | nicId        | **yes**  | string | The ID of the NIC.    |
@@ -1356,7 +1356,7 @@ Adds a NIC to the target server.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                                                            |
-| ------------ | :------: | ------ | ---------------------------------------------------------------------- |
+|--------------|:--------:|--------|------------------------------------------------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.                                                     |
 | serverId     | **yes**  | string | The ID of the server.                                                  |
 | nic          | **yes**  | object | A [NIC object](#nic-resource-object) describing the NIC to be created. |
@@ -1381,7 +1381,7 @@ CreateNic(datacenterId, serverId, nic)
 #### NIC Resource Object
 
 | Name           | Required | Type   | Description                                                                                  |
-| -------------- | :------: | ------ | -------------------------------------------------------------------------------------------- |
+|----------------|:--------:|--------|----------------------------------------------------------------------------------------------|
 | Name           |    no    | string | The name of the NIC.                                                                         |
 | Ips            |    no    | list   | IP addresses assigned to the NIC.                                                            |
 | Dhcp           |    no    | bool   | Set to _false_ if you wish to disable DHCP on the NIC. Default: _true_.                      |
@@ -1403,7 +1403,7 @@ The user can specify and assign private IPs manually. Valid IP addresses for pri
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                                                                  |
-| -------------- | :------: | ------ | ---------------------------------------------------------------------------- |
+|----------------|:--------:|--------|------------------------------------------------------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.                                                           |
 | serverId       | **yes**  | string | The ID of the server.                                                        |
 | nicId          | **yes**  | string | The ID of the NIC.                                                           |
@@ -1428,7 +1428,7 @@ Deletes the specified NIC.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 | nicId        | **yes**  | string | The ID of the NIC.    |
@@ -1448,7 +1448,7 @@ Retrieves a list of firewall rules associated with a particular NIC.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description           |
-| ------------ | :------: | ------ | --------------------- |
+|--------------|:--------:|--------|-----------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.    |
 | serverId     | **yes**  | string | The ID of the server. |
 | nicId        | **yes**  | string | The ID of the NIC.    |
@@ -1466,7 +1466,7 @@ Retrieves the attributes of a given firewall rule.
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                  |
-| -------------- | :------: | ------ | ---------------------------- |
+|----------------|:--------:|--------|------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.           |
 | serverId       | **yes**  | string | The ID of the server.        |
 | nicId          | **yes**  | string | The ID of the NIC.           |
@@ -1485,7 +1485,7 @@ This will add a firewall rule to the NIC.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                                                                                         |
-| ------------ | :------: | ------ | --------------------------------------------------------------------------------------------------- |
+|--------------|:--------:|--------|-----------------------------------------------------------------------------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.                                                                                  |
 | serverId     | **yes**  | string | The ID of the server.                                                                               |
 | nicId        | **yes**  | string | The ID of the NIC.                                                                                  |
@@ -1510,7 +1510,7 @@ Pass the object and arguments to `create_firewall_rule`:
 #### Firewall Rule Resource Object
 
 | Name           | Required | Type   | Description                                                                                                                                                                    |
-| -------------- | :------: | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|----------------|:--------:|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Name           |    no    | string | The name of the firewall rule.                                                                                                                                                 |
 | Protocol       | **yes**  | string | The protocol for the rule: TCP, UDP, ICMP, ANY.                                                                                                                                |
 | SourceMac      |    no    | string | Only traffic originating from the respective MAC address is allowed. Valid format: aa:bb:cc:dd:ee:ff. A _nil_ value allows all source MAC address.                             |
@@ -1530,7 +1530,7 @@ Perform updates to an existing firewall rule. You will notice that some argument
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                                                                                                                                                                    |
-| -------------- | :------: | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|----------------|:--------:|--------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.                                                                                                                                                             |
 | serverId       | **yes**  | string | The ID of the server.                                                                                                                                                          |
 | nicId          | **yes**  | string | The ID of the NIC.                                                                                                                                                             |
@@ -1558,7 +1558,7 @@ Pass the arguments to `UpdateFirewallRule`:
 Removes a firewall rule.
 
 | Name           | Required | Type   | Description                  |
-| -------------- | :------: | ------ | ---------------------------- |
+|----------------|:--------:|--------|------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.           |
 | serverId       | **yes**  | string | The ID of the server.        |
 | nicId          | **yes**  | string | The ID of the NIC.           |
@@ -1579,7 +1579,7 @@ Retrieve a list of load balancers within the data center.
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description        |
-| ------------ | :------: | ------ | ------------------ |
+|--------------|:--------:|--------|--------------------|
 | datacenterId | **yes**  | string | The ID of the VDC. |
 
 Pass the arguments to `ListLoadbalancers`:
@@ -1595,7 +1595,7 @@ Retrieves the attributes of a given load balancer.
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                  |
-| -------------- | :------: | ------ | ---------------------------- |
+|----------------|:--------:|--------|------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.           |
 | loadbalancerId | **yes**  | string | The ID of the load balancer. |
 
@@ -1612,7 +1612,7 @@ Creates a load balancer within the VDC. Load balancers can be used for public or
 The following table describes the request arguments:
 
 | Name         | Required | Type   | Description                                                                                         |
-| ------------ | :------: | ------ | --------------------------------------------------------------------------------------------------- |
+|--------------|:--------:|--------|-----------------------------------------------------------------------------------------------------|
 | datacenterId | **yes**  | string | The ID of the VDC.                                                                                  |
 | loadbalancer | **yes**  | object | A [LoadBalancer object](#load-balancer-resource-object) describing the load balancer to be created. |
 
@@ -1633,7 +1633,7 @@ Pass the object and arguments to `CreateLoadbalancer`:
 #### Load Balancer Resource Object
 
 | Name         | Required | Type   | Description                                                                                           |
-| ------------ | :------: | ------ | ----------------------------------------------------------------------------------------------------- |
+|--------------|:--------:|--------|-------------------------------------------------------------------------------------------------------|
 | Name         | **yes**  | string | The name of the load balancer.                                                                        |
 | Ip           |    no    | string | IPv4 address of the load balancer. All attached NICs will inherit this IP.                            |
 | Dhcp         |    no    | bool   | Indicates if the load balancer will reserve an IP using DHCP.                                         |
@@ -1648,7 +1648,7 @@ Perform updates to attributes of a load balancer.
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                                                   |
-| -------------- | :------: | ------ | ------------------------------------------------------------- |
+|----------------|:--------:|--------|---------------------------------------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.                                            |
 | loadbalancerId | **yes**  | string | The ID of the load balancer.                                  |
 | Name           |    no    | string | The name of the load balancer.                                |
@@ -1669,7 +1669,7 @@ Deletes the specified load balancer.
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                  |
-| -------------- | :------: | ------ | ---------------------------- |
+|----------------|:--------:|--------|------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.           |
 | loadbalancerId | **yes**  | string | The ID of the load balancer. |
 
@@ -1686,7 +1686,7 @@ This will retrieve a list of NICs associated with the load balancer.
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                  |
-| -------------- | :------: | ------ | ---------------------------- |
+|----------------|:--------:|--------|------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.           |
 | loadbalancerId | **yes**  | string | The ID of the load balancer. |
 
@@ -1703,7 +1703,7 @@ Retrieves the attributes of a given load balanced NIC.
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                  |
-| -------------- | :------: | ------ | ---------------------------- |
+|----------------|:--------:|--------|------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.           |
 | loadbalancerId | **yes**  | string | The ID of the load balancer. |
 | nicId          | **yes**  | string | The ID of the NIC.           |
@@ -1721,7 +1721,7 @@ This will associate a NIC to a load balancer, enabling the NIC to participate in
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                  |
-| -------------- | :------: | ------ | ---------------------------- |
+|----------------|:--------:|--------|------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.           |
 | loadbalancerId | **yes**  | string | The ID of the load balancer. |
 | nicId          | **yes**  | string | The ID of the NIC.           |
@@ -1739,7 +1739,7 @@ Removes the association of a NIC with a load balancer.
 The following table describes the request arguments:
 
 | Name           | Required | Type   | Description                                                |
-| -------------- | :------: | ------ | ---------------------------------------------------------- |
+|----------------|:--------:|--------|------------------------------------------------------------|
 | datacenterId   | **yes**  | string | The ID of the VDC.                                         |
 | loadbalancerId | **yes**  | string | The ID of the load balancer.                               |
 | nicId          | **yes**  | string | The ID of the NIC you are removing from the load balancer. |
@@ -1767,7 +1767,7 @@ Retrieves the attributes of a specific request. This operation shares the same `
 The following table describes the request arguments:
 
 | Name       | Required | Type   | Description                                          |
-| ---------- | :------: | ------ | ---------------------------------------------------- |
+|------------|:--------:|--------|------------------------------------------------------|
 | request_id | **yes**  | string | The ID of the request.                               |
 | status     | **yes**  | bool   | Set to _False_ to have the request details returned. |
 
@@ -1786,7 +1786,7 @@ Retrieves the status of a request. This operation shares the same `get_request` 
 The following table describes the request arguments:
 
 | Name | Required | Type   | Description                                                    |
-| ---- | :------: | ------ | -------------------------------------------------------------- |
+|------|:--------:|--------|----------------------------------------------------------------|
 | path | **yes**  | string | The ID of the request. Retrieved from response header location |
 
 Pass the arguments to `get_request`:
@@ -1824,7 +1824,7 @@ ListGroups()
 The following table describes the request arguments:
 
 | Name    | Required | Type   | Description                               |
-| ------- | -------- | ------ | ----------------------------------------- |
+|---------|----------|--------|-------------------------------------------|
 | groupId | Yes      | string | The ID of the specific group to retrieve. |
 
 ```
@@ -1836,7 +1836,7 @@ GetGroup(groupid)
 The following table describes the request arguments:
 
 | Name  | Type  | Description                                | Required |
-| ----- | ----- | ------------------------------------------ | -------- |
+|-------|-------|--------------------------------------------|----------|
 | group | Group | See [Group Object](#group-resource-object) | Yes      |
 
 Build the `Group` resource object:
@@ -1860,7 +1860,7 @@ CreateGroup(group Group)
 #### Group Resource Object
 
 | Name                 | Required | Type   | Description                                               |
-| -------------------- | :------: | ------ | --------------------------------------------------------- |
+|----------------------|:--------:|--------|-----------------------------------------------------------|
 | Name                 | **yes**  | string | A name that was given to the group.                       |
 | CreateDataCenter     |    no    | bool   | The group has permission to create virtual data centers.  |
 | CreateSnapshot       |    no    | bool   | The group has permission to create snapshots.             |
@@ -1879,7 +1879,7 @@ Use this operation to update a group.
 The following table describes the request arguments:
 
 | Name    | Type    | Description                                | Required                                  |
-| ------- | ------- | ------------------------------------------ | ----------------------------------------- |
+|---------|---------|--------------------------------------------|-------------------------------------------|
 | groupId | **yes** | string                                     | The ID of the specific group to retrieve. |
 | group   | Group   | See [Group Object](#group-resource-object) | Yes                                       |
 
@@ -1897,7 +1897,7 @@ Use this operation to delete a single group. Resources that are assigned to the 
 The following table describes the request arguments:
 
 | Name    | Type    | Description | Required                                  |
-| ------- | ------- | ----------- | ----------------------------------------- |
+|---------|---------|-------------|-------------------------------------------|
 | groupId | **yes** | string      | The ID of the specific group to retrieve. |
 
 ```
@@ -1919,7 +1919,7 @@ ListShares()
 The following table describes the request arguments:
 
 | Name       | Required | Type   | Description                                  |
-| ---------- | -------- | ------ | -------------------------------------------- |
+|------------|----------|--------|----------------------------------------------|
 | groupid    | **yes**  | string | The ID of the specific group to retrieve.    |
 | resourceId | **yes**  | string | The ID of the specific resource to retrieve. |
 
@@ -1934,7 +1934,7 @@ GetShare(groupid, resourceId)
 The following table describes the request arguments:
 
 | Name       | Required | Type   | Description                                         |
-| ---------- | -------- | ------ | --------------------------------------------------- |
+|------------|----------|--------|-----------------------------------------------------|
 | groupid    | **yes**  | string | The ID of the specific group to add a resource too. |
 | resourceId | **yes**  | string | The ID of the specific resource to add.             |
 | share      | **yes**  | Share  | See [Share Object](#share-resource-object)          |
@@ -1957,7 +1957,7 @@ AddShare(share Share, groupid, resourceId)
 #### Share Resource Object
 
 | Name           | Required | Type | Description                                                   |
-| -------------- | :------: | ---- | ------------------------------------------------------------- |
+|----------------|:--------:|------|---------------------------------------------------------------|
 | EditPrivilege  |    no    | bool | The group has permission to edit privileges on this resource. |
 | SharePrivilege |    no    | bool | The group has permission to share this resource.              |
 
@@ -1970,7 +1970,7 @@ Use this to update the permissions that a group has for a specific resource shar
 The following table describes the request arguments:
 
 | Name       | Required | Type   | Description                                         |
-| ---------- | -------- | ------ | --------------------------------------------------- |
+|------------|----------|--------|-----------------------------------------------------|
 | groupid    | **yes**  | string | The ID of the specific group to add a resource too. |
 | resourceId | **yes**  | string | The ID of the specific resource to add.             |
 | share      | **yes**  | Share  | See [Share Object](#share-resource-object)          |
@@ -1987,7 +1987,7 @@ Use this operation to delete a single group. Resources that are assigned to the 
 The following table describes the request arguments:
 
 | Name       | Type    | Description | Required                                                        |
-| ---------- | ------- | ----------- | --------------------------------------------------------------- |
+|------------|---------|-------------|-----------------------------------------------------------------|
 | groupid    | **yes** | string      | The ID of the specific group containing the resource to delete. |
 | resourceId | **yes** | string      | The ID of the specific resource to delete.                      |
 
@@ -2004,7 +2004,7 @@ Retrieves a full list of all the users that are members of a particular group.
 The following table describes the request arguments:
 
 | Name    | Type    | Description | Required                                                  |
-| ------- | ------- | ----------- | --------------------------------------------------------- |
+|---------|---------|-------------|-----------------------------------------------------------|
 | groupid | **yes** | string      | The ID of the specific group to retrieve a user list for. |
 
 ```
@@ -2018,7 +2018,7 @@ ListGroupUsers(groupid)
 The following table describes the request arguments:
 
 | Name    | Required | Type   | Description                                             |
-| ------- | -------- | ------ | ------------------------------------------------------- |
+|---------|----------|--------|---------------------------------------------------------|
 | groupid | **yes**  | string | The ID of the specific group you want to add a user to. |
 | userid  | **yes**  | string | The ID of the specific user to add to the group.        |
 
@@ -2035,7 +2035,7 @@ Use this operation to remove a user from a group.
 The following table describes the request arguments:
 
 | Name    | Type    | Description | Required                                                     |
-| ------- | ------- | ----------- | ------------------------------------------------------------ |
+|---------|---------|-------------|--------------------------------------------------------------|
 | groupid | **yes** | string      | The ID of the specific group you want to remove a user from. |
 | userid  | **yes** | string      | The ID of the specific user to remove from the group.        |
 
@@ -2062,7 +2062,7 @@ Retrieve details about a specific user including what groups and resources the u
 The following table describes the request arguments:
 
 | Name   | Required | Type   | Description                                                |
-| ------ | -------- | ------ | ---------------------------------------------------------- |
+|--------|----------|--------|------------------------------------------------------------|
 | userid | **yes**  | string | The ID of the specific user to retrieve information about. |
 
 ```
@@ -2078,7 +2078,7 @@ Creates a new user under a particular contract.
 The following table describes the request arguments:
 
 | Name | Required | Type | Description                              |
-| ---- | -------- | ---- | ---------------------------------------- |
+|------|----------|------|------------------------------------------|
 | user | **yes**  | User | See [User Object](#user-resource-object) |
 
 Build the `User` resource object:
@@ -2104,7 +2104,7 @@ CreateUser(user User)
 #### User Resource Object
 
 | Name          | Required | Type | Description                                                               |
-| ------------- | :------: | ---- | ------------------------------------------------------------------------- |
+|---------------|:--------:|------|---------------------------------------------------------------------------|
 | Firstname     | **yes**  | bool | The first name of the user.                                               |
 | Lastname      | **yes**  | bool | The last name of the user.                                                |
 | Email         | **yes**  | bool | The e-mail address of the user.                                           |
@@ -2122,7 +2122,7 @@ Update details about a specific user including their privileges.
 The following table describes the request arguments:
 
 | Name   | Required | Type   | Description                            |
-| ------ | -------- | ------ | -------------------------------------- |
+|--------|----------|--------|----------------------------------------|
 | userid | **Yes**  | string | The ID of the specific user to update. |
 
 ```
@@ -2147,7 +2147,7 @@ Blacklists the user, disabling them. The user is not completely purged, therefor
 The following table describes the request arguments:
 
 | Name   | Type    | Description | Required                               |
-| ------ | ------- | ----------- | -------------------------------------- |
+|--------|---------|-------------|----------------------------------------|
 | userid | **Yes** | string      | The ID of the specific user to update. |
 
 ```
@@ -2175,13 +2175,13 @@ Lists all shareable resources of a specific type. Optionally include their assoc
 The following table describes the request arguments:
 
 | Name         | Type    | Description | Required                                                      |
-| ------------ | ------- | ----------- | ------------------------------------------------------------- |
+|--------------|---------|-------------|---------------------------------------------------------------|
 | resourcetype | **Yes** | string      | The specific type of resources to retrieve information about. |
 
 The values available for resourcetype are listed in this table:
 
 | Resource Type | Description                                             |
-| ------------- | ------------------------------------------------------- |
+|---------------|---------------------------------------------------------|
 | datacenter    | A virtual data center.                                  |
 | image         | A private image that has been uploaded to ProfitBricks. |
 | snapshot      | A snapshot of a storage volume.                         |
@@ -2198,14 +2198,14 @@ ListResourcesByType(resourcetype)
 The following table describes the request arguments:
 
 | Name         | Type    | Description | Required                                                       |
-| ------------ | ------- | ----------- | -------------------------------------------------------------- |
+|--------------|---------|-------------|----------------------------------------------------------------|
 | resourcetype | **Yes** | string      | The specific type of resources to retrieve information about.  |
 | resourceId   | **Yes** | string      | The ID of the specific resource to retrieve information about. |
 
 The values available for resourcetype are listed in this table:
 
 | Resource Type | Description                                             |
-| ------------- | ------------------------------------------------------- |
+|---------------|---------------------------------------------------------|
 | datacenter    | A virtual data center.                                  |
 | image         | A private image that has been uploaded to ProfitBricks. |
 | snapshot      | A snapshot of a storage volume.                         |
@@ -2222,26 +2222,33 @@ GetResourceByType(resourcetype, resourceId)
 ##### KubernetesCluster Resource Object
 
 | Name       | Required | Type                                                                          | Description                               |
-| ---------- | :------: | ----------------------------------------------------------------------------- | ----------------------------------------- |
+|------------|:--------:|-------------------------------------------------------------------------------|-------------------------------------------|
 | Properties | **yes**  | \*[KubernetesClusterProperties](#KubernetesClusterProperties-resource-object) | The properties of the Kubernetes Cluster. |
 
 ##### UpdatedKubernetesCluster Resource Object
 
 | Name       | Required | Type                                                                          | Description                               |
-| ---------- | :------: | ----------------------------------------------------------------------------- | ----------------------------------------- |
+|------------|:--------:|-------------------------------------------------------------------------------|-------------------------------------------|
 | Properties | **yes**  | \*[KubernetesClusterProperties](#KubernetesClusterProperties-resource-object) | The properties of the Kubernetes Cluster. |
+
+## AutoScaling Resource Object
+
+| Name         | Required | Type   | Description                                                                                        |
+|--------------|:--------:|--------|----------------------------------------------------------------------------------------------------|
+| MinNodeCount | **yes**  | uint32 | The minimum number of nodes this node pool should scale down to. Should be less than MaxNodeCount  |
+| MaxNodeCount | **yes**  | uint32 | The maximum number of nodes this node pool should scale up to. Should be greater than MinNodeCount |
 
 ## MaintenanceWindow Resource Object
 
 | Name         | Required | Type   | Description                                                                                                 |
-| ------------ | :------: | ------ | ----------------------------------------------------------------------------------------------------------- |
+|--------------|:--------:|--------|-------------------------------------------------------------------------------------------------------------|
 | DayOfTheWeek | **yes**  | string | The english name of the day of the week (One of: Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday). |
 | Time         | **yes**  | string | The time of the day in **HH:mm:ss** format                                                                  |
 
 ##### KubernetesClusterProperties Resource Object
 
 | Name              | Required | Type                                                    | Description                                 |
-| ----------------- | :------: | ------------------------------------------------------- | ------------------------------------------- |
+|-------------------|:--------:|---------------------------------------------------------|---------------------------------------------|
 | Name              | **yes**  | string                                                  | The desired name for the Kubernetes Cluster |
 | K8sVersion        |  **no**  | string                                                  | The desired Kubernetes Version              |
 | MaintenanceWindow |  **no**  | [MaintenanceWindow](#MaintenanceWindow-resource-object) | The desired Maintenance Window              |
@@ -2249,13 +2256,13 @@ GetResourceByType(resourcetype, resourceId)
 ##### KubernetesNodePool Resource Object
 
 | Name       | Required | Type                                                                            | Description                                 |
-| ---------- | :------: | ------------------------------------------------------------------------------- | ------------------------------------------- |
+|------------|:--------:|---------------------------------------------------------------------------------|---------------------------------------------|
 | Properties | **yes**  | \*[KubernetesNodePoolProperties](#KubernetesNodePoolProperties-resource-object) | The properties of the kubernetes node pool. |
 
 ##### KubernetesNodePoolProperties Resource Object
 
 | Name              | Required | Type                                                    | Description                                                                                                    |
-| ----------------- | :------: | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+|-------------------|:--------:|---------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|
 | Name              | **yes**  | string                                                  | The desired name of the node pool - The name of each node in the pool will have this as prefix                 |
 | DatacenterID      | **yes**  | string                                                  | The desired datacenter location - see [Locations](#locations)                                                  |
 | NodeCount         | **yes**  | uint32                                                  | The desired number of nodes in the cluster                                                                     |
@@ -2266,6 +2273,7 @@ GetResourceByType(resourcetype, resourceId)
 | StorageSize       | **yes**  | uint32                                                  | Desired storage size, in MB                                                                                    |
 | StorageType       | **yes**  | string                                                  | The storage type for each node (one of HDD, SSD)                                                               |
 | K8sVersion        |   yes    | string                                                  | The kubernetes version in which a nodepool is running                                                          |
+| AutoScaling       |    no    | [\*AutoScaling](#AutoScaling-resource-object)           | Whether this Node Pool should autoscale. Comprised of a minimum and a maximum number of nodes                  |
 | MaintenanceWindow |  **no**  | [MaintenanceWindow](#MaintenanceWindow-resource-object) | An optional object with 2 keys: dayOfTheWeek and time.                                                         |
 
 ### Create Cluster
@@ -2275,7 +2283,7 @@ Creates a Kubernetes cluster
 The following table describes the request arguments:
 
 | Name    | Type                                                      | Description                           | Required |
-| ------- | --------------------------------------------------------- | ------------------------------------- | -------- |
+|---------|-----------------------------------------------------------|---------------------------------------|----------|
 | cluster | \*[KubernetesCluster](#kubernetescluster-resource-object) | An Kubernetes cluster resource object | **yes**  |
 
 ```golang
@@ -2303,7 +2311,7 @@ Retrieves an existing Kubernetes cluster
 The following table describes the request arguments:
 
 | Name      | Type   | Description                                | Required |
-| --------- | ------ | ------------------------------------------ | -------- |
+|-----------|--------|--------------------------------------------|----------|
 | clusterID | string | The uuid of an existing Kubernetes cluster | **yes**  |
 
 ```golang
@@ -2340,7 +2348,7 @@ Updates an existing Kubernetes cluster
 The following table describes the request arguments:
 
 | Name      | Type                                                                    | Description                                      | Required |
-| --------- | ----------------------------------------------------------------------- | ------------------------------------------------ | -------- |
+|-----------|-------------------------------------------------------------------------|--------------------------------------------------|----------|
 | clusterID | string                                                                  | The UUID of the Kubernetes cluster to be updated | **yes**  |
 | cluster   | \*[UpdatedKubernetesCluster](#UpdatedKubernetesCluster-resource-object) | An Kubernetes cluster resource object            | **yes**  |
 
@@ -2369,7 +2377,7 @@ Deletes an existing Kubernetes cluster
 The following table describes the request arguments:
 
 | Name      | Type   | Description                                      | Required |
-| --------- | ------ | ------------------------------------------------ | -------- |
+|-----------|--------|--------------------------------------------------|----------|
 | clusterID | string | The UUID of the Kubernetes cluster to be deleted | **yes**  |
 
 ```golang
@@ -2389,7 +2397,7 @@ Retrieves the Kubeconfig (The kubectl configuration) as a string, for an existin
 The following table describes the request arguments:
 
 | Name      | Type   | Description                                                     | Required |
-| --------- | ------ | --------------------------------------------------------------- | -------- |
+|-----------|--------|-----------------------------------------------------------------|----------|
 | clusterID | string | The UUID of the Kubernetes which you want the configuration for | **yes**  |
 
 ```golang
@@ -2409,7 +2417,7 @@ Creates a Kubernetes node pool for an existing Kubernetes Cluster
 The following table describes the request arguments:
 
 | Name      | Type                                                        | Description                                                            | Required |
-| --------- | ----------------------------------------------------------- | ---------------------------------------------------------------------- | -------- |
+|-----------|-------------------------------------------------------------|------------------------------------------------------------------------|----------|
 | clusterID | string                                                      | The UUID of the Kubernetes cluster the node pool should be assigned to | **yes**  |
 | nodePool  | \*[KubernetesNodePool](#KubernetesNodePool-Resource-Object) | An Kubernetes node pool resource object                                | **yes**  |
 
@@ -2444,7 +2452,7 @@ Retrieves an existing Kubernetes node pool
 The following table describes the request arguments:
 
 | Name       | Type   | Description                                                          | Required |
-| ---------- | ------ | -------------------------------------------------------------------- | -------- |
+|------------|--------|----------------------------------------------------------------------|----------|
 | clusterID  | string | The UUID of the Kubernetes cluster the existing node pool belongs to | **yes**  |
 | nodePoolID | string | The UUID of the Kubernetes node pool to be retrieved                 | **yes**  |
 
@@ -2465,7 +2473,7 @@ Retrieves all existing Kubernetes node pools found in an existing Kubernetes Clu
 The following table describes the request arguments:
 
 | Name      | Type   | Description                                                       | Required |
-| --------- | ------ | ----------------------------------------------------------------- | -------- |
+|-----------|--------|-------------------------------------------------------------------|----------|
 | clusterID | string | The UUID of the Kubernetes cluster to retrieve the node pools for | **yes**  |
 
 ```golang
@@ -2485,7 +2493,7 @@ Updates an existing Kubernetes Node Pool
 The following table describes the request arguments:
 
 | Name       | Type                                                        | Description                                                             | Required |
-| ---------- | ----------------------------------------------------------- | ----------------------------------------------------------------------- | -------- |
+|------------|-------------------------------------------------------------|-------------------------------------------------------------------------|----------|
 | clusterID  | string                                                      | The UUID of the existingKubernetes cluster the node pool is assigned to | **yes**  |
 | nodePoolID | string                                                      | The UUID of the Kubernetes node pool to be updated                      | **yes**  |
 | nodePool   | \*[KubernetesNodePool](#KubernetesNodePool-Resource-Object) | An Kubernetes node pool resource object                                 | **yes**  |
@@ -2515,7 +2523,7 @@ Deletes an existing Kubernetes node pool
 The following table describes the request arguments:
 
 | Name       | Type   | Description                                                          | Required |
-| ---------- | ------ | -------------------------------------------------------------------- | -------- |
+|------------|--------|----------------------------------------------------------------------|----------|
 | clusterID  | string | The UUID of the Kubernetes cluster the existing node pool belongs to | **yes**  |
 | nodePoolID | string | The UUID of the Kubernetes node pool to be deleted                   | **yes**  |
 
@@ -2536,13 +2544,13 @@ if err != nil {
 ##### BackupUnit Resource Object
 
 | Name       | Required | Type                                                            | Description                       |
-| ---------- | :------: | --------------------------------------------------------------- | --------------------------------- |
+|------------|:--------:|-----------------------------------------------------------------|-----------------------------------|
 | Properties | **yes**  | \*[BackupUnitProperties](#BackupUnitProperties-resource-object) | The properties of the backup unit |
 
 ##### BackupUnitProperties Resource Object
 
 | Name     | Required | Type   | Description                                                |
-| -------- | :------: | ------ | ---------------------------------------------------------- |
+|----------|:--------:|--------|------------------------------------------------------------|
 | Name     | **yes**  | string | Alphanumeric name you want assigned to the backup unit     |
 | Email    | **yes**  | string | Alphanumeric password you want assigned to the backup unit |
 | Passowrd | **yes**  | string | The e-mail address you want assigned to the backup unit    |
@@ -2554,7 +2562,7 @@ Creates a new Backup Unit
 The following table describes the request arguments:
 
 | Name       | Type                                        | Description                                     | Required |
-| ---------- | ------------------------------------------- | ----------------------------------------------- | -------- |
+|------------|---------------------------------------------|-------------------------------------------------|----------|
 | backupUnit | \*[BackupUnit](#BackupUnit-resource-object) | a BackupUnit object with the desired properties | **yes**  |
 
 ```golang
@@ -2582,7 +2590,7 @@ Retrieves an existing backup unit
 The following table describes the request arguments:
 
 | Name         | Type   | Description                                      | Required |
-| ------------ | ------ | ------------------------------------------------ | -------- |
+|--------------|--------|--------------------------------------------------|----------|
 | backupUnitID | string | The UUID of the backup unit you want to retrieve | **yes**  |
 
 ```golang
@@ -2616,7 +2624,7 @@ Updates the email / password associated with an existing backup unit
 The following table describes the request arguments:
 
 | Name         | Type                                        | Description                                    | Required |
-| ------------ | ------------------------------------------- | ---------------------------------------------- | -------- |
+|--------------|---------------------------------------------|------------------------------------------------|----------|
 | backupUnitID | string                                      | The UUID of the backup unit you want to update | **yes**  |
 | BackupUnit   | \*[BackupUnit](#BackupUnit-resource-object) | The updated BackupUnit object                  | **yes**  |
 
@@ -2645,7 +2653,7 @@ Deletes an existing backup unit
 The following table describes the request arguments:
 
 | Name         | Type   | Description                                    | Required |
-| ------------ | ------ | ---------------------------------------------- | -------- |
+|--------------|--------|------------------------------------------------|----------|
 | backupUnitID | string | The UUID of the backup unit you want to delete | **yes**  |
 
 ```golang
@@ -2665,7 +2673,7 @@ Retrieves the SSO URL for an existing backup unit
 The following table describes the request arguments:
 
 | Name         | Type   | Description                                                            | Required |
-| ------------ | ------ | ---------------------------------------------------------------------- | -------- |
+|--------------|--------|------------------------------------------------------------------------|----------|
 | backupUnitID | string | The UUID of the backup unit for which you want to retrieve the SSO URL | **yes**  |
 
 ```golang
@@ -2683,13 +2691,13 @@ if err != nil {
 ##### S3Key Resource Object
 
 | Name       | Required | Type                                                  | Description                       |
-| ---------- | :------: | ----------------------------------------------------- | --------------------------------- |
+|------------|:--------:|-------------------------------------------------------|-----------------------------------|
 | Properties | **yes**  | \*[S3KeyProperties](#S3KeyProperties-resource-object) | The properties of the backup unit |
 
 ##### S3KeyProperties Resource Object
 
 | Name   | Required | Type   | Description                                   |
-| ------ | :------: | ------ | --------------------------------------------- |
+|--------|:--------:|--------|-----------------------------------------------|
 | S3Key  |  **no**  | string | The S3 secret key                             |
 | Active | **yes**  | bool   | Indicates whether the S3 key is active or not |
 
@@ -2700,7 +2708,7 @@ Creates a new S3 Key
 The following table describes the request arguments:
 
 | Name   | Type   | Description                                        | Required |
-| ------ | ------ | -------------------------------------------------- | -------- |
+|--------|--------|----------------------------------------------------|----------|
 | userID | string | The UUID of the user the key should be assigned to | **yes**  |
 
 ```golang
@@ -2722,7 +2730,7 @@ Retrieves an existing S3 Key from the API
 The following table describes the request arguments:
 
 | Name    | Type   | Description                             | Required |
-| ------- | ------ | --------------------------------------- | -------- |
+|---------|--------|-----------------------------------------|----------|
 | userID  | string | The UUID of the user the key belongs to | **yes**  |
 | s3KeyID | string | The UUID of the existing S3 key         | **yes**  |
 
@@ -2743,7 +2751,7 @@ Retrieves the existing S3 Keys for an user
 The following table describes the request arguments:
 
 | Name   | Type   | Description                                  | Required |
-| ------ | ------ | -------------------------------------------- | -------- |
+|--------|--------|----------------------------------------------|----------|
 | userID | string | The UUID of the user to list the S3 keys for | **yes**  |
 
 ```golang
@@ -2765,7 +2773,7 @@ Updates the state of an existing S3 Key
 The following table describes the request arguments:
 
 | Name    | Type                              | Description                                | Required |
-| ------- | --------------------------------- | ------------------------------------------ | -------- |
+|---------|-----------------------------------|--------------------------------------------|----------|
 | userID  | string                            | The UUID of the user the S3 key belongs to | **yes**  |
 | s3KeyID | string                            | The UUID of the existing S3 key            | **yes**  |
 | s3Key   | \*[S3Key](#S3Key-resource-object) | The updated S3 Key Object                  | **yes**  |
@@ -2795,7 +2803,7 @@ Deletes an existing S3 Key
 The following table describes the request arguments:
 
 | Name    | Type   | Description                                | Required |
-| ------- | ------ | ------------------------------------------ | -------- |
+|---------|--------|--------------------------------------------|----------|
 | userID  | string | The UUID of the user the S3 key belongs to | **yes**  |
 | s3KeyID | string | The UUID of the existing S3 key            | **yes**  |
 
