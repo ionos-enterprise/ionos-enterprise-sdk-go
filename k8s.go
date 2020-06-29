@@ -115,6 +115,15 @@ type KubernetesClusterEntities struct {
 	NodePools *KubernetesNodePools `json:"nodepools,omitempty"`
 }
 
+type AutoScaling struct {
+	// The minimum number of nodes this node pool can be scaled down to
+	// Required: true
+	MinNodeCount uint32 `json:"minNodeCount,omitempty"`
+	// The maximum number of nodes this node pool can be scaled up to
+	// Required: true
+	MaxNodeCount uint32 `json:"maxNodeCount,omitempty"`
+}
+
 type MaintenanceWindow struct {
 	// The english name of the day of the week
 	// Required: false
@@ -241,6 +250,10 @@ type KubernetesNodePoolProperties struct {
 	// Required: true
 	K8sVersion string `json:"k8sVersion,omitempty"`
 
+	// Whether this cluster should autoscale. This is comprised of a minimum and maximum number of nodes
+	// Required: false
+	AutoScaling *AutoScaling `json:"autoScaling,omitempty"`
+
 	// The desired Maintanance Window
 	// Required: false
 	MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"`
@@ -322,7 +335,7 @@ type KubernetesNodeProperties struct {
 	PublicIP string `json:"publicIP,omitempty"`
 
 	// The k8s version that the node has.
-	// Read Only: true
+	// Read Only: false
 	K8sVersion string `json:"k8sVersion,omitempty"`
 }
 
