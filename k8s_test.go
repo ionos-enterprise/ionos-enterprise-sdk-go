@@ -10,6 +10,12 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+var (
+	zero = uint32(0)
+	one  = uint32(1)
+	five = uint32(5)
+)
+
 type SuiteKubernetesCluster struct {
 	ClientBaseSuite
 }
@@ -93,7 +99,7 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesNodepool() {
 	s.NotEmpty(np.Properties.RAMSize)
 	s.NotEmpty(np.Properties.StorageSize)
 	s.NotEmpty(np.Properties.StorageType)
-	s.NotEmpty(np.Properties.Autoscaling)
+	s.NotEmpty(np.Properties.AutoScaling)
 	s.NotEmpty(np.Properties.MaintenanceWindow)
 }
 
@@ -141,26 +147,40 @@ func (s *SuiteKubernetesCluster) Test_ReplaceKubernetesNode() {
 
 func (s *SuiteKubernetesCluster) Test_AutoscalingEnabled() {
 	s.Run("enabled true", func() {
-		autoscaling := Autoscaling{
-			MinNodeCount: 0,
-			MaxNodeCount: 5,
+		autoscaling := AutoScaling{
+			MinNodeCount: &zero,
+			MaxNodeCount: &five,
 		}
 		s.True(autoscaling.Enabled())
-		autoscaling = Autoscaling{
-			MinNodeCount: 1,
-			MaxNodeCount: 5,
+		autoscaling = AutoScaling{
+			MinNodeCount: &one,
+			MaxNodeCount: &five,
 		}
 		s.True(autoscaling.Enabled())
 	})
 	s.Run("enabled false, autoscaling undefined", func() {
-		var autosscaling Autoscaling
+		var autosscaling AutoScaling
 		s.False(autosscaling.Enabled())
 
 	})
 	s.Run("enabled false, limits 0", func() {
-		autoscaling := Autoscaling{
-			MinNodeCount: 0,
-			MaxNodeCount: 0,
+		autoscaling := AutoScaling{
+			MinNodeCount: &zero,
+			MaxNodeCount: &zero,
+		}
+		s.False(autoscaling.Enabled())
+	})
+	s.Run("enable false, minnodecount nil", func() {
+		autoscaling := AutoScaling{
+			MinNodeCount: nil,
+			MaxNodeCount: &one,
+		}
+		s.False(autoscaling.Enabled())
+	})
+	s.Run("enable false, maxnodecount nil", func() {
+		autoscaling := AutoScaling{
+			MinNodeCount: &one,
+			MaxNodeCount: nil,
 		}
 		s.False(autoscaling.Enabled())
 	})

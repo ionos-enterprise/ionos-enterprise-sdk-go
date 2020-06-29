@@ -12,10 +12,6 @@ const (
 	K8sStateAcvtive = "ACTIVE"
 	// Kubernetes cluster/nodepool resource state is failed
 	K8sStateFailed = "FAILED"
-	// Kubernetes cluster/nodepool resource state is suspended
-	K8sStateSuspended = "SUSPENDED"
-	// Kubernetes cluster/nodepool resource state is failed_suspended
-	K8sStateFailedSuspended = "FAILED_SUSPENDED"
 	// Kubernetes cluster/nodepool resource state is updating
 	K8sStateUpdating = "UPDATING"
 	// Kubernetes cluster/nodepool resource state is failed_updating
@@ -117,11 +113,11 @@ type KubernetesClusterEntities struct {
 
 type AutoScaling struct {
 	// The minimum number of nodes this node pool can be scaled down to
-	// Required: true
-	MinNodeCount uint32 `json:"minNodeCount,omitempty"`
+	// Required: false
+	MinNodeCount *uint32 `json:"minNodeCount,omitempty"`
 	// The maximum number of nodes this node pool can be scaled up to
-	// Required: true
-	MaxNodeCount uint32 `json:"maxNodeCount,omitempty"`
+	// Required: false
+	MaxNodeCount *uint32 `json:"maxNodeCount,omitempty"`
 }
 
 type MaintenanceWindow struct {
@@ -131,15 +127,6 @@ type MaintenanceWindow struct {
 	// A string of the following format: 08:00:00
 	// Required: false
 	Time string `json:"time,omitempty"`
-}
-
-type Autoscaling struct {
-	// The minimum number of worker nodes that the
-	// managed node group can scale in.
-	MinNodeCount uint32 `json:"minNodeCount,omitempty"`
-	// The maximum number of worker nodes that the
-	// managed node pool can scale-out.
-	MaxNodeCount uint32 `json:"maxNodeCount,omitempty"`
 }
 
 type KubernetesClusterProperties struct {
@@ -257,10 +244,6 @@ type KubernetesNodePoolProperties struct {
 	// The desired Maintanance Window
 	// Required: false
 	MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"`
-
-	// The desired Autoscaling Limits
-	// Required: false
-	Autoscaling *Autoscaling `json:"autoScaling,omitempty"`
 }
 
 type KubernetesNodePools struct {
@@ -435,8 +418,8 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 	return &h, validateResponse(rsp, http.StatusAccepted)
 }
 
-func (n *Autoscaling) Enabled() bool {
-	if n == nil || (n.MinNodeCount == 0 && n.MaxNodeCount == 0) {
+func (n *AutoScaling) Enabled() bool {
+	if n == nil || (n.MinNodeCount == nil || n.MaxNodeCount == nil) || (*n.MinNodeCount == 0 && *n.MaxNodeCount == 0) {
 		return false
 	}
 	return true
