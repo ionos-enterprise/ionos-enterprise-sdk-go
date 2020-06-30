@@ -169,14 +169,14 @@ func (s *SuiteKubernetesCluster) Test_AutoscalingEnabled() {
 		}
 		s.False(autoscaling.Enabled())
 	})
-	s.Run("enable false, minnodecount nil", func() {
+	s.Run("enabled false, minnodecount nil", func() {
 		autoscaling := AutoScaling{
 			MinNodeCount: nil,
 			MaxNodeCount: &one,
 		}
 		s.False(autoscaling.Enabled())
 	})
-	s.Run("enable false, maxnodecount nil", func() {
+	s.Run("enabled false, maxnodecount nil", func() {
 		autoscaling := AutoScaling{
 			MinNodeCount: &one,
 			MaxNodeCount: nil,
