@@ -5,6 +5,7 @@ is specific http status code or not.
 package profitbricks
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -39,15 +40,17 @@ func NewClientError(errType ClientErrorType, msg string) ClientError {
 }
 
 func IsClientErrorType(err error, errType ClientErrorType) bool {
-	if err, ok := err.(ClientError); ok {
-		return err.errType == errType
+	var clientErr ClientError
+	if errors.As(err, &clientErr) {
+		return clientErr.errType == errType
 	}
 	return false
 }
 
 func IsHttpStatus(err error, status int) bool {
-	if err, ok := err.(ApiError); ok {
-		return err.HttpStatusCode() == status
+	var apiErr ApiError
+	if errors.As(err, &apiErr) {
+		return apiErr.HttpStatusCode() == status
 	}
 	return false
 }

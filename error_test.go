@@ -2,6 +2,7 @@ package profitbricks
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -111,4 +112,12 @@ func (s *ErrorSuite) Test_BadGatewayError() {
 	s.Error(err)
 	s.Equal(body, err.(ApiError).Body())
 	s.Equal(1, httpmock.GetTotalCallCount())
+}
+
+func TestIsHttpStatusWrapped(t *testing.T) {
+	assert.True(t, IsHttpStatus(fmt.Errorf("wrapped: %w", newApiError(http.StatusOK)), http.StatusOK))
+}
+
+func TestIsClientErrorTypeWrapped(t *testing.T) {
+	assert.True(t, IsClientErrorType(fmt.Errorf("wrapped: %w", NewClientError(InvalidInput, "")), InvalidInput))
 }
