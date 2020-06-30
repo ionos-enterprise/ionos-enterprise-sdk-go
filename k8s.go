@@ -9,7 +9,7 @@ const (
 	// Kubernetes cluster/nodepool resource state is deploying
 	K8sStateDeploying = "DEPLOYING"
 	// Kubernetes cluster/nodepool resource state is active
-	K8sStateAcvtive = "ACTIVE"
+	K8sStateActive = "ACTIVE"
 	// Kubernetes cluster/nodepool resource state is failed
 	K8sStateFailed = "FAILED"
 	// Kubernetes cluster/nodepool resource state is updating
@@ -28,9 +28,9 @@ const (
 	K8sNodeStateProvisioning = "PROVISIONING"
 	// Kubernetes Node resource state is provisioned
 	K8sNodeStateProvisioned = "PROVISIONED"
-	// Kubernetes Node resource state is terminating,
+	// Kubernetes Node resource state is terminating
 	K8sNodeStateTerminating = "TERMINATING"
-	// Kubernetes Node resource state is rebuilding,
+	// Kubernetes Node resource state is rebuilding
 	K8sNodeStateRebuilding = "REBUILDING"
 )
 
@@ -418,9 +418,6 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 	return &h, validateResponse(rsp, http.StatusAccepted)
 }
 
-func (n *AutoScaling) Enabled() bool {
-	if n == nil || (n.MinNodeCount == nil || n.MaxNodeCount == nil) || (*n.MinNodeCount == 0 && *n.MaxNodeCount == 0) {
-		return false
-	}
-	return true
+func (n AutoScaling) Enabled() bool {
+	return !(n.MinNodeCount == nil || n.MaxNodeCount == nil || *n.MinNodeCount == 0 && *n.MaxNodeCount == 0)
 }

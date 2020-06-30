@@ -159,8 +159,7 @@ func (s *SuiteKubernetesCluster) Test_AutoscalingEnabled() {
 		s.True(autoscaling.Enabled())
 	})
 	s.Run("enabled false, autoscaling undefined", func() {
-		var autosscaling AutoScaling
-		s.False(autosscaling.Enabled())
+		s.False(AutoScaling{}.Enabled())
 
 	})
 	s.Run("enabled false, limits 0", func() {
