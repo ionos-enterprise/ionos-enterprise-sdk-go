@@ -94,7 +94,7 @@ type AutoScaling struct {
 type KubernetesNodePoolLAN struct {
 	// The ID of the lan the Kubernetes Node Pool should be part of
 	// Required: true
-	ID string `json:"id"`
+	ID uint32 `json:"id"`
 }
 
 type MaintenanceWindow struct {

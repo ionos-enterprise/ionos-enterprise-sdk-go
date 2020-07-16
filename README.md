@@ -2242,7 +2242,7 @@ GetResourceByType(resourcetype, resourceId)
 
 | Name | Required | Type   | Description                  |
 | ---- | -------- | ------ | ---------------------------- |
-| ID   | **no**   | string | The ID of the LAN in the VDC |
+| ID   | **yes**   | uint32 | The ID of the LAN in the VDC |
 
 ## MaintenanceWindow Resource Object
 
