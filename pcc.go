@@ -88,7 +88,7 @@ type PCCPeer struct {
 type PCCConnectableDataCenter struct {
 	// The id of the cross-connectable VDC
 	// Required: false
-	ID string `json:"datacenterId,omitempty"`
+	ID string `json:"id,omitempty"`
 	// The name of the cross-connectable VDC
 	// Required: false
 	Name string `json:"name,omitempty"`
