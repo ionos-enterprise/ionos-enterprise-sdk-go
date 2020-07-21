@@ -118,7 +118,7 @@ func (c *Client) CreatePrivateCrossConnect(pcc PrivateCrossConnect) (*PrivateCro
 // UpdatePrivateCrossConnect updates a private cross-connect
 func (c *Client) UpdatePrivateCrossConnect(pccID string, pcc PrivateCrossConnect) (*PrivateCrossConnect, error) {
 	rsp := &PrivateCrossConnect{}
-	return rsp, c.Put(PrivateCrossConnectPath(pccID), pcc, rsp, http.StatusOK)
+	return rsp, c.PatchAcc(PrivateCrossConnectPath(pccID), pcc.Properties, rsp)
 }
 
 // DeletePrivateCrossConnect deletes a private cross-connect by its id
