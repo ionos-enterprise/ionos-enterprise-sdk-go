@@ -2986,7 +2986,7 @@ The following table describes the request arguments:
 
 pccID := "d4246339-9c0f-41fb-a96d-1c640ae4501x"
 
-deletedPCCResponse, err := client.DeleteS3Key(pccID)
+deletedPCCResponse, err := client.DeletePrivateCrossConnect(pccID)
 
 if err != nil {
     fmt.Printf("Error deleting private cross-connect: \n%+v\n", err)
