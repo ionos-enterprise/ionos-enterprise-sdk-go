@@ -23,6 +23,7 @@ type LanProperties struct {
 	Name       string        `json:"name,omitempty"`
 	Public     bool          `json:"public,omitempty"`
 	IPFailover *[]IPFailover `json:"ipFailover,omitempty"`
+	PCC        string        `json:"pcc,omitmepty"`
 }
 
 // LanEntities object
