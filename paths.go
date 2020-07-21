@@ -346,3 +346,13 @@ func s3KeysListPath(userID string) string {
 func s3KeyPath(userID string, s3KeyID string) string {
 	return safeJoin(s3KeysPath(userID), s3KeyID)
 }
+
+// PrivateCrossConnectsPath: "pccs"
+func PrivateCrossConnectsPath() string {
+	return "pccs"
+}
+
+// PrivateCrossConnectPath: "pccs/<pccID>"
+func PrivateCrossConnectPath(pccID string) string {
+	return safeJoin(PrivateCrossConnectsPath(), pccID)
+}

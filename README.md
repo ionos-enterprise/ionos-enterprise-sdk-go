@@ -146,6 +146,12 @@ This guide will walk you through getting setup with the library and performing v
     - [List S3 Keys](#list-s3-keys)
     - [Update S3 Key](#update-s3-key)
     - [Delete S3 Key](#delete-s3-key)
+  - [Private Cross Connects](#private-cross-connects)
+    - [Create Private Cross Connect](#create-private-cross-connect)
+    - [Read Private Cross Connect](#read-private-cross-connect)
+    - [List Private Cross Connects](#list-private-cross-connects)
+    - [Update Private Cross Connect](#update-private-cross-connect)
+    - [Delete Private Cross Connect](#delete-private-cross-connect)
 - [Example](#example)
 - [Support](#support)
 - [Testing](#testing)
@@ -228,7 +234,6 @@ func main() {
 		os.Getenv("PROFITBRICKS_USERNAME"),
 		os.Getenv("PROFITBRICKS_PASSWORD"),
 	)
-...
 ```
 
 **Caution**: You will want to ensure you follow security best practices when using credentials within your code or stored in a file.
@@ -1234,11 +1239,12 @@ Pass the object and arguments to `create_lan`:
 
 #### LAN Resource Object
 
-| Name   | Required | Type   | Description                                                     |
-| ------ | :------: | ------ | --------------------------------------------------------------- |
-| Name   |    no    | string | The name of your LAN.                                           |
-| Public | **Yes**  | bool   | Boolean indicating if the LAN faces the public Internet or not. |
-| Nics   |    no    | list   | One or more NIC IDs attached to the LAN.                        |
+| Name   | Required | Type   | Description                                                                                                   |
+| ------ | :------: | ------ | ------------------------------------------------------------------------------------------------------------- |
+| Name   |    no    | string | The name of your LAN.                                                                                         |
+| Public | **Yes**  | bool   | Boolean indicating if the LAN faces the public Internet or not.                                               |
+| Nics   |    no    | list   | One or more NIC IDs attached to the LAN.                                                                      |
+| PCC    |    no    | string | Optionally, add this LAN as a peer to a [PrivateCrossConnect](#Private-Cross-Connects) by specifying its UUID |
 
 #### IPFailover Resource Object
 
@@ -2242,7 +2248,7 @@ GetResourceByType(resourcetype, resourceId)
 
 | Name | Required | Type   | Description                  |
 | ---- | -------- | ------ | ---------------------------- |
-| ID   | **yes**   | uint32 | The ID of the LAN in the VDC |
+| ID   | **yes**  | uint32 | The ID of the LAN in the VDC |
 
 ## MaintenanceWindow Resource Object
 
@@ -2267,21 +2273,21 @@ GetResourceByType(resourcetype, resourceId)
 
 ##### KubernetesNodePoolProperties Resource Object
 
-| Name              | Required | Type                                                                    | Description                                                                                                    |
-| ----------------- | :------: | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| Name              | **yes**  | string                                                                  | The desired name of the node pool - The name of each node in the pool will have this as prefix                 |
-| DatacenterID      | **yes**  | string                                                                  | The desired datacenter location - see [Locations](#locations)                                                  |
-| NodeCount         | **yes**  | uint32                                                                  | The desired number of nodes in the cluster                                                                     |
-| CPUFamily         | **yes**  | string                                                                  | CPU Family for the nodes - see [Locations](#locations)                                                         |
-| CoresCount        | **yes**  | uint32                                                                  | Desired number of CPU cores per node                                                                           |
-| AvailabilityZone  | **yes**  | string                                                                  | Desired availability zone (one of AUTO, ZONE_1, ZONE_2)                                                        |
-| RAMSize           | **yes**  | uint32                                                                  | Desired amount of RAM per node in MB - Size must be specified in multiples of 256 MB with a minimum of 2048 MB |
-| StorageSize       | **yes**  | uint32                                                                  | Desired storage size, in MB                                                                                    |
-| StorageType       | **yes**  | string                                                                  | The storage type for each node (one of HDD, SSD)                                                               |
-| K8sVersion        |   yes    | string                                                                  | The kubernetes version in which a nodepool is running                                                          |
-| AutoScaling       |    no    | [\*AutoScaling](#AutoScaling-resource-object)                           | Whether this Node Pool should autoscale. Comprised of a minimum and a maximum number of nodes                  |
+| Name              | Required | Type                                                                  | Description                                                                                                    |
+| ----------------- | :------: | --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| Name              | **yes**  | string                                                                | The desired name of the node pool - The name of each node in the pool will have this as prefix                 |
+| DatacenterID      | **yes**  | string                                                                | The desired datacenter location - see [Locations](#locations)                                                  |
+| NodeCount         | **yes**  | uint32                                                                | The desired number of nodes in the cluster                                                                     |
+| CPUFamily         | **yes**  | string                                                                | CPU Family for the nodes - see [Locations](#locations)                                                         |
+| CoresCount        | **yes**  | uint32                                                                | Desired number of CPU cores per node                                                                           |
+| AvailabilityZone  | **yes**  | string                                                                | Desired availability zone (one of AUTO, ZONE_1, ZONE_2)                                                        |
+| RAMSize           | **yes**  | uint32                                                                | Desired amount of RAM per node in MB - Size must be specified in multiples of 256 MB with a minimum of 2048 MB |
+| StorageSize       | **yes**  | uint32                                                                | Desired storage size, in MB                                                                                    |
+| StorageType       | **yes**  | string                                                                | The storage type for each node (one of HDD, SSD)                                                               |
+| K8sVersion        |   yes    | string                                                                | The kubernetes version in which a nodepool is running                                                          |
+| AutoScaling       |    no    | [\*AutoScaling](#AutoScaling-resource-object)                         | Whether this Node Pool should autoscale. Comprised of a minimum and a maximum number of nodes                  |
 | LANs              |  **no**  | \*\[\][KubernetesNodePoolLAN](#KubernetesNodePoolLAN-Resource-Object) | A list of Local Area Networks the nodes in the pool should be a part of                                        |
-| MaintenanceWindow |  **no**  | [MaintenanceWindow](#MaintenanceWindow-resource-object)                 | An optional object with 2 keys: dayOfTheWeek and time.                                                         |
+| MaintenanceWindow |  **no**  | [MaintenanceWindow](#MaintenanceWindow-resource-object)               | An optional object with 2 keys: dayOfTheWeek and time.                                                         |
 
 ### Create Cluster
 
@@ -2693,13 +2699,15 @@ if err != nil {
 }
 ```
 
+---
+
 ## User S3 Keys
 
 ##### S3Key Resource Object
 
-| Name       | Required | Type                                                  | Description                       |
-| ---------- | :------: | ----------------------------------------------------- | --------------------------------- |
-| Properties | **yes**  | \*[S3KeyProperties](#S3KeyProperties-resource-object) | The properties of the backup unit |
+| Name       | Required | Type                                                  | Description                  |
+| ---------- | :------: | ----------------------------------------------------- | ---------------------------- |
+| Properties | **yes**  | \*[S3KeyProperties](#S3KeyProperties-resource-object) | The properties of the S3 key |
 
 ##### S3KeyProperties Resource Object
 
@@ -2822,6 +2830,168 @@ if err != nil {
     fmt.Printf("Error deleting S3 Key: \n%+v\n", err)
 } else {
     fmt.Printf("Successfully deleted S3 Key: \n%+v\n", deletedS3KeyResponse)
+}
+
+```
+
+---
+
+## Private Cross Connects
+
+**NOTE:** Please note that currently, only VDC's created in the same physical location can be cross-connected
+
+##### PrivateCrossConnect Resource Object
+
+| Name       | Required | Type                                                                              | Description                             |
+| ---------- | :------: | --------------------------------------------------------------------------------- | --------------------------------------- |
+| Properties | **yes**  | \*[PrivateCrossConnectProperties](#PrivateCrossConnectProperties-resource-object) | The properties of private cross connect |
+
+##### PrivateCrossConnectProperties Resource Object
+
+| Name                   | Required | Type                                                                      | Description                                                       |
+| ---------------------- | :------: | ------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| Name                   | **yes**  | string                                                                    | A humanly readable name for the private cross-connect             |
+| Description            |  **no**  | string                                                                    | A short description for the private cross-connect                 |
+| Peers                  |  **no**  | \*[][pccpeer](#PCCPeer-resource-object)                                   | A read-only property containing all the currentl peers of the PCC |
+| ConnectableDatacenters |  **no**  | \*[][pccconnectabledatacenter](#PCCConnectableDataCenter-resource-object) | A read-only property containing all the connectable VDC's         |
+
+##### PCCPeer Resource Object
+
+| Name           | Required | Type   | Description                                                                                          |
+| -------------- | :------: | ------ | ---------------------------------------------------------------------------------------------------- |
+| LANId          |  **no**  | string | The id of the cross-connected LAN                                                                    |
+| LANName        |  **no**  | string | The name of the cross-connected LAN                                                                  |
+| DataCenterID   |  **no**  | string | The id of the cross-connected datacenter                                                             |
+| DataCenterName |  **no**  | string | THe name of the cross-connected datacenter                                                           |
+| Location       |  **no**  | string | The physical location of the cross-connected datacenter (Please see [Locations](#locations) section) |
+
+##### PCCConnectableDataCenter Resource Object
+
+| Name     | Required | Type   | Description                                                                                      |
+| -------- | :------: | ------ | ------------------------------------------------------------------------------------------------ |
+| ID       |  **no**  | string | The UUID of the connectable datacenter                                                           |
+| Name     |  **no**  | string | The name of the connectable datacenter                                                           |
+| Location |  **no**  | string | The physical location of the connectable datacenter (Please see [Locations](#locations) section) |
+
+### Create Private Cross Connect
+
+Creates a new, empty private cross-connect
+
+The following table describes the request arguments:
+
+| Name | Type                                                          | Description                                    | Required |
+| ---- | ------------------------------------------------------------- | ---------------------------------------------- | -------- |
+| pcc  | \*[PrivateCrossConnect](#PrivateCrossConnect-resource-object) | The desired name for the private cross-connect | **yes**  |
+
+```golang
+
+pcc := profitbricks.PrivateCrossConnect{
+    Properties: &profitbricks.PrivateCrossConnectProperties{
+        Name: "demo",
+        Description: "description for demo",
+    },
+}
+
+createdPCC, err := client.CreatePrivateCrossConnect(pcc)
+
+if err != nil {
+    fmt.Printf("Error creating private cross-connect: \n%+v", err)
+} else {
+    fmt.Printf("Successfully created private cross-connect: \n%+v", createdPCC)
+}
+
+```
+
+### Read Private Cross Connect
+
+Retrieves an existing private cross-connect from the API
+
+The following table describes the request arguments:
+
+| Name  | Type   | Description                       | Required |
+| ----- | ------ | --------------------------------- | -------- |
+| pccID | string | The UUID of private cross-connect | **yes**  |
+
+```golang
+pccID := "d4246339-9c0f-41fb-a96d-1c640ae4501x"
+
+pcc, err := client.GetPrivateCrossConnect(pccID)
+
+if err != nil {
+    fmt.Printf("Error retrieving private cross-connect: \n%+v", err)
+} else {
+    fmt.Printf("Existing private cross-connect: \n%+v", pcc)
+}
+```
+
+### List Private Cross Connects
+
+Retrieves the existing private cross-connects
+
+```golang
+
+pccs, err := client.ListPrivateCrossConnects()
+
+if err != nil {
+    fmt.Printf("Error retrieving private cross-connects: \n%+v", err)
+} else {
+    fmt.Printf("Successfully retrieved private cross-connects: \n%+v", pccs)
+}
+
+```
+
+### Update Private Cross Connect
+
+Updates the state of an existing Private cross-connect
+
+The following table describes the request arguments:
+
+| Name  | Type                                                          | Description                                              | Required |
+| ----- | ------------------------------------------------------------- | -------------------------------------------------------- | -------- |
+| pccID | string                                                        | The UUID of the private cross-connect you wish to update | **yes**  |
+| pcc   | \*[PrivateCrossConnect](#PrivateCrossConnect-resource-object) | The desired name for the private cross-connect           | **yes**  |
+
+```golang
+
+pccID := "d4246339-9c0f-41fb-a96d-1c640ae4501x"
+
+pcc := profitbricks.PrivateCrossConnect{
+    Properties: &profitbricks.PrivateCrossConnectProperties{
+        Name: "demo-renamed",
+        Description: "updated description for demo-renamed",
+    },
+}
+
+updatedPCC, err := client.UpdatePrivateCrossConnect(pccID, pcc)
+
+if err != nil {
+    fmt.Printf("Error updating private cross-connect: \n%+v", err)
+} else {
+    fmt.Printf("Successfully updated private cross-connect: \n%+v", updatedPCC)
+}
+
+```
+
+### Delete Private Cross Connect
+
+Deletes an existing private cross-connect
+
+The following table describes the request arguments:
+
+| Name  | Type   | Description                                              | Required |
+| ----- | ------ | -------------------------------------------------------- | -------- |
+| pccID | string | The UUID of the private cross-connect you wish to delete | **yes**  |
+
+```golang
+
+pccID := "d4246339-9c0f-41fb-a96d-1c640ae4501x"
+
+deletedPCCResponse, err := client.DeleteS3Key(pccID)
+
+if err != nil {
+    fmt.Printf("Error deleting private cross-connect: \n%+v\n", err)
+} else {
+    fmt.Printf("Successfully deleted private cross-connect: \n%+v\n", deletedPCCResponse)
 }
 
 ```
