@@ -17,7 +17,7 @@ type ContractResources struct {
 
 //ContractResourcesProperties object
 type ContractResourcesProperties struct {
-	PBContractNumber string           `json:"contractNumber,omitempty"`
+	PBContractNumber int64            `json:"contractNumber,omitempty"`
 	Owner            string           `json:"owner,omitempty"`
 	Status           string           `json:"status,omitempty"`
 	ResourceLimits   *ResourcesLimits `json:"resourceLimits,omitempty"`
