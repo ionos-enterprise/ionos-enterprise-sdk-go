@@ -120,6 +120,12 @@ type AutoScaling struct {
 	MaxNodeCount *uint32 `json:"maxNodeCount,omitempty"`
 }
 
+type KubernetesNodePoolLAN struct {
+	// The ID of the lan the Kubernetes Node Pool should be part of
+	// Required: true
+	ID uint32 `json:"id"`
+}
+
 type MaintenanceWindow struct {
 	// The english name of the day of the week
 	// Required: false
@@ -240,6 +246,10 @@ type KubernetesNodePoolProperties struct {
 	// Whether this cluster should autoscale. This is comprised of a minimum and maximum number of nodes
 	// Required: false
 	AutoScaling *AutoScaling `json:"autoScaling,omitempty"`
+
+	// The LANs the nodes in this pool should be part of
+	// Required: true
+	LANs *[]KubernetesNodePoolLAN `json:"lans,omitempty"`
 
 	// The desired Maintanance Window
 	// Required: false
