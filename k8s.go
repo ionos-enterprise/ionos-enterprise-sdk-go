@@ -3,35 +3,45 @@ package profitbricks
 import (
 	"fmt"
 	"net/http"
+	"time"
+
+	"k8s.io/apimachinery/pkg/util/wait"
 )
+
+type KubernetesClusterNodePoolState string
 
 const (
 	// Kubernetes cluster/nodepool resource state is deploying
-	K8sStateDeploying = "DEPLOYING"
+	K8sStateDeploying KubernetesClusterNodePoolState = "DEPLOYING"
 	// Kubernetes cluster/nodepool resource state is active
-	K8sStateActive = "ACTIVE"
+	K8sStateActive KubernetesClusterNodePoolState = "ACTIVE"
 	// Kubernetes cluster/nodepool resource state is failed
-	K8sStateFailed = "FAILED"
+	K8sStateFailed KubernetesClusterNodePoolState = "FAILED"
 	// Kubernetes cluster/nodepool resource state is updating
-	K8sStateUpdating = "UPDATING"
+	K8sStateUpdating KubernetesClusterNodePoolState = "UPDATING"
 	// Kubernetes cluster/nodepool resource state is failed_updating
-	K8sStateFailedUpdating = "FAILED_UPDATING"
+	K8sStateFailedUpdating KubernetesClusterNodePoolState = "FAILED_UPDATING"
 	// Kubernetes cluster/nodepool resource state is destroying
-	K8sStateDestroying = "DESTROYING"
+	K8sStateDestroying KubernetesClusterNodePoolState = "DESTROYING"
 	// Kubernetes cluster/nodepool resource state is failed_destroying
-	K8sStateFailedDestroying = "FAILED_DESTROYING"
+	K8sStateFailedDestroying KubernetesClusterNodePoolState = "FAILED_DESTROYING"
 	// Kubernetes cluster/nodepool resource state is terminated
-	K8sStateTerminated = "TERMINATED"
+	K8sStateTerminated KubernetesClusterNodePoolState = "TERMINATED"
+)
+
+type KubernetesNodeState string
+
+const (
 	// Kubernetes Node resource state is ready
-	K8sNodeStateReady = "READY"
+	K8sNodeStateReady KubernetesNodeState = "READY"
 	// Kubernetes Node resource state is provisioning
-	K8sNodeStateProvisioning = "PROVISIONING"
+	K8sNodeStateProvisioning KubernetesNodeState = "PROVISIONING"
 	// Kubernetes Node resource state is provisioned
-	K8sNodeStateProvisioned = "PROVISIONED"
+	K8sNodeStateProvisioned KubernetesNodeState = "PROVISIONED"
 	// Kubernetes Node resource state is terminating
-	K8sNodeStateTerminating = "TERMINATING"
+	K8sNodeStateTerminating KubernetesNodeState = "TERMINATING"
 	// Kubernetes Node resource state is rebuilding
-	K8sNodeStateRebuilding = "REBUILDING"
+	K8sNodeStateRebuilding KubernetesNodeState = "REBUILDING"
 )
 
 type KubernetesClusters struct {
@@ -430,4 +440,20 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 
 func (a *AutoScaling) Enabled() bool {
 	return !(a.MinNodeCount == nil || a.MaxNodeCount == nil || *a.MinNodeCount == 0 && *a.MaxNodeCount == 0)
+}
+
+func (c *Client) WaitForKubernetesNodePoolState(
+	clusterID, nodePoolID string,
+	state KubernetesClusterNodePoolState,
+	timeout, interval time.Duration) (err error) {
+	return wait.PollImmediate(interval, timeout, func() (done bool, err error) {
+		var np *KubernetesNodePool
+		np, err = c.GetKubernetesNodePool(clusterID, nodePoolID)
+		if err != nil {
+			fmt.Println(err)
+			return false, err
+		}
+		fmt.Printf("NP: %+v\n", np.Metadata)
+		return np != nil && np.Metadata != nil && np.Metadata.State == string(state), err
+	})
 }

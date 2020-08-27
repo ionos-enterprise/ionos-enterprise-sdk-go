@@ -1,8 +1,10 @@
 package profitbricks
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -183,4 +185,38 @@ func (s *SuiteKubernetesCluster) Test_AutoscalingEnabled() {
 		}
 		s.False(autoscaling.Enabled())
 	})
+}
+
+func (s *SuiteKubernetesCluster) Test_WaitForKubernetesNodePoolState_OK() {
+	notReadyData := loadTestData(s.T(), "get_kubernetes_nodepool_DEPLOYING.json")
+	notReadyRsp := makeJsonResponse(http.StatusOK, notReadyData)
+	readyData := loadTestData(s.T(), "get_kubernetes_nodepool.json")
+	readyRsp := makeJsonResponse(http.StatusOK, readyData)
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools/2`,
+		httpmock.ResponderFromResponse(readyRsp).Once())
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools/2`,
+		httpmock.ResponderFromResponse(notReadyRsp).Times(4))
+	err := s.c.WaitForKubernetesNodePoolState("1", "2", K8sStateActive, time.Millisecond*100, time.Millisecond*10)
+	s.NoError(err)
+}
+
+func (s *SuiteKubernetesCluster) Test_WaitForKubernetesNodePoolState_TIMEOUT() {
+	notReadyData := loadTestData(s.T(), "get_kubernetes_nodepool_DEPLOYING.json")
+	notReadyRsp := makeJsonResponse(http.StatusOK, notReadyData)
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools/2`,
+		httpmock.ResponderFromResponse(notReadyRsp).Times(10))
+	err := s.c.WaitForKubernetesNodePoolState("1", "2", K8sStateActive, time.Millisecond*100, time.Microsecond*10)
+	fmt.Println(err)
+	s.Error(err)
+}
+
+func (s *SuiteKubernetesCluster) Test_WaitForKubernetesNodePoolState_FAIL() {
+	notReadyData := loadTestData(s.T(), "get_kubernetes_nodepool_DEPLOYING.json")
+	notReadyRsp := makeJsonResponse(http.StatusOK, notReadyData)
+	failureRsp := makeJsonResponse(http.StatusNotFound, []byte("{}"))
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools/2`,
+		httpmock.ResponderFromResponse(failureRsp).Once())
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools/2`,
+		httpmock.ResponderFromResponse(notReadyRsp).Times(2))
+	s.Error(s.c.WaitForKubernetesNodePoolState("1", "2", K8sStateActive, time.Millisecond*100, time.Millisecond*10))
 }
