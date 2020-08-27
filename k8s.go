@@ -450,10 +450,20 @@ func (c *Client) WaitForKubernetesNodePoolState(
 		var np *KubernetesNodePool
 		np, err = c.GetKubernetesNodePool(clusterID, nodePoolID)
 		if err != nil {
-			fmt.Println(err)
 			return false, err
 		}
-		fmt.Printf("NP: %+v\n", np.Metadata)
 		return np != nil && np.Metadata != nil && np.Metadata.State == string(state), err
+	})
+}
+
+func (c *Client) WaitForKubernetesClusterState(
+	clusterID string, state KubernetesClusterNodePoolState, timeout, interval time.Duration) (err error) {
+	return wait.PollImmediate(interval, timeout, func() (done bool, err error) {
+		var cl *KubernetesCluster
+		cl, err = c.GetKubernetesCluster(clusterID)
+		if err != nil {
+			return false, err
+		}
+		return cl != nil && cl.Metadata != nil && cl.Metadata.State == string(state), err
 	})
 }
