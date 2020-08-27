@@ -147,37 +147,37 @@ func (s *SuiteKubernetesCluster) Test_ReplaceKubernetesNode() {
 
 func (s *SuiteKubernetesCluster) Test_AutoscalingEnabled() {
 	s.Run("enabled true", func() {
-		autoscaling := AutoScaling{
+		autoscaling := &AutoScaling{
 			MinNodeCount: &zero,
 			MaxNodeCount: &five,
 		}
 		s.True(autoscaling.Enabled())
-		autoscaling = AutoScaling{
+		autoscaling = &AutoScaling{
 			MinNodeCount: &one,
 			MaxNodeCount: &five,
 		}
 		s.True(autoscaling.Enabled())
 	})
 	s.Run("enabled false, autoscaling undefined", func() {
-		s.False(AutoScaling{}.Enabled())
-
+		autoscaling := &AutoScaling{}
+		s.False(autoscaling.Enabled())
 	})
 	s.Run("enabled false, limits 0", func() {
-		autoscaling := AutoScaling{
+		autoscaling := &AutoScaling{
 			MinNodeCount: &zero,
 			MaxNodeCount: &zero,
 		}
 		s.False(autoscaling.Enabled())
 	})
 	s.Run("enabled false, minnodecount nil", func() {
-		autoscaling := AutoScaling{
+		autoscaling := &AutoScaling{
 			MinNodeCount: nil,
 			MaxNodeCount: &one,
 		}
 		s.False(autoscaling.Enabled())
 	})
 	s.Run("enabled false, maxnodecount nil", func() {
-		autoscaling := AutoScaling{
+		autoscaling := &AutoScaling{
 			MinNodeCount: &one,
 			MaxNodeCount: nil,
 		}

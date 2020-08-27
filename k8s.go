@@ -418,6 +418,6 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 	return &h, validateResponse(rsp, http.StatusAccepted)
 }
 
-func (a AutoScaling) Enabled() bool {
+func (a *AutoScaling) Enabled() bool {
 	return !(a.MinNodeCount == nil || a.MaxNodeCount == nil || *a.MinNodeCount == 0 && *a.MaxNodeCount == 0)
 }
