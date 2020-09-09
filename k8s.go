@@ -461,7 +461,7 @@ func (c *Client) WaitForKubernetesClusterState(
 		}
 		return cl != nil && cl.Metadata != nil && cl.Metadata.State == state, err
 	}); err != nil {
-		return fmt.Errorf("error waiting for cluster state %s [%w]", state, err)
+		return fmt.Errorf("error waiting for cluster state %s: %w", state, err)
 	}
 	return nil
 }
