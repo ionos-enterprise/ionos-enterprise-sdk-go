@@ -447,7 +447,7 @@ func (c *Client) WaitForKubernetesNodePoolState(
 		}
 		return np != nil && np.Metadata != nil && np.Metadata.State == state, err
 	}); err != nil {
-		return fmt.Errorf("error waiting for nodepool state %s [%w]", state, err)
+		return fmt.Errorf("error waiting for nodepool state %s: %w", state, err)
 	}
 	return nil
 }
