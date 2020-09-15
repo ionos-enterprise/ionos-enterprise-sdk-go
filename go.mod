@@ -9,8 +9,4 @@ require (
 	github.com/stretchr/testify v1.6.1
 )
 
-replace github.com/ionos-enterprise/ionos-enterprise-sdk-go/v6 => /Users/florin/work/code/cloud-sdk/sdk/compat/go
-
-replace github.com/ionos-cloud/ionos-cloud-sdk-go/v5 => /Users/florin/work/code/cloud-sdk/sdk/core/go
-
 go 1.13
