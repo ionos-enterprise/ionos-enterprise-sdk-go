@@ -16,6 +16,7 @@ func TestListLocations(t *testing.T) {
 	resp, err := c.ListLocations()
 	if err != nil {
 		t.Errorf(err.Error())
+		t.Fail()
 	}
 
 	locid = resp.Items[0].ID
@@ -29,6 +30,7 @@ func TestGetLocation(t *testing.T) {
 	resp, err := c.GetLocation("us/las")
 	if err != nil {
 		t.Errorf(err.Error())
+		t.Fail()
 	}
 
 	assert.Equal(t, resp.ID, "us/las")
@@ -40,5 +42,6 @@ func TestGetRegionalLocations(t *testing.T) {
 	_, err := c.GetRegionalLocations("us")
 	if err != nil {
 		t.Errorf(err.Error())
+		t.Fail()
 	}
 }

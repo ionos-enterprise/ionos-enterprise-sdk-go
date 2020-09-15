@@ -1,7 +1,9 @@
 package profitbricks
 
 import (
+	"context"
 	"fmt"
+	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
 )
 
@@ -49,34 +51,77 @@ type Snapshots struct {
 
 //ListSnapshots lists all snapshots
 func (c *Client) ListSnapshots() (*Snapshots, error) {
+
+	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsGet(context.TODO(), nil)
+	ret := Snapshots{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	url := snapshotsPath()
 	ret := &Snapshots{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
+	 */
 }
 
 //GetSnapshot gets a specific snapshot
 func (c *Client) GetSnapshot(snapshotID string) (*Snapshot, error) {
+
+	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsFindById(context.TODO(), snapshotID, nil)
+	ret := Snapshot{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	url := snapshotPath(snapshotID)
 	ret := &Snapshot{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
+	 */
 }
 
 // DeleteSnapshot deletes a specified snapshot
 func (c *Client) DeleteSnapshot(snapshotID string) (*http.Header, error) {
+	_, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsDelete(context.TODO(), snapshotID, nil)
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+
+	/*
 	url := snapshotPath(snapshotID)
 	ret := &http.Header{}
 	err := c.Delete(url, ret, http.StatusAccepted)
 	return ret, err
+	 */
 }
 
 // UpdateSnapshot updates a snapshot
 func (c *Client) UpdateSnapshot(snapshotID string, request SnapshotProperties) (*Snapshot, error) {
+
+	input := ionossdk.SnapshotProperties{}
+	if errConvert := convertToCore(&request, &input); errConvert != nil {
+		return nil, errConvert
+	}
+	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsPatch(context.TODO(), snapshotID, input, nil)
+	ret := Snapshot{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	url := snapshotPath(snapshotID)
 	ret := &Snapshot{}
 	err := c.Patch(url, request, ret, http.StatusAccepted)
 	return ret, err
+	 */
 }
 
 // DeleteSnapshotAndWait deletes a specified snapshot and waits for the request

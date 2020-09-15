@@ -1,10 +1,11 @@
 package integration_tests
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-enterprise/ionos-enterprise-sdk-go/v6"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -310,11 +311,14 @@ func TestCreateCompositeServer(t *testing.T) {
 
 	if err != nil {
 		t.Error(err)
+		t.Error(errors.New(srv.Response))
+		return
 	}
 	err = c.WaitTillProvisioned(srv.Headers.Get("Location"))
 
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	assert.Equal(t, srv.PBType, "server")

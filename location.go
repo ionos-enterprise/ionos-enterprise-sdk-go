@@ -1,6 +1,7 @@
 package profitbricks
 
 import (
+	"context"
 	"net/http"
 	"strings"
 )
@@ -37,23 +38,41 @@ type LocationProperties struct {
 
 // ListLocations returns location collection data
 func (c *Client) ListLocations() (*Locations, error) {
-	ret := &Locations{}
-	return ret, c.GetOK(locationsPath(), ret)
+	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsGet(context.TODO(), nil)
+	ret := Locations{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
 }
 
 // GetRegionalLocations returns a list of available locations in a specific region
 func (c *Client) GetRegionalLocations(regid string) (*Locations, error) {
-	ret := &Locations{}
-	return ret, c.GetOK(locationRegionPath(regid), ret)
 
+
+	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegion(context.TODO(), regid, nil)
+	ret := Locations{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret,err
 }
 
 // GetLocation returns location data
 func (c *Client) GetLocation(locid string) (*Location, error) {
-	ret := &Location{}
+
 	parts := strings.SplitN(locid, "/", 2)
 	if len(parts) != 2 {
 		return nil, NewClientError(InvalidInput, "Invalid location id")
 	}
-	return ret, c.GetOK(locationPath(parts[0], parts[1]), ret)
+
+	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegionAndId(context.TODO(), parts[0], parts[1], nil)
+	ret := Location{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
 }

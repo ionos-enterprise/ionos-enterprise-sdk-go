@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-enterprise/ionos-enterprise-sdk-go/v6"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -82,11 +82,11 @@ func TestCreateCompositeLan(t *testing.T) {
 
 	nicResponse, err := c.CreateNic(dataCenter.ID, server.ID, nicRequest)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	err = c.WaitTillProvisioned(nicResponse.Headers.Get("Location"))
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	lannicid = nicResponse.ID
@@ -105,13 +105,13 @@ func TestCreateCompositeLan(t *testing.T) {
 	}
 	lan, err := c.CreateLan(dataCenter.ID, request)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	lanfailoverid = lan.ID
 
 	err = c.WaitTillProvisioned(lan.Headers.Get("Location"))
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	assert.Equal(t, lan.PBType, "lan")

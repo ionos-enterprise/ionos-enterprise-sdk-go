@@ -4,12 +4,13 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-
+	"github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	resty "github.com/go-resty/resty/v2"
 )
 
 type Client struct {
 	*resty.Client
+	CoreSdk *ionossdk.APIClient
 	// AuthApiUrl will be used by methods talking to the auth api by sending absolute urls
 	AuthApiUrl  string
 	CloudApiUrl string
@@ -24,6 +25,7 @@ const (
 func RestyClient(username, password, token string) *Client {
 	c := &Client{
 		Client:      resty.New(),
+		CoreSdk:     ionossdk.NewAPIClient(ionossdk.NewConfiguration(username, password, token)),
 		AuthApiUrl:  DefaultAuthUrl,
 		CloudApiUrl: DefaultApiUrl,
 	}

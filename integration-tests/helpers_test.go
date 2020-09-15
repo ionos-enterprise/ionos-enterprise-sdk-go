@@ -2,11 +2,10 @@ package integration_tests
 
 import (
 	"fmt"
+	sdk "github.com/ionos-enterprise/ionos-enterprise-sdk-go/v6"
 	"os"
 	"strings"
 	"sync"
-
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
 )
 
 var (
@@ -43,6 +42,9 @@ var (
 	snapshot            *sdk.Snapshot
 	snapshotname        = "GO SDK TEST"
 	snapshotdescription = "GO SDK test snapshot"
+	backupUnit			*sdk.BackupUnit
+	cluster 			*sdk.KubernetesCluster
+	share				*sdk.Share
 )
 
 func boolAddr(v bool) *bool {
@@ -51,8 +53,8 @@ func boolAddr(v bool) *bool {
 
 // Setup creds for single running tests
 func setupTestEnv() sdk.Client {
-	client := *sdk.NewClient(os.Getenv("PROFITBRICKS_USERNAME"), os.Getenv("PROFITBRICKS_PASSWORD"))
-	if val, ok := os.LookupEnv("PROFITBRICKS_API_URL"); ok {
+	client := *sdk.NewClient(os.Getenv("IONOS_USERNAME"), os.Getenv("IONOS_PASSWORD"))
+	if val, ok := os.LookupEnv("IONOS_API_URL"); ok {
 		client.SetCloudApiURL(val)
 	}
 
@@ -69,7 +71,14 @@ func createDataCenter() {
 			Location:    location,
 		},
 	}
-	resp, _ := c.CreateDatacenter(obj)
+	resp, err := c.CreateDatacenter(obj)
+	if err != nil {
+		panic(err)
+	}
+	err = c.WaitTillProvisioned(resp.Headers.Get("Location"))
+	if err != nil {
+		panic(err)
+	}
 
 	dataCenter = resp
 }
@@ -128,6 +137,8 @@ func createCompositeDataCenter() {
 	resp, err := c.CreateDatacenter(obj)
 	if err != nil {
 		fmt.Println("error while creating", err)
+		fmt.Println(resp.Response)
+		return
 	}
 	compositeDataCenter = resp
 
@@ -191,17 +202,20 @@ func createCompositeServerFW() {
 
 	srv, err := c.CreateServer(dataCenter.ID, req)
 
+	if err != nil {
+		fmt.Println("[createCompositeServerFW] error while creating a server: ", err)
+		os.Exit(1)
+	}
+
 	server = srv
 	nic = &srv.Entities.Nics.Items[0]
 	fw = &nic.Entities.FirewallRules.Items[0]
 
-	if err != nil {
-		fmt.Println("error while creating a server", err)
-	}
 	err = c.WaitTillProvisioned(srv.Headers.Get("Location"))
 
 	if err != nil {
-		fmt.Println("error while waiting on", err)
+		fmt.Println("[createCompositeServerFW] server creation timeout timeout: ", err)
+		os.Exit(1)
 	}
 }
 
@@ -232,9 +246,15 @@ func createLoadBalancerWithIP() {
 	resp, err := c.ReserveIPBlock(obj)
 	if err != nil {
 		fmt.Println("Error while reserving an IP block", err)
+		fmt.Println(resp.Response)
+		os.Exit(1)
 	}
 
-	c.WaitTillProvisioned(resp.Headers.Get("Location"))
+	err = c.WaitTillProvisioned(resp.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println("error while waiting for IPBlock to be reserved: ", err)
+		os.Exit(1)
+	}
 	ipBlock = resp
 	var request = sdk.Loadbalancer{
 		Properties: sdk.LoadbalancerProperties{
@@ -253,8 +273,17 @@ func createLoadBalancerWithIP() {
 		},
 	}
 
-	resp1, _ := c.CreateLoadbalancer(dataCenter.ID, request)
-	c.WaitTillProvisioned(resp1.Headers.Get("Location"))
+	resp1, err := c.CreateLoadbalancer(dataCenter.ID, request)
+	if err != nil {
+		fmt.Println("error while creating load balancer: ", err)
+		fmt.Println(resp1.Response)
+		os.Exit(1)
+	}
+	err = c.WaitTillProvisioned(resp1.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println("error while waiting for load balancer to be created: ", err)
+		os.Exit(1)
+	}
 	loadBalancer = resp1
 	nic = &loadBalancer.Entities.Balancednics.Items[0]
 }
@@ -270,17 +299,30 @@ func createVolume() {
 		},
 	}
 
-	resp, _ := c.CreateVolume(dataCenter.ID, request)
+	resp, err := c.CreateVolume(dataCenter.ID, request)
+	if err != nil {
+		fmt.Println("error while creating volume: ", err)
+		fmt.Println(resp.Response)
+		os.Exit(1)
 
+	}
 	volume = resp
 	c.WaitTillProvisioned(resp.Headers.Get("Location"))
 }
 
 func createSnapshot() {
 	c := setupTestEnv()
-	resp, _ := c.CreateSnapshot(dataCenter.ID, volume.ID, snapshotname, snapshotdescription)
+	resp, err := c.CreateSnapshot(dataCenter.ID, volume.ID, snapshotname, snapshotdescription)
+	if err != nil {
+		fmt.Println("error creating snapshot: ", err)
+		os.Exit(1)
+	}
 	snapshot = resp
-	c.WaitTillProvisioned(snapshot.Headers.Get("Location"))
+	err = c.WaitTillProvisioned(snapshot.Headers.Get("Location"))
+	if err != nil {
+		fmt.Println("time out waiting for snapshot creation: ", err)
+		os.Exit(1)
+	}
 }
 
 func mknicCustom(client sdk.Client, dcid, serverid string, lanid int, ips []string) string {

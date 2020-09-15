@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/antihax/optional"
+	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
-
-	resty "github.com/go-resty/resty/v2"
 )
 
 const (
@@ -186,14 +187,56 @@ func (f *RequestListFilter) WithCreatedBefore(t time.Time) *RequestListFilter {
 
 // ListRequests lists all requests
 func (c *Client) ListRequests() (*Requests, error) {
+
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(context.TODO(), nil)
+	ret := Requests{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+	/*
 	url := "/requests"
 	ret := &Requests{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
+	 */
 }
 
 // ListRequestsWithFilter lists all requests that match the given filters
 func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, error) {
+
+	opts := ionossdk.RequestsGetOpts{}
+	if filter != nil {
+		for k, v := range filter.Values {
+			switch k {
+			case "filter.url":
+				opts.FilterUrl = optional.NewString(strings.Join(v, ","))
+			case "filter.createdDate":
+				opts.FilterCreatedDate = optional.NewString(strings.Join(v, ","))
+			case "filter.method":
+				opts.FilterMethod = optional.NewString(strings.Join(v, ","))
+			case "filter.body":
+				opts.FilterBody = optional.NewString(strings.Join(v, ","))
+			case "filter.status":
+				opts.FilterStatus = optional.NewString(strings.Join(v, ","))
+			case "filter.createdAfter":
+				opts.FilterCreatedAfter = optional.NewString(strings.Join(v, ","))
+			case "filter.createdBefore":
+				opts.FilterCreatedBefore = optional.NewString(strings.Join(v, ","))
+			}
+		}
+	}
+
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(context.TODO(), &opts)
+	ret := Requests{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	path := "/requests"
 	ret := &Requests{}
 	r := c.R().SetResult(ret)
@@ -205,22 +248,43 @@ func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, e
 		}
 	}
 	return ret, c.DoWithRequest(r, resty.MethodGet, path, http.StatusOK)
+	 */
 }
 
 // GetRequest gets a specific request
 func (c *Client) GetRequest(reqID string) (*Request, error) {
+
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsFindById(context.TODO(), reqID, nil)
+	ret := Request{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	url := "/requests/" + reqID
 	ret := &Request{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
+	 */
 }
 
 // GetRequestStatus returns status of the request
 func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsStatusGet(context.TODO(), path, nil)
+	ret := RequestStatus{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+	/*
 	url := path
 	ret := &RequestStatus{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
+	 */
 }
 
 // IsRequestFinished checks the given path to a request status resource. The request is considered "done"
@@ -247,32 +311,8 @@ func (c *Client) IsRequestFinished(path string) (bool, error) {
 // It returns an error if the request status could not be fetched, the request
 // failed or the given context is canceled.
 func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string) error {
-	req := c.R()
-	status := &RequestStatus{}
-	req.SetContext(ctx).SetResult(status)
-	ticker := time.NewTicker(1 * time.Second)
-	defer ticker.Stop()
-	for {
-		err := c.DoWithRequest(req, resty.MethodGet, path, http.StatusOK)
-		if err != nil {
-			return err
-		}
-		switch status.Metadata.Status {
-		case RequestStatusDone:
-			return nil
-		case RequestStatusFailed:
-			return NewClientError(
-				RequestFailed,
-				fmt.Sprintf("Request %s failed: %s", status.ID, status.Metadata.Message),
-			)
-		}
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		case <-ticker.C:
-			continue
-		}
-	}
+	_, err := c.CoreSdk.WaitForRequest(ctx, path)
+	return err
 }
 
 // WaitTillProvisioned waits for a request to be completed.

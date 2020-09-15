@@ -12,7 +12,7 @@ func TestGetContractResources(t *testing.T) {
 	c := setupTestEnv()
 	resp, err := c.GetContractResources()
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	assert.Equal(t, resp.PBType, "contract")
 }

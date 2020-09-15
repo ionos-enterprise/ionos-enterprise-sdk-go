@@ -1,7 +1,9 @@
 package profitbricks
 
 import (
+	"context"
 	"fmt"
+	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
 )
 
@@ -305,91 +307,265 @@ type KubernetesNodeProperties struct {
 
 // ListKubernetesClusters gets a list of all clusters
 func (c *Client) ListKubernetesClusters() (*KubernetesClusters, error) {
+
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sGet(context.TODO(), nil)
+	ret := KubernetesClusters{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+
+	/*
 	rsp := &KubernetesClusters{}
 	return rsp, c.GetOK(kubernetesClustersPath(), rsp)
+	 */
 }
 
 // GetKubernetesCluster gets cluster with given id
 func (c *Client) GetKubernetesCluster(clusterID string) (*KubernetesCluster, error) {
+
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindByClusterid(context.TODO(), clusterID, nil)
+	ret := KubernetesCluster{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+	/*
 	rsp := &KubernetesCluster{}
 	return rsp, c.GetOK(kubernetesClusterPath(clusterID), rsp)
+	 */
 }
 
 // CreateKubernetesCluster creates a cluster
 func (c *Client) CreateKubernetesCluster(cluster KubernetesCluster) (*KubernetesCluster, error) {
+
+	input := ionossdk.KubernetesCluster{}
+	if errConvert := convertToCore(&cluster, &input); errConvert != nil {
+		return nil, errConvert
+	}
+
+	rsp, apiResponse, err := c.CoreSdk.KubernetesApi.K8sPost(context.TODO(), input, nil)
+	ret := KubernetesCluster{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	if err != nil {
+		if apiResponse != nil {
+			fmt.Println("error: ", string(apiResponse.Payload))
+		}
+	}
+	return &ret, err
+
+	/*
 	rsp := &KubernetesCluster{}
 	return rsp, c.PostAcc(kubernetesClustersPath(), cluster, rsp)
+	 */
 }
 
 // DeleteKubernetesCluster deletes cluster
 func (c *Client) DeleteKubernetesCluster(clusterID string) (*http.Header, error) {
+
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sDelete(context.TODO(), clusterID, nil)
+
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	/*
 	h := &http.Header{}
 	return h, c.Delete(kubernetesClusterPath(clusterID), h, http.StatusAccepted)
+	 */
 }
 
 // UpdateKubernetesCluster updates cluster
 func (c *Client) UpdateKubernetesCluster(clusterID string, cluster UpdatedKubernetesCluster) (*KubernetesCluster, error) {
+
+	input := ionossdk.KubernetesCluster{}
+	if errConvert := convertToCore(&cluster, &input); errConvert != nil {
+		return nil, errConvert
+	}
+
+	/* forcefully setting entities to null, because the api prohibits using it while the UpdatedKubernetesCluster
+	   struct lists it */
+	input.Entities = nil
+
+	/* also clear out the ID, metadata and other props if given, leave out only Properties */
+	input.Id = nil
+	input.Metadata = nil
+	input.Type = nil
+	input.Href = nil
+
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sPut(context.TODO(), clusterID, input, nil)
+
+	ret := KubernetesCluster{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+
+	/*
 	rsp := &KubernetesCluster{}
 	return rsp, c.Put(kubernetesClusterPath(clusterID), cluster, rsp, http.StatusOK)
+	 */
 }
 
 // GetKubeconfig returns the kubeconfig of cluster
 func (c *Client) GetKubeconfig(clusterID string) (string, error) {
+
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sKubeconfigGet(context.TODO(), clusterID, nil)
+	ret := KubernetesConfig{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return "", errConvert
+	}
+	return ret.Properties.KubeConfig, err
+
+	/*
 	rsp := &KubernetesConfig{}
 	if err := c.GetOK(kubeConfigPath(clusterID), rsp); err != nil {
 		return "", err
 	}
 	return rsp.Properties.KubeConfig, nil
+	 */
 }
 
 // ListKubernetesNodePools gets a list of all node pools of a cluster
 func (c *Client) ListKubernetesNodePools(clusterID string) (*KubernetesNodePools, error) {
+
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsGet(context.TODO(), clusterID, nil)
+	ret := KubernetesNodePools{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+	/*
 	rsp := &KubernetesNodePools{}
 	return rsp, c.GetOK(kubernetesNodePoolsPath(clusterID), rsp)
+	 */
 }
 
 // CreateKubernetesNodePool creates a new node pool for cluster
 func (c *Client) CreateKubernetesNodePool(clusterID string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
+
+	input := ionossdk.KubernetesNodePoolProperties{}
+	if errConvert := convertToCore(nodePool.Properties, &input); errConvert != nil {
+		return nil, errConvert
+	}
+
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPost(context.TODO(), clusterID, input, nil)
+	ret := KubernetesNodePool{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+
+	/*
 	rsp := &KubernetesNodePool{}
 	return rsp, c.PostAcc(kubernetesNodePoolsPath(clusterID), nodePool, rsp)
+	 */
 }
 
 // DeleteKubernetesNodePool deletes node pool from cluster
 func (c *Client) DeleteKubernetesNodePool(clusterID, nodePoolID string) (*http.Header, error) {
-	return c.DeleteAcc(kubernetesNodePoolPath(clusterID, nodePoolID))
+
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsDelete(context.TODO(), clusterID, nodePoolID,nil)
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+
+	// return c.DeleteAcc(kubernetesNodePoolPath(clusterID, nodePoolID))
 }
 
 // GetKubernetesNodePool gets node pool of the cluster
 func (c *Client) GetKubernetesNodePool(clusterID, nodePoolID string) (*KubernetesNodePool, error) {
+
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsFindById(context.TODO(), clusterID, nodePoolID, nil)
+    ret := KubernetesNodePool{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+/*
 	rsp := &KubernetesNodePool{}
 	return rsp, c.GetOK(kubernetesNodePoolPath(clusterID, nodePoolID), rsp)
+ */
 }
 
 // Update KubernetesNodePool updates node pool
 func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
+
+	input := ionossdk.KubernetesNodePoolPropertiesForPut{}
+	if errConvert := convertToCore(nodePool.Properties, &input); errConvert != nil {
+		return nil, errConvert
+	}
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPut(context.TODO(), clusterID, nodePoolID, input, nil)
+
+	ret := KubernetesNodePool{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+	/*
 	rsp := &KubernetesNodePool{}
 	return rsp, c.PutAcc(kubernetesNodePoolPath(clusterID, nodePoolID), nodePool, rsp)
+	 */
 }
 
 // ListKubernetesNodes gets a list of all nodes of a node pool
 func (c *Client) ListKubernetesNodes(clusterID, nodePoolID string) (*KubernetesNodes, error) {
+
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesGet(context.TODO(), clusterID, nodePoolID, nil)
+	ret := KubernetesNodes{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+
+	/*
 	rsp := &KubernetesNodes{}
 	return rsp, c.GetOK(kubernetesNodesPath(clusterID, nodePoolID), rsp)
+	 */
 }
 
 // GetKubernetesNode gets node of a node pool
 func (c *Client) GetKubernetesNode(clusterID, nodePoolID, nodeID string) (*KubernetesNode, error) {
+
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesFindById(context.TODO(), clusterID, nodePoolID, nodeID, nil)
+	ret := KubernetesNode{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+	/*
 	rsp := &KubernetesNode{}
 	return rsp, c.GetOK(kubernetesNodePath(clusterID, nodePoolID, nodeID), rsp)
+	 */
 }
 
 // DeleteKubernetesNode deletes a node from a node pool, decreasing its size by 1.
 func (c *Client) DeleteKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
-	return c.DeleteAcc(kubernetesNodePath(clusterID, nodePoolID, nodeID))
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesDelete(context.TODO(), clusterID, nodePoolID, nodeID, nil)
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	// return c.DeleteAcc(kubernetesNodePath(clusterID, nodePoolID, nodeID))
 }
 
 // ReplaceKubernetesNode replaces a node of a node pool.
 func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
+
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesReplacePost(
+		context.TODO(), clusterID, nodePoolID, nodeID, nil)
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	/*
 	url := kubernetesNodeReplacePath(clusterID, nodePoolID, nodeID)
 	rsp, err := c.R().SetError(ApiError{}).Post(url)
 	if err != nil {
@@ -397,4 +573,5 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 	}
 	h := rsp.Header()
 	return &h, validateResponse(rsp, http.StatusAccepted)
+	 */
 }

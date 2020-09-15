@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-enterprise/ionos-enterprise-sdk-go/v6"
 	"github.com/stretchr/testify/assert"
 )
 

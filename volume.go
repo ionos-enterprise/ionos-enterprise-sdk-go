@@ -2,9 +2,9 @@ package profitbricks
 
 import (
 	"context"
+	"github.com/antihax/optional"
+	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
-
-	resty "github.com/go-resty/resty/v2"
 )
 
 // Volume object
@@ -42,6 +42,7 @@ type VolumeProperties struct {
 	DiscScsiHotPlug     bool     `json:"discScsiHotPlug,omitempty"`
 	DiscScsiHotUnplug   bool     `json:"discScsiHotUnplug,omitempty"`
 	DeviceNumber        int64    `json:"deviceNumber,omitempty"`
+	BackupunitId	    string   `json:"backupunitId,omitempty"`
 }
 
 // Volumes object
@@ -57,50 +58,134 @@ type Volumes struct {
 
 // ListVolumes returns a Collection struct for volumes in the Datacenter
 func (c *Client) ListVolumes(dcid string) (*Volumes, error) {
+
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesGet(context.TODO(), dcid, nil)
+
+	ret := Volumes{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	ret := &Volumes{}
 	return ret, c.GetOK(volumesPath(dcid), ret)
+	 */
 }
 
 // GetVolume gets a volume
 func (c *Client) GetVolume(dcid string, volumeID string) (*Volume, error) {
+
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesFindById(context.TODO(), dcid, volumeID, nil)
+	ret := Volume{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	ret := &Volume{}
 	return ret, c.GetOK(volumePath(dcid, volumeID), ret)
+	 */
 }
 
 // UpdateVolume updates a volume
 func (c *Client) UpdateVolume(dcid string, volid string, request VolumeProperties) (*Volume, error) {
+
+	input := ionossdk.VolumeProperties{}
+	if errConvert := convertToCore(&request, &input); errConvert != nil {
+		return nil, errConvert
+	}
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPatch(context.TODO(), dcid, volid, input, nil)
+	ret := Volume{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	ret := &Volume{}
 	return ret, c.PatchAcc(volumePath(dcid, volid), request, ret)
+	 */
 }
 
 // CreateVolume creates a volume
 func (c *Client) CreateVolume(dcid string, request Volume) (*Volume, error) {
+
+	input := ionossdk.Volume{}
+	if errConvert := convertToCore(&request, &input); errConvert != nil {
+		return nil, errConvert
+	}
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPost(context.TODO(), dcid, input, nil)
+	ret := Volume{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	ret := &Volume{}
 	return ret, c.PostAcc(volumesPath(dcid), request, ret)
+	 */
 }
 
 // DeleteVolume deletes a volume
 func (c *Client) DeleteVolume(dcid, volid string) (*http.Header, error) {
-	return c.DeleteAcc(volumePath(dcid, volid))
+
+	_, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesDelete(context.TODO(), dcid, volid, nil)
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+
+	/* return c.DeleteAcc(volumePath(dcid, volid)) */
 }
 
 // CreateSnapshot creates a volume snapshot
 func (c *Client) CreateSnapshot(dcid string, volid string, name string, description string) (*Snapshot, error) {
+
+	optionals := ionossdk.DatacentersVolumesCreateSnapshotPostOpts{
+		Name: optional.NewString(name),
+		Description: optional.NewString(description),
+	}
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesCreateSnapshotPost(context.TODO(), dcid, volid, &optionals)
+	ret := Snapshot{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	ret := &Snapshot{}
 	req := c.Client.R().
 		SetFormData(map[string]string{"name": name, "description": description}).
 		SetResult(ret)
 	return ret, c.DoWithRequest(req, resty.MethodPost, createSnapshotPath(dcid, volid), http.StatusAccepted)
+	 */
 }
 
 // RestoreSnapshot restores a volume with provided snapshot
 func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (*http.Header, error) {
+
+	opts := ionossdk.DatacentersVolumesRestoreSnapshotPostOpts{
+		SnapshotId: optional.NewString(snapshotID),
+	}
+	_, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesRestoreSnapshotPost(
+		context.TODO(), dcid, volid, &opts)
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	/*
 	ret := &Header{}
 	req := c.Client.R().
 		SetFormData(map[string]string{"snapshotId": snapshotID}).
 		SetResult(ret)
 	err := c.DoWithRequest(req, resty.MethodPost, restoreSnapshotPath(dcid, volid), http.StatusAccepted)
 	return ret.GetHeader(), err
+	 */
 }
 
 // CreateVolumeAndWait creates a volume and waits for the request to complete.

@@ -1,6 +1,7 @@
 package profitbricks
 
 import (
+	"context"
 	"net/http"
 )
 
@@ -65,16 +66,38 @@ type Cdroms struct {
 
 // ListImages returns an Collection struct
 func (c *Client) ListImages() (*Images, error) {
+	rsp, apiResponse, err := c.CoreSdk.ImageApi.ImagesGet(context.TODO(), nil)
+	ret := Images{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	url := imagesPath()
 	ret := &Images{}
 	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+	return ret, err*/
 }
 
 // GetImage returns an Instance struct where id ==imageid
 func (c *Client) GetImage(imageid string) (*Image, error) {
+
+	rsp, apiResponse, err := c.CoreSdk.ImageApi.ImagesFindById(context.TODO(), imageid, nil)
+	ret := Image{}
+
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
 	url := imagePath(imageid)
 	ret := &Image{}
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
+
+	 */
 }

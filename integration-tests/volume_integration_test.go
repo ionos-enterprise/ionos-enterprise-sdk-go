@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-enterprise/ionos-enterprise-sdk-go/v6"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -123,12 +123,12 @@ func TestRestoreSnapshot(t *testing.T) {
 
 	resp, err := c.RestoreSnapshot(dataCenter.ID, volume.ID, snapshot.ID)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	err = c.WaitTillProvisioned(resp.Get("Location"))
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 }
 
@@ -137,4 +137,5 @@ func TestCleanup(t *testing.T) {
 	c.DeleteSnapshot(snapshot.ID)
 	c.DeleteVolume(dataCenter.ID, volume.ID)
 	c.DeleteDatacenter(dataCenter.ID)
+	c.DeleteKubernetesCluster(cluster.ID)
 }

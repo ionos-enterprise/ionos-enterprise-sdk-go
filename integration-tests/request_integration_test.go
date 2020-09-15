@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-enterprise/ionos-enterprise-sdk-go/v6"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +17,7 @@ func TestListRequests(t *testing.T) {
 	c := setupTestEnv()
 	resp, err := c.ListRequests()
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	assert.True(t, len(resp.Items) > 0)
@@ -26,14 +26,13 @@ func TestListRequests(t *testing.T) {
 
 func TestGetRequestStatus(t *testing.T) {
 	c := setupTestEnv()
-	path := reqID.Href + "/status"
-	resp, err := c.GetRequestStatus(path)
+	resp, err := c.GetRequestStatus(reqID.ID)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
-	assert.Equal(t, resp.PBType, "request-status")
-	assert.Equal(t, resp.Href, path)
+	assert.Equal(t, "request-status", resp.PBType)
+	assert.Equal(t, reqID.Href + "/status", resp.Href)
 }
 
 func TestGetRequestFailure(t *testing.T) {
@@ -48,9 +47,9 @@ func TestWaitTillProvisionedOrCanceled(t *testing.T) {
 	t.Run("cancellation", func(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
-		err := c.WaitTillProvisionedOrCanceled(ctx, "a/path")
+		err := c.WaitTillProvisionedOrCanceled(ctx, c.CloudApiUrl + "/a/path")
 		if assert.Error(t, err) {
-			assert.Equal(t, context.Canceled, err)
+			assert.Contains(t, err.Error(), context.Canceled.Error())
 		}
 	})
 	t.Run("error getting request status", func(t *testing.T) {
@@ -60,5 +59,6 @@ func TestWaitTillProvisionedOrCanceled(t *testing.T) {
 		if assert.Error(t, err) {
 			assert.IsType(t, &url.Error{}, err)
 		}
+
 	})
 }

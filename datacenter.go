@@ -2,6 +2,7 @@ package profitbricks
 
 import (
 	"context"
+	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
 )
 
@@ -66,20 +67,58 @@ type Datacenters struct {
 	Headers  *http.Header `json:"headers,omitempty"`
 }
 
+
 // ListDatacenters lists all data centers
 func (c *Client) ListDatacenters() (*Datacenters, error) {
-	url := datacentersPath()
+
+/*
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersGet(context.TODO(), nil)
+	ret := coreDataCentersConvertor(&resp)
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+*/
+
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersGet(context.TODO(), nil)
+	ret := Datacenters{}
+	if err != nil {
+		return &ret, err
+	}
+	err2 := convertToCompat(&resp, &ret)
+	if err2 != nil {
+		return &ret, err2
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+	/*
 	ret := &Datacenters{}
+	url := datacentersPath()
 	err := c.Get(url, ret, http.StatusOK)
 	return ret, err
+	 */
 }
 
 // CreateDatacenter creates a data center
 func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
-	url := datacentersPath()
-	ret := &Datacenter{}
-	err := c.Post(url, dc, ret, http.StatusAccepted)
-	return ret, err
+	// url := datacentersPath()
+	// ret := &Datacenter{}
+	// err := c.Post(url, dc, ret, http.StatusAccepted)
+	input := ionossdk.Datacenter{}
+	err := convertToCore(&dc, &input)
+	if err != nil {
+		return nil, err
+	}
+
+
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPost(context.TODO(), input, nil)
+	ret := Datacenter{}
+	err2 := convertToCompat(&resp, &ret)
+	if err2 != nil {
+		return nil, err2
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
 }
 
 // CreateDatacenterAndWait creates a data center, waits for the request to finish and returns a refreshed
@@ -105,18 +144,37 @@ func (c *Client) CreateDatacenterAndWait(ctx context.Context, dc Datacenter) (re
 
 // GetDatacenter gets a datacenter
 func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
-	url := datacenterPath(dcid)
-	ret := &Datacenter{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+
+	dc, response, err := c.CoreSdk.DataCenterApi.DatacentersFindById(context.TODO(), dcid, nil)
+	ret := Datacenter{}
+	err2 := convertToCompat(&dc, &ret)
+	if err2 != nil {
+		return nil, err2
+	}
+	fillInResponse(&ret, response)
+	return &ret, err
+
 }
 
 // UpdateDataCenter updates a data center
 func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datacenter, error) {
-	url := datacenterPath(dcid)
-	ret := &Datacenter{}
-	err := c.Patch(url, obj, ret, http.StatusAccepted)
-	return ret, err
+
+	input := ionossdk.DatacenterProperties{}
+	err := convertToCore(&obj, &input)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPatch(context.TODO(), dcid, input, nil)
+	ret := Datacenter{}
+	err2 := convertToCompat(&resp, &ret)
+	if err2 != nil {
+		return nil, err2
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+
 }
 
 // UpdateDatacenter updates a data center, waits for the request to finish and returns a refreshed result.
@@ -141,9 +199,14 @@ func (c *Client) UpdateDatacenterAndWait(ctx context.Context, dcid string, obj D
 
 // DeleteDatacenter deletes a data center
 func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
-	url := datacenterPath(dcid)
-	ret := &http.Header{}
-	return ret, c.Delete(url, ret, http.StatusAccepted)
+
+	_, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersDelete(context.TODO(), dcid, nil)
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+
 }
 
 // DeleteDatacenterAndWait deletes given datacenter and waits for the request to finish
