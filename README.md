@@ -1,3 +1,5 @@
+## Notice - this fork of Go SDK is highly EXPERIMENTAL and should be used only for testing purposes not on production environments. A production ready version can be found at https://github.com/ionos-enterprise/ionos-enterprise-sdk-go. 
+
 # Go SDK
 
 Version: profitbricks-sdk-go **5.0**
