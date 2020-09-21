@@ -1,4 +1,4 @@
-module github.com/ionos-enterprise/ionos-enterprise-sdk-go
+module github.com/ionos-cloud/ionos-enterprise-sdk-go
 
 require (
 	github.com/antihax/optional v1.0.0
