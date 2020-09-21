@@ -1,7 +1,7 @@
 package integration_tests
 
 import (
-	sdk "github.com/ionos-enterprise/ionos-enterprise-sdk-go/v6"
+	sdk "github.com/ionos-cloud/ionos-enterprise-sdk-go/v5"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

@@ -2,7 +2,7 @@ package integration_tests
 
 import (
 	"fmt"
-	sdk "github.com/ionos-enterprise/ionos-enterprise-sdk-go/v6"
+	sdk "github.com/ionos-cloud/ionos-enterprise-sdk-go/v5"
 	"os"
 	"strings"
 	"sync"
