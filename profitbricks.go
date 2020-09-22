@@ -37,7 +37,7 @@ func RestyClient(username, password, token string) *Client {
 	c.SetHostURL(DefaultApiUrl)
 	c.SetDepth(10)
 	c.SetTimeout(3 * time.Minute)
-	c.SetUserAgent("ionos-enterprise-sdk-go " + Version)
+	c.SetUserAgent("ionos-enterprise-sdk-go-compat " + Version)
 	c.SetRetryCount(3)
 	c.SetRetryMaxWaitTime(10 * time.Minute)
 	c.SetRetryWaitTime(1 * time.Second)
