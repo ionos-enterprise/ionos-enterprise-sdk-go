@@ -19,7 +19,7 @@ type Client struct {
 const (
 	DefaultApiUrl  = "https://api.ionos.com/cloudapi/v5"
 	DefaultAuthUrl = "https://api.ionos.com/auth/v1"
-	Version        = "5.0.3"
+	Version        = "5.1.0"
 )
 
 func RestyClient(username, password, token string) *Client {
@@ -67,7 +67,7 @@ func RestyClient(username, password, token string) *Client {
 // SetDebug activates/deactivates resty's debug mode. For better readability
 // the pretty print feature is also enabled.
 func (c *Client) SetDebug(debug bool) {
-	c.Client.SetDebug(debug)
+	// c.Client.SetDebug(debug)
 	c.SetPretty(debug)
 }
 
@@ -75,14 +75,14 @@ func (c *Client) SetDebug(debug bool) {
 // API accepts values from 0 to 10, a low depth means mostly only IDs and hrefs will be
 // returned. Therefore nested structures may be nil.
 func (c *Client) SetDepth(depth int) {
-	c.Client.SetQueryParam("depth", strconv.Itoa(depth))
+	c.CoreSdk.GetConfig().AddDefaultQueryParam("depth", strconv.Itoa(depth))
 }
 
 // SetPretty toggles if the data retrieved from the api will be delivered pretty printed.
 // Usually this does not make sense from an sdk perspective, but for debugging it's nice
 // therefore it is also set to true, if debug is enabled.
 func (c *Client) SetPretty(pretty bool) {
-	c.Client.SetQueryParam("pretty", strconv.FormatBool(pretty))
+	c.CoreSdk.GetConfig().AddDefaultQueryParam("pretty", strconv.FormatBool(pretty))
 }
 
 // NewClient is a constructor for Client object
@@ -98,17 +98,17 @@ func NewClientbyToken(token string) *Client {
 
 // SetUserAgent sets User-Agent request header for all API calls
 func (c *Client) SetUserAgent(agent string) {
-	c.Client.SetHeader("User-Agent", agent)
+	c.CoreSdk.GetConfig().UserAgent = agent
 }
 
 // GetUserAgent gets User-Agent header
 func (c *Client) GetUserAgent() string {
-	return c.Client.Header.Get("User-Agent")
+	return c.CoreSdk.GetConfig().UserAgent
 }
 
 // SetCloudApiURL sets Cloud API url
 func (c *Client) SetCloudApiURL(url string) {
-	c.Client.SetHostURL(url)
+	c.CoreSdk.GetConfig().BasePath = url
 }
 
 // SetAuthApiUrl sets the Auth API url
