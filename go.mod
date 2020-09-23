@@ -7,6 +7,4 @@ require (
 	github.com/stretchr/testify v1.6.1
 )
 
-replace github.com/ionos-cloud/ionos-cloud-sdk-go/v5 => /Users/florin/work/code/ionos-cloud/ionos-cloud-sdk-go
-
 go 1.13
