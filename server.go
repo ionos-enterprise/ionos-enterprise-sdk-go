@@ -59,7 +59,9 @@ type ResourceReference struct {
 // ListServers returns a server struct collection
 func (c *Client) ListServers(dcid string) (*Servers, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersGet(context.TODO(), dcid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersGet(ctx, dcid, nil)
 	ret := Servers{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -82,7 +84,9 @@ func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
 		return nil, errConvert
 	}
 
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPost(context.TODO(), dcid, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPost(ctx, dcid, input, nil)
 	ret := Server{}
 
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -121,7 +125,9 @@ func (c *Client) CreateServerAndWait(ctx context.Context, dcid string, srvid Ser
 // GetServer pulls data for the server where id = srvid returns a Instance struct
 func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersFindById(context.TODO(), dcid, srvid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersFindById(ctx, dcid, srvid, nil)
 	ret := Server{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -144,7 +150,9 @@ func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties)
 		return nil, errConvert
 	}
 
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPatch(context.TODO(), dcid, srvid, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPatch(ctx, dcid, srvid, input, nil)
 	ret := Server{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -185,7 +193,9 @@ func (c *Client) UpdateServerAndWait(
 
 // DeleteServer deletes the server where id=srvid and returns Resp struct
 func (c *Client) DeleteServer(dcid, srvid string) (*http.Header, error) {
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersDelete(context.TODO(), dcid, srvid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersDelete(ctx, dcid, srvid, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -210,7 +220,9 @@ func (c *Client) DeleteServerAndWait(ctx context.Context, dcid, srvid string) er
 // ListAttachedCdroms returns list of attached cd roms
 func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsGet(context.TODO(), dcid, srvid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsGet(ctx, dcid, srvid, nil)
 	ret := Images{}
 
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -231,7 +243,9 @@ func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, error) {
 
 	image := ionossdk.Image{Id: &cdid}
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsPost(context.TODO(), dcid, srvid, image, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsPost(ctx, dcid, srvid, image, nil)
 
 	ret := Image{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -256,7 +270,9 @@ func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, er
 // GetAttachedCdrom gets attached cd roms
 func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsFindById(context.TODO(), dcid, srvid, cdid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsFindById(ctx, dcid, srvid, cdid, nil)
 	ret := Image{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, err
@@ -274,7 +290,9 @@ func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 // DetachCdrom detaches a CD rom
 func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsDelete(context.TODO(), dcid, srvid, cdid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsDelete(ctx, dcid, srvid, cdid, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -291,7 +309,9 @@ func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 // ListAttachedVolumes lists attached volumes
 func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesGet(context.TODO(), dcid, srvid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesGet(ctx, dcid, srvid, nil)
 	ret := Volumes{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -310,7 +330,9 @@ func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume, error) {
 
 	input := ionossdk.Volume{Id: &volid}
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesPost(context.TODO(), dcid, srvid, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesPost(ctx, dcid, srvid, input, nil)
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -334,7 +356,9 @@ func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume,
 // GetAttachedVolume gets an attached volume
 func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesFindById(context.TODO(), dcid, srvid, volid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesFindById(ctx, dcid, srvid, volid, nil)
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -353,7 +377,9 @@ func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 // DetachVolume detaches a volume
 func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesDelete(context.TODO(), dcid, srvid, volid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesDelete(ctx, dcid, srvid, volid, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -370,7 +396,9 @@ func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
 // StartServer starts a server
 func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStartPost(context.TODO(), dcid, srvid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStartPost(ctx, dcid, srvid, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -387,7 +415,9 @@ func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
 // StopServer stops a server
 func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStopPost(context.TODO(), dcid, srvid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStopPost(ctx, dcid, srvid, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -404,7 +434,9 @@ func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
 // RebootServer reboots a server
 func (c *Client) RebootServer(dcid, srvid string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersRebootPost(context.TODO(), dcid, srvid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersRebootPost(ctx, dcid, srvid, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

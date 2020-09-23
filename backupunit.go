@@ -1,7 +1,6 @@
 package profitbricks
 
 import (
-	"context"
 	"github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
 )
@@ -73,7 +72,11 @@ func (c *Client) CreateBackupUnit(backupUnit BackupUnit) (*BackupUnit, error) {
 	// rsp := &BackupUnit{}
 	input := ionossdk.BackupUnit{}
 	err := convertToCore(&backupUnit, &input)
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPost(context.TODO(), input, nil)
+	
+	ctx, cancel := c.GetContext()
+	if cancel != nil { defer cancel() }
+	
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPost(ctx, input, nil)
 
 	ret := BackupUnit{}
 	errConvert := convertToCompat(&rsp, &ret)
@@ -86,8 +89,10 @@ func (c *Client) CreateBackupUnit(backupUnit BackupUnit) (*BackupUnit, error) {
 
 // ListBackupUnits lists all available backup units
 func (c *Client) ListBackupUnits() (*BackupUnits, error) {
-
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsGet(context.Background(), nil)
+	
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsGet(ctx, nil)
 	ret := BackupUnits{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -102,7 +107,9 @@ func (c *Client) UpdateBackupUnit(backupUnitID string, backupUnit BackupUnit) (*
 	if errConv := convertToCore(&backupUnit, &input); errConv != nil {
 		return nil, errConv
 	}
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPut(context.TODO(), backupUnitID, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPut(ctx, backupUnitID, input, nil)
 	ret := BackupUnit{}
 	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
 		return nil, errConv
@@ -114,7 +121,9 @@ func (c *Client) UpdateBackupUnit(backupUnitID string, backupUnit BackupUnit) (*
 
 // DeleteBackupUnit deletes an existing backup unit
 func (c *Client) DeleteBackupUnit(backupUnitID string) (*http.Header, error) {
-	_, httpResponse, err := c.CoreSdk.BackupUnitApi.BackupunitsDelete(context.TODO(), backupUnitID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, httpResponse, err := c.CoreSdk.BackupUnitApi.BackupunitsDelete(ctx, backupUnitID, nil)
 	if httpResponse == nil || err != nil {
 		return nil, err
 	}
@@ -125,7 +134,9 @@ func (c *Client) DeleteBackupUnit(backupUnitID string) (*http.Header, error) {
 // GetBackupUnit retrieves an existing backup unit
 func (c *Client) GetBackupUnit(backupUnitID string) (*BackupUnit, error) {
 
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsFindById(context.TODO(), backupUnitID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsFindById(ctx, backupUnitID, nil)
 	ret := BackupUnit{}
 	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
 		return nil, errConv
@@ -139,7 +150,9 @@ func (c *Client) GetBackupUnit(backupUnitID string) (*BackupUnit, error) {
 // GetBackupUnitSSOURL retrieves the SSO URL for an existing backup unit
 func (c *Client) GetBackupUnitSSOURL(backupUnitID string) (*BackupUnitSSOURL, error) {
 
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsSsourlGet(context.TODO(), backupUnitID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsSsourlGet(ctx, backupUnitID, nil)
 
 	if err != nil {
 		return nil, err

@@ -1,7 +1,6 @@
 package profitbricks
 
 import (
-	"context"
 	"net/http"
 )
 
@@ -46,7 +45,9 @@ type ResourcesLimits struct {
 // GetContractResources returns list of contract resources
 func (c *Client) GetContractResources() (*ContractResources, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.ContractApi.ContractsGet(context.TODO(), nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.ContractApi.ContractsGet(ctx, nil)
 	ret := ContractResources{}
 	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
 		return nil, errConv

@@ -56,7 +56,9 @@ type S3KeyProperties struct {
 // CreateS3Key creates an S3 Key for an user
 func (c *Client) CreateS3Key(userID string) (*S3Key, error) {
 
-	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysPost(context.TODO(), userID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysPost(ctx, userID, nil)
 	ret := S3Key{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -73,7 +75,9 @@ func (c *Client) CreateS3Key(userID string) (*S3Key, error) {
 // ListS3Keys lists all available S3 keys for an user
 func (c *Client) ListS3Keys(userID string) (*S3Keys, error) {
 
-	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysGet(context.TODO(), userID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysGet(ctx, userID, nil)
 	ret := S3Keys{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -109,7 +113,9 @@ func (c *Client) UpdateS3Key(userID string, s3KeyID string, s3Key S3Key) (*S3Key
 // DeleteS3Key deletes an existing S3 key
 func (c *Client) DeleteS3Key(userID string, s3KeyID string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersS3keysDelete(context.TODO(), userID, s3KeyID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersS3keysDelete(ctx, userID, s3KeyID, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

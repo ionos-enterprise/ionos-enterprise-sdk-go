@@ -308,7 +308,9 @@ type KubernetesNodeProperties struct {
 // ListKubernetesClusters gets a list of all clusters
 func (c *Client) ListKubernetesClusters() (*KubernetesClusters, error) {
 
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sGet(context.TODO(), nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sGet(ctx, nil)
 	ret := KubernetesClusters{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -324,7 +326,9 @@ func (c *Client) ListKubernetesClusters() (*KubernetesClusters, error) {
 // GetKubernetesCluster gets cluster with given id
 func (c *Client) GetKubernetesCluster(clusterID string) (*KubernetesCluster, error) {
 
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindByClusterid(context.TODO(), clusterID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindByClusterid(ctx, clusterID, nil)
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -344,7 +348,9 @@ func (c *Client) CreateKubernetesCluster(cluster KubernetesCluster) (*Kubernetes
 		return nil, errConvert
 	}
 
-	rsp, apiResponse, err := c.CoreSdk.KubernetesApi.K8sPost(context.TODO(), input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.KubernetesApi.K8sPost(ctx, input, nil)
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -365,7 +371,9 @@ func (c *Client) CreateKubernetesCluster(cluster KubernetesCluster) (*Kubernetes
 // DeleteKubernetesCluster deletes cluster
 func (c *Client) DeleteKubernetesCluster(clusterID string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sDelete(context.TODO(), clusterID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sDelete(ctx, clusterID, nil)
 
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -396,7 +404,9 @@ func (c *Client) UpdateKubernetesCluster(clusterID string, cluster UpdatedKubern
 	input.Type = nil
 	input.Href = nil
 
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sPut(context.TODO(), clusterID, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sPut(ctx, clusterID, input, nil)
 
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -413,7 +423,9 @@ func (c *Client) UpdateKubernetesCluster(clusterID string, cluster UpdatedKubern
 // GetKubeconfig returns the kubeconfig of cluster
 func (c *Client) GetKubeconfig(clusterID string) (string, error) {
 
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sKubeconfigGet(context.TODO(), clusterID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sKubeconfigGet(ctx, clusterID, nil)
 	ret := KubernetesConfig{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return "", errConvert
@@ -432,7 +444,9 @@ func (c *Client) GetKubeconfig(clusterID string) (string, error) {
 // ListKubernetesNodePools gets a list of all node pools of a cluster
 func (c *Client) ListKubernetesNodePools(clusterID string) (*KubernetesNodePools, error) {
 
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsGet(context.TODO(), clusterID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsGet(ctx, clusterID, nil)
 	ret := KubernetesNodePools{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -452,7 +466,9 @@ func (c *Client) CreateKubernetesNodePool(clusterID string, nodePool KubernetesN
 		return nil, errConvert
 	}
 
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPost(context.TODO(), clusterID, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPost(ctx, clusterID, input, nil)
 	ret := KubernetesNodePool{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -468,7 +484,9 @@ func (c *Client) CreateKubernetesNodePool(clusterID string, nodePool KubernetesN
 // DeleteKubernetesNodePool deletes node pool from cluster
 func (c *Client) DeleteKubernetesNodePool(clusterID, nodePoolID string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsDelete(context.TODO(), clusterID, nodePoolID,nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsDelete(ctx, clusterID, nodePoolID,nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -481,7 +499,9 @@ func (c *Client) DeleteKubernetesNodePool(clusterID, nodePoolID string) (*http.H
 // GetKubernetesNodePool gets node pool of the cluster
 func (c *Client) GetKubernetesNodePool(clusterID, nodePoolID string) (*KubernetesNodePool, error) {
 
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsFindById(context.TODO(), clusterID, nodePoolID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsFindById(ctx, clusterID, nodePoolID, nil)
     ret := KubernetesNodePool{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -500,7 +520,9 @@ func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool
 	if errConvert := convertToCore(nodePool.Properties, &input); errConvert != nil {
 		return nil, errConvert
 	}
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPut(context.TODO(), clusterID, nodePoolID, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPut(ctx, clusterID, nodePoolID, input, nil)
 
 	ret := KubernetesNodePool{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -516,7 +538,9 @@ func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool
 // ListKubernetesNodes gets a list of all nodes of a node pool
 func (c *Client) ListKubernetesNodes(clusterID, nodePoolID string) (*KubernetesNodes, error) {
 
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesGet(context.TODO(), clusterID, nodePoolID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesGet(ctx, clusterID, nodePoolID, nil)
 	ret := KubernetesNodes{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -532,7 +556,9 @@ func (c *Client) ListKubernetesNodes(clusterID, nodePoolID string) (*KubernetesN
 // GetKubernetesNode gets node of a node pool
 func (c *Client) GetKubernetesNode(clusterID, nodePoolID, nodeID string) (*KubernetesNode, error) {
 
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesFindById(context.TODO(), clusterID, nodePoolID, nodeID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesFindById(ctx, clusterID, nodePoolID, nodeID, nil)
 	ret := KubernetesNode{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -546,7 +572,9 @@ func (c *Client) GetKubernetesNode(clusterID, nodePoolID, nodeID string) (*Kuber
 
 // DeleteKubernetesNode deletes a node from a node pool, decreasing its size by 1.
 func (c *Client) DeleteKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
-	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesDelete(context.TODO(), clusterID, nodePoolID, nodeID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesDelete(ctx, clusterID, nodePoolID, nodeID, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

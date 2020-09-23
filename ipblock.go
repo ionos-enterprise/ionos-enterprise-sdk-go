@@ -1,7 +1,6 @@
 package profitbricks
 
 import (
-	"context"
 	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
 )
@@ -51,7 +50,9 @@ type IPBlocks struct {
 //ListIPBlocks lists all IP blocks
 func (c *Client) ListIPBlocks() (*IPBlocks, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksGet(context.TODO(), nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksGet(ctx, nil)
 	ret := IPBlocks{}
 
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -76,7 +77,9 @@ func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
-	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPost(context.TODO(), input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPost(ctx, input, nil)
 	ret := IPBlock{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -95,7 +98,9 @@ func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
 //GetIPBlock gets an IP blocks
 func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksFindById(context.TODO(), ipblockid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksFindById(ctx, ipblockid, nil)
 	ret := IPBlock{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -119,7 +124,9 @@ func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBl
 		return nil, errConvert
 	}
 
-	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPatch(context.TODO(), ipblockid, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPatch(ctx, ipblockid, input, nil)
 
 	ret := IPBlock{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -141,7 +148,9 @@ func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBl
 //ReleaseIPBlock deletes an IP block
 func (c *Client) ReleaseIPBlock(ipblockid string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksDelete(context.TODO(), ipblockid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksDelete(ctx, ipblockid, nil)
 
 	if apiResponse != nil {
 		return &apiResponse.Header, err

@@ -1,7 +1,6 @@
 package profitbricks
 
 import (
-	"context"
 	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
 )
@@ -47,7 +46,9 @@ type FirewallRules struct {
 //ListFirewallRules lists all firewall rules
 func (c *Client) ListFirewallRules(dcID string, serverID string, nicID string) (*FirewallRules, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesGet(context.TODO(), dcID, serverID, nicID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesGet(ctx, dcID, serverID, nicID, nil)
 
 	ret := FirewallRules{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -67,7 +68,9 @@ func (c *Client) ListFirewallRules(dcID string, serverID string, nicID string) (
 //GetFirewallRule gets a firewall rule
 func (c *Client) GetFirewallRule(dcID string, serverID string, nicID string, fwID string) (*FirewallRule, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesFindById(context.TODO(), dcID, serverID, nicID, fwID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesFindById(ctx, dcID, serverID, nicID, fwID, nil)
 	ret := FirewallRule{}
 
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -92,7 +95,9 @@ func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, 
 	if errConvert := convertToCore(&fw, &input); errConvert != nil {
 		return nil, errConvert
 	}
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesPost(context.TODO(), dcID, serverID, nicID, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesPost(ctx, dcID, serverID, nicID, input, nil)
 
 	ret := FirewallRule{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -116,7 +121,9 @@ func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, 
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesPatch(context.TODO(), dcID, serverID, nicID, fwID, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesPatch(ctx, dcID, serverID, nicID, fwID, input, nil)
 
 	ret := FirewallRule{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -136,7 +143,9 @@ func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, 
 //DeleteFirewallRule deletes a firewall rule
 func (c *Client) DeleteFirewallRule(dcID string, serverID string, nicID string, fwID string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesDelete(context.TODO(), dcID, serverID, nicID, fwID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesDelete(ctx, dcID, serverID, nicID, fwID, nil)
 	return &apiResponse.Header, err
 
 	/*

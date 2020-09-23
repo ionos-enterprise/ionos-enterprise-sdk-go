@@ -188,7 +188,9 @@ func (f *RequestListFilter) WithCreatedBefore(t time.Time) *RequestListFilter {
 // ListRequests lists all requests
 func (c *Client) ListRequests() (*Requests, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(context.TODO(), nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(ctx, nil)
 	ret := Requests{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -229,7 +231,9 @@ func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, e
 		}
 	}
 
-	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(context.TODO(), &opts)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(ctx, &opts)
 	ret := Requests{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -254,7 +258,9 @@ func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, e
 // GetRequest gets a specific request
 func (c *Client) GetRequest(reqID string) (*Request, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsFindById(context.TODO(), reqID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsFindById(ctx, reqID, nil)
 	ret := Request{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -271,7 +277,9 @@ func (c *Client) GetRequest(reqID string) (*Request, error) {
 
 // GetRequestStatus returns status of the request
 func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
-	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsStatusGet(context.TODO(), path, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsStatusGet(ctx, path, nil)
 	ret := RequestStatus{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -319,7 +327,7 @@ func (c *Client) WaitTillProvisionedOrCanceled(ctx context.Context, path string)
 // It returns an error if the request status could not be fetched, the request
 // failed or a timeout of 2.5 minutes is exceeded.
 func (c *Client) WaitTillProvisioned(path string) (err error) {
-	ctx, cancel := context.WithTimeout(context.TODO(), 150*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 150*time.Second)
 	defer cancel()
 	if err = c.WaitTillProvisionedOrCanceled(ctx, path); err != nil {
 		if err == context.DeadlineExceeded {

@@ -1,19 +1,23 @@
 package profitbricks
 
 import (
-	"net/http"
+	"context"
+	"github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"strconv"
 	"time"
-	"github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
-	resty "github.com/go-resty/resty/v2"
 )
 
 type Client struct {
-	*resty.Client
+	// *resty.Client
 	CoreSdk *ionossdk.APIClient
 	// AuthApiUrl will be used by methods talking to the auth api by sending absolute urls
 	AuthApiUrl  string
 	CloudApiUrl string
+	Config Configuration
+}
+
+type Configuration struct {
+	Timeout time.Duration
 }
 
 const (
@@ -24,20 +28,23 @@ const (
 
 func RestyClient(username, password, token string) *Client {
 	c := &Client{
-		Client:      resty.New(),
+		// Client:      resty.New(),
 		CoreSdk:     ionossdk.NewAPIClient(ionossdk.NewConfiguration(username, password, token)),
 		AuthApiUrl:  DefaultAuthUrl,
 		CloudApiUrl: DefaultApiUrl,
 	}
+
+	/*
 	if token == "" {
 		c.SetBasicAuth(username, password)
 	} else {
 		c.SetAuthToken(token)
-	}
-	c.SetHostURL(DefaultApiUrl)
+	}*/
+	// c.SetHostURL(DefaultApiUrl)
 	c.SetDepth(10)
 	c.SetTimeout(3 * time.Minute)
 	c.SetUserAgent("ionos-enterprise-sdk-go-compat " + Version)
+	/*
 	c.SetRetryCount(3)
 	c.SetRetryMaxWaitTime(10 * time.Minute)
 	c.SetRetryWaitTime(1 * time.Second)
@@ -61,7 +68,12 @@ func RestyClient(username, password, token string) *Client {
 			}
 			return false
 		})
+	 */
 	return c
+}
+
+func (c *Client) SetTimeout(t time.Duration) {
+	c.Config.Timeout = t
 }
 
 // SetDebug activates/deactivates resty's debug mode. For better readability
@@ -114,4 +126,12 @@ func (c *Client) SetCloudApiURL(url string) {
 // SetAuthApiUrl sets the Auth API url
 func (c *Client) SetAuthApiUrl(url string) {
 	c.AuthApiUrl = url
+}
+
+func (c *Client) GetContext() (context.Context, context.CancelFunc) {
+	if c.Config.Timeout > 0 {
+		return context.WithTimeout(context.Background(), c.Config.Timeout)
+	}
+
+	return context.Background(), nil
 }

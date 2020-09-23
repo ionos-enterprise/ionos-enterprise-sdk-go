@@ -1,7 +1,6 @@
 package profitbricks
 
 import (
-	"context"
 	"fmt"
 	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
@@ -52,7 +51,9 @@ type Snapshots struct {
 //ListSnapshots lists all snapshots
 func (c *Client) ListSnapshots() (*Snapshots, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsGet(context.TODO(), nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsGet(ctx, nil)
 	ret := Snapshots{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -70,7 +71,9 @@ func (c *Client) ListSnapshots() (*Snapshots, error) {
 //GetSnapshot gets a specific snapshot
 func (c *Client) GetSnapshot(snapshotID string) (*Snapshot, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsFindById(context.TODO(), snapshotID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsFindById(ctx, snapshotID, nil)
 	ret := Snapshot{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -87,7 +90,9 @@ func (c *Client) GetSnapshot(snapshotID string) (*Snapshot, error) {
 
 // DeleteSnapshot deletes a specified snapshot
 func (c *Client) DeleteSnapshot(snapshotID string) (*http.Header, error) {
-	_, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsDelete(context.TODO(), snapshotID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsDelete(ctx, snapshotID, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -109,7 +114,9 @@ func (c *Client) UpdateSnapshot(snapshotID string, request SnapshotProperties) (
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
-	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsPatch(context.TODO(), snapshotID, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsPatch(ctx, snapshotID, input, nil)
 	ret := Snapshot{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert

@@ -59,7 +59,9 @@ type Volumes struct {
 // ListVolumes returns a Collection struct for volumes in the Datacenter
 func (c *Client) ListVolumes(dcid string) (*Volumes, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesGet(context.TODO(), dcid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesGet(ctx, dcid, nil)
 
 	ret := Volumes{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -76,7 +78,9 @@ func (c *Client) ListVolumes(dcid string) (*Volumes, error) {
 // GetVolume gets a volume
 func (c *Client) GetVolume(dcid string, volumeID string) (*Volume, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesFindById(context.TODO(), dcid, volumeID, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesFindById(ctx, dcid, volumeID, nil)
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -96,7 +100,9 @@ func (c *Client) UpdateVolume(dcid string, volid string, request VolumePropertie
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPatch(context.TODO(), dcid, volid, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPatch(ctx, dcid, volid, input, nil)
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -116,7 +122,9 @@ func (c *Client) CreateVolume(dcid string, request Volume) (*Volume, error) {
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPost(context.TODO(), dcid, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPost(ctx, dcid, input, nil)
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -132,7 +140,9 @@ func (c *Client) CreateVolume(dcid string, request Volume) (*Volume, error) {
 // DeleteVolume deletes a volume
 func (c *Client) DeleteVolume(dcid, volid string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesDelete(context.TODO(), dcid, volid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesDelete(ctx, dcid, volid, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -149,7 +159,9 @@ func (c *Client) CreateSnapshot(dcid string, volid string, name string, descript
 		Name: optional.NewString(name),
 		Description: optional.NewString(description),
 	}
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesCreateSnapshotPost(context.TODO(), dcid, volid, &optionals)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesCreateSnapshotPost(ctx, dcid, volid, &optionals)
 	ret := Snapshot{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert

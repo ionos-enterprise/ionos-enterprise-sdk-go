@@ -72,13 +72,17 @@ type Datacenters struct {
 func (c *Client) ListDatacenters() (*Datacenters, error) {
 
 /*
-	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersGet(context.TODO(), nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersGet(ctx, nil)
 	ret := coreDataCentersConvertor(&resp)
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 */
 
-	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersGet(context.TODO(), nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersGet(ctx, nil)
 	ret := Datacenters{}
 	if err != nil {
 		return &ret, err
@@ -110,7 +114,9 @@ func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
 	}
 
 
-	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPost(context.TODO(), input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPost(ctx, input, nil)
 	ret := Datacenter{}
 	err2 := convertToCompat(&resp, &ret)
 	if err2 != nil {
@@ -145,7 +151,9 @@ func (c *Client) CreateDatacenterAndWait(ctx context.Context, dc Datacenter) (re
 // GetDatacenter gets a datacenter
 func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
 
-	dc, response, err := c.CoreSdk.DataCenterApi.DatacentersFindById(context.TODO(), dcid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	dc, response, err := c.CoreSdk.DataCenterApi.DatacentersFindById(ctx, dcid, nil)
 	ret := Datacenter{}
 	err2 := convertToCompat(&dc, &ret)
 	if err2 != nil {
@@ -165,7 +173,9 @@ func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datac
 		return nil, err
 	}
 
-	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPatch(context.TODO(), dcid, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPatch(ctx, dcid, input, nil)
 	ret := Datacenter{}
 	err2 := convertToCompat(&resp, &ret)
 	if err2 != nil {
@@ -200,7 +210,9 @@ func (c *Client) UpdateDatacenterAndWait(ctx context.Context, dcid string, obj D
 // DeleteDatacenter deletes a data center
 func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersDelete(context.TODO(), dcid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersDelete(ctx, dcid, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

@@ -59,7 +59,9 @@ type Lans struct {
 
 // ListLans returns a Collection for lans in the Datacenter
 func (c *Client) ListLans(dcid string) (*Lans, error) {
-	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansGet(context.TODO(), dcid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansGet(ctx, dcid, nil)
 	ret := Lans{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil{
 		return nil, errConvert
@@ -81,7 +83,9 @@ func (c *Client) CreateLan(dcid string, request Lan) (*Lan, error) {
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
-	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansPost(context.TODO(), dcid, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansPost(ctx, dcid, input, nil)
 	ret := Lan{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -120,7 +124,9 @@ func (c *Client) CreateLanAndWait(ctx context.Context, dcid string, request Lan)
 // GetLan pulls data for the lan where id = lanid returns an Instance struct
 func (c *Client) GetLan(dcid, lanid string) (*Lan, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansFindById(context.TODO(), dcid, lanid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansFindById(ctx, dcid, lanid, nil)
 	ret := Lan{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -143,7 +149,9 @@ func (c *Client) UpdateLan(dcid string, lanid string, obj LanProperties) (*Lan, 
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}
-	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansPatch(context.TODO(), dcid, lanid, input, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansPatch(ctx, dcid, lanid, input, nil)
 	ret := Lan{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -182,7 +190,9 @@ func (c *Client) UpdateLanAndWait(ctx context.Context, dcid, lanid string, props
 // DeleteLan deletes a lan where id == lanid
 func (c *Client) DeleteLan(dcid, lanid string) (*http.Header, error) {
 
-	_, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansDelete(context.TODO(), dcid, lanid, nil)
+    ctx, cancel := c.GetContext()
+    if cancel != nil { defer cancel() }
+	_, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansDelete(ctx, dcid, lanid, nil)
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
