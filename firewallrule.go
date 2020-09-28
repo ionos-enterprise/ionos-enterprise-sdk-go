@@ -18,15 +18,15 @@ type FirewallRule struct {
 
 //FirewallruleProperties object
 type FirewallruleProperties struct {
-	Name           string  `json:"name,omitempty"`
+	Name           string  `json:"name"`
 	Protocol       string  `json:"protocol,omitempty"`
-	SourceMac      *string `json:"sourceMac,omitempty"`
-	SourceIP       *string `json:"sourceIp,omitempty"`
-	TargetIP       *string `json:"targetIp,omitempty"`
-	IcmpCode       *int    `json:"icmpCode,omitempty"`
-	IcmpType       *int    `json:"icmpType,omitempty"`
-	PortRangeStart *int    `json:"portRangeStart,omitempty"`
-	PortRangeEnd   *int    `json:"portRangeEnd,omitempty"`
+	SourceMac      *string `json:"sourceMac"`
+	SourceIP       *string `json:"sourceIp"`
+	TargetIP       *string `json:"targetIp"`
+	IcmpCode       *int    `json:"icmpCode"`
+	IcmpType       *int    `json:"icmpType"`
+	PortRangeStart *int    `json:"portRangeStart"`
+	PortRangeEnd   *int    `json:"portRangeEnd"`
 }
 
 //FirewallRules object
@@ -38,6 +38,20 @@ type FirewallRules struct {
 	Response   string         `json:"Response,omitempty"`
 	Headers    *http.Header   `json:"headers,omitempty"`
 	StatusCode int            `json:"statuscode,omitempty"`
+}
+
+func (in FirewallruleProperties) DeepCopy() FirewallruleProperties {
+	return FirewallruleProperties{
+		Name:           in.Name,
+		Protocol:       in.Protocol,
+		SourceMac:      in.SourceMac,
+		SourceIP:       in.SourceIP,
+		TargetIP:       in.TargetIP,
+		IcmpCode:       in.IcmpCode,
+		IcmpType:       in.IcmpType,
+		PortRangeStart: in.PortRangeStart,
+		PortRangeEnd:   in.PortRangeEnd,
+	}
 }
 
 //ListFirewallRules lists all firewall rules
@@ -64,11 +78,14 @@ func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, 
 	return ret, err
 }
 
-//UpdateFirewallRule updates a firewall rule
+// UpdateFirewallRule updates a firewall rule.
+// You need to pass all wanted properties, not just those you want to change.
 func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, fwID string, obj FirewallruleProperties) (*FirewallRule, error) {
+	props := obj.DeepCopy()
+	props.Protocol = "" // the field is immutable and must not be sent in an update request
 	url := firewallRulePath(dcID, serverID, nicID, fwID)
 	ret := &FirewallRule{}
-	err := c.Patch(url, obj, ret, http.StatusAccepted)
+	err := c.Patch(url, props, ret, http.StatusAccepted)
 	return ret, err
 }
 
