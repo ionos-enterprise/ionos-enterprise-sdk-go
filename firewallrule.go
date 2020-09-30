@@ -18,15 +18,15 @@ type FirewallRule struct {
 
 //FirewallruleProperties object
 type FirewallruleProperties struct {
-	Name           string  `json:"name,omitempty"`
+	Name           string  `json:"name"`
 	Protocol       string  `json:"protocol,omitempty"`
-	SourceMac      *string `json:"sourceMac,omitempty"`
-	SourceIP       *string `json:"sourceIp,omitempty"`
-	TargetIP       *string `json:"targetIp,omitempty"`
-	IcmpCode       *int    `json:"icmpCode,omitempty"`
-	IcmpType       *int    `json:"icmpType,omitempty"`
-	PortRangeStart *int    `json:"portRangeStart,omitempty"`
-	PortRangeEnd   *int    `json:"portRangeEnd,omitempty"`
+	SourceMac      *string `json:"sourceMac"`
+	SourceIP       *string `json:"sourceIp"`
+	TargetIP       *string `json:"targetIp"`
+	IcmpCode       *int    `json:"icmpCode"`
+	IcmpType       *int    `json:"icmpType"`
+	PortRangeStart *int    `json:"portRangeStart"`
+	PortRangeEnd   *int    `json:"portRangeEnd"`
 }
 
 //FirewallRules object
@@ -64,7 +64,8 @@ func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, 
 	return ret, err
 }
 
-//UpdateFirewallRule updates a firewall rule
+// UpdateFirewallRule updates a firewall rule.
+// You need to pass all wanted properties, not just those you want to change.
 func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, fwID string, obj FirewallruleProperties) (*FirewallRule, error) {
 	url := firewallRulePath(dcID, serverID, nicID, fwID)
 	ret := &FirewallRule{}
