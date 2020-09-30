@@ -40,20 +40,6 @@ type FirewallRules struct {
 	StatusCode int            `json:"statuscode,omitempty"`
 }
 
-func (in FirewallruleProperties) DeepCopy() FirewallruleProperties {
-	return FirewallruleProperties{
-		Name:           in.Name,
-		Protocol:       in.Protocol,
-		SourceMac:      in.SourceMac,
-		SourceIP:       in.SourceIP,
-		TargetIP:       in.TargetIP,
-		IcmpCode:       in.IcmpCode,
-		IcmpType:       in.IcmpType,
-		PortRangeStart: in.PortRangeStart,
-		PortRangeEnd:   in.PortRangeEnd,
-	}
-}
-
 //ListFirewallRules lists all firewall rules
 func (c *Client) ListFirewallRules(dcID string, serverID string, nicID string) (*FirewallRules, error) {
 	url := firewallRulesPath(dcID, serverID, nicID)
@@ -81,11 +67,9 @@ func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, 
 // UpdateFirewallRule updates a firewall rule.
 // You need to pass all wanted properties, not just those you want to change.
 func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, fwID string, obj FirewallruleProperties) (*FirewallRule, error) {
-	props := obj.DeepCopy()
-	props.Protocol = "" // the field is immutable and must not be sent in an update request
 	url := firewallRulePath(dcID, serverID, nicID, fwID)
 	ret := &FirewallRule{}
-	err := c.Patch(url, props, ret, http.StatusAccepted)
+	err := c.Patch(url, obj, ret, http.StatusAccepted)
 	return ret, err
 }
 
