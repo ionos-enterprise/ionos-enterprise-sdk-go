@@ -117,11 +117,11 @@ type KubernetesClusterEntities struct {
 
 type AutoScaling struct {
 	// The minimum number of nodes this node pool can be scaled down to
-	// Required: false
-	MinNodeCount *uint32 `json:"minNodeCount,omitempty"`
+	// Required: true
+	MinNodeCount uint32 `json:"minNodeCount,omitempty"`
 	// The maximum number of nodes this node pool can be scaled up to
-	// Required: false
-	MaxNodeCount *uint32 `json:"maxNodeCount,omitempty"`
+	// Required: true
+	MaxNodeCount uint32 `json:"maxNodeCount,omitempty"`
 }
 
 type KubernetesNodePoolLAN struct {
@@ -432,8 +432,9 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 	return &h, validateResponse(rsp, http.StatusAccepted)
 }
 
+// Enabled returns true when max > 0.
 func (a *AutoScaling) Enabled() bool {
-	return !(a.MinNodeCount == nil || a.MaxNodeCount == nil || *a.MinNodeCount == 0 && *a.MaxNodeCount == 0)
+	return a != nil && a.MaxNodeCount > 0
 }
 
 func (c *Client) WaitForKubernetesNodePoolState(
