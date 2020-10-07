@@ -3,6 +3,39 @@ package profitbricks
 import (
 	"fmt"
 	"net/http"
+	"time"
+)
+
+const (
+	// Kubernetes cluster/nodepool resource state is deploying
+	K8sStateDeploying = "DEPLOYING"
+	// Kubernetes cluster/nodepool resource state is active
+	K8sStateActive = "ACTIVE"
+	// Kubernetes cluster/nodepool resource state is failed
+	K8sStateFailed = "FAILED"
+	// Kubernetes cluster/nodepool resource state is updating
+	K8sStateUpdating = "UPDATING"
+	// Kubernetes cluster/nodepool resource state is failed_updating
+	K8sStateFailedUpdating = "FAILED_UPDATING"
+	// Kubernetes cluster/nodepool resource state is destroying
+	K8sStateDestroying = "DESTROYING"
+	// Kubernetes cluster/nodepool resource state is failed_destroying
+	K8sStateFailedDestroying = "FAILED_DESTROYING"
+	// Kubernetes cluster/nodepool resource state is terminated
+	K8sStateTerminated = "TERMINATED"
+)
+
+const (
+	// Kubernetes Node resource state is ready
+	K8sNodeStateReady = "READY"
+	// Kubernetes Node resource state is provisioning
+	K8sNodeStateProvisioning = "PROVISIONING"
+	// Kubernetes Node resource state is provisioned
+	K8sNodeStateProvisioned = "PROVISIONED"
+	// Kubernetes Node resource state is terminating
+	K8sNodeStateTerminating = "TERMINATING"
+	// Kubernetes Node resource state is rebuilding
+	K8sNodeStateRebuilding = "REBUILDING"
 )
 
 type KubernetesClusters struct {
@@ -397,4 +430,39 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 	}
 	h := rsp.Header()
 	return &h, validateResponse(rsp, http.StatusAccepted)
+}
+
+// Enabled returns true when max > 0.
+func (a *AutoScaling) Enabled() bool {
+	return a != nil && a.MaxNodeCount > 0
+}
+
+func (c *Client) WaitForKubernetesNodePoolState(
+	clusterID, nodePoolID string,
+	state string,
+	timeout, interval time.Duration) error {
+	if err := PollImmediate(interval, timeout, func() (bool, error) {
+		np, err := c.GetKubernetesNodePool(clusterID, nodePoolID)
+		if err != nil {
+			return false, err
+		}
+		return np != nil && np.Metadata != nil && np.Metadata.State == state, err
+	}); err != nil {
+		return fmt.Errorf("error waiting for nodepool state %s: %w", state, err)
+	}
+	return nil
+}
+
+func (c *Client) WaitForKubernetesClusterState(
+	clusterID string, state string, timeout, interval time.Duration) error {
+	if err := PollImmediate(interval, timeout, func() (bool, error) {
+		cl, err := c.GetKubernetesCluster(clusterID)
+		if err != nil {
+			return false, err
+		}
+		return cl != nil && cl.Metadata != nil && cl.Metadata.State == state, err
+	}); err != nil {
+		return fmt.Errorf("error waiting for cluster state %s: %w", state, err)
+	}
+	return nil
 }

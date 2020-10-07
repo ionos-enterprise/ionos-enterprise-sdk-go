@@ -10,7 +10,7 @@
     "lastModifiedDate" : "2019-09-20T12:18:44Z",
     "lastModifiedBy" : "admin@example.com",
     "lastModifiedByUserId" : "3b7e9212-399a-4f23-ada1-b4410d345152",
-    "state" : "ACTIVE"
+    "state" : "DEPLOYING"
   },
   "properties" : {
     "name" : "unit-test-node-pool",
