@@ -52,7 +52,7 @@ func (c *Client) ListIPBlocks() (*IPBlocks, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksGet(ctx, nil)
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksGet(ctx).Execute()
 	ret := IPBlocks{}
 
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -79,7 +79,7 @@ func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPost(ctx, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPost(ctx).Ipblock(input).Execute()
 	ret := IPBlock{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -100,7 +100,7 @@ func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksFindById(ctx, ipblockid, nil)
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksFindById(ctx, ipblockid).Execute()
 	ret := IPBlock{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -126,7 +126,7 @@ func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBl
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPatch(ctx, ipblockid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPatch(ctx, ipblockid).Ipblock(input).Execute()
 
 	ret := IPBlock{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -150,7 +150,7 @@ func (c *Client) ReleaseIPBlock(ipblockid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksDelete(ctx, ipblockid, nil)
+	_, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksDelete(ctx, ipblockid).Execute()
 
 	if apiResponse != nil {
 		return &apiResponse.Header, err

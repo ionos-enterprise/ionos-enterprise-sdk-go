@@ -76,7 +76,7 @@ func (c *Client) CreateBackupUnit(backupUnit BackupUnit) (*BackupUnit, error) {
 	ctx, cancel := c.GetContext()
 	if cancel != nil { defer cancel() }
 	
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPost(ctx, input, nil)
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPost(ctx).BackupUnit(input).Execute()
 
 	ret := BackupUnit{}
 	errConvert := convertToCompat(&rsp, &ret)
@@ -92,7 +92,7 @@ func (c *Client) ListBackupUnits() (*BackupUnits, error) {
 	
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsGet(ctx, nil)
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsGet(ctx).Execute()
 	ret := BackupUnits{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -109,7 +109,7 @@ func (c *Client) UpdateBackupUnit(backupUnitID string, backupUnit BackupUnit) (*
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPut(ctx, backupUnitID, input, nil)
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPut(ctx, backupUnitID).BackupUnit(input).Execute()
 	ret := BackupUnit{}
 	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
 		return nil, errConv
@@ -123,7 +123,7 @@ func (c *Client) UpdateBackupUnit(backupUnitID string, backupUnit BackupUnit) (*
 func (c *Client) DeleteBackupUnit(backupUnitID string) (*http.Header, error) {
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, httpResponse, err := c.CoreSdk.BackupUnitApi.BackupunitsDelete(ctx, backupUnitID, nil)
+	_, httpResponse, err := c.CoreSdk.BackupUnitApi.BackupunitsDelete(ctx, backupUnitID).Execute()
 	if httpResponse == nil || err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func (c *Client) GetBackupUnit(backupUnitID string) (*BackupUnit, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsFindById(ctx, backupUnitID, nil)
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsFindById(ctx, backupUnitID).Execute()
 	ret := BackupUnit{}
 	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
 		return nil, errConv
@@ -152,7 +152,7 @@ func (c *Client) GetBackupUnitSSOURL(backupUnitID string) (*BackupUnitSSOURL, er
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsSsourlGet(ctx, backupUnitID, nil)
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsSsourlGet(ctx, backupUnitID).Execute()
 
 	if err != nil {
 		return nil, err

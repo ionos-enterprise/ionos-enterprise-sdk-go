@@ -82,7 +82,7 @@ func (c *Client) ListDatacenters() (*Datacenters, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersGet(ctx, nil)
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersGet(ctx).Execute()
 	ret := Datacenters{}
 	if err != nil {
 		return &ret, err
@@ -116,7 +116,7 @@ func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPost(ctx, input, nil)
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPost(ctx).Datacenter(input).Execute()
 	ret := Datacenter{}
 	err2 := convertToCompat(&resp, &ret)
 	if err2 != nil {
@@ -153,7 +153,7 @@ func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	dc, response, err := c.CoreSdk.DataCenterApi.DatacentersFindById(ctx, dcid, nil)
+	dc, response, err := c.CoreSdk.DataCenterApi.DatacentersFindById(ctx, dcid).Execute()
 	ret := Datacenter{}
 	err2 := convertToCompat(&dc, &ret)
 	if err2 != nil {
@@ -175,7 +175,7 @@ func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datac
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPatch(ctx, dcid, input, nil)
+	resp, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersPatch(ctx, dcid).Datacenter(input).Execute()
 	ret := Datacenter{}
 	err2 := convertToCompat(&resp, &ret)
 	if err2 != nil {
@@ -212,7 +212,7 @@ func (c *Client) DeleteDatacenter(dcid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersDelete(ctx, dcid, nil)
+	_, apiResponse, err := c.CoreSdk.DataCenterApi.DatacentersDelete(ctx, dcid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

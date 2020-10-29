@@ -310,7 +310,7 @@ func (c *Client) ListKubernetesClusters() (*KubernetesClusters, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sGet(ctx, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sGet(ctx).Execute()
 	ret := KubernetesClusters{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -328,7 +328,7 @@ func (c *Client) GetKubernetesCluster(clusterID string) (*KubernetesCluster, err
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindByClusterid(ctx, clusterID, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindByClusterid(ctx, clusterID).Execute()
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -350,7 +350,7 @@ func (c *Client) CreateKubernetesCluster(cluster KubernetesCluster) (*Kubernetes
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.KubernetesApi.K8sPost(ctx, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.KubernetesApi.K8sPost(ctx).KubernetesCluster(input).Execute()
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -373,7 +373,7 @@ func (c *Client) DeleteKubernetesCluster(clusterID string) (*http.Header, error)
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sDelete(ctx, clusterID, nil)
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sDelete(ctx, clusterID).Execute()
 
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -406,7 +406,7 @@ func (c *Client) UpdateKubernetesCluster(clusterID string, cluster UpdatedKubern
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sPut(ctx, clusterID, input, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sPut(ctx, clusterID).Kubernetescluster(input).Execute()
 
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -425,7 +425,7 @@ func (c *Client) GetKubeconfig(clusterID string) (string, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sKubeconfigGet(ctx, clusterID, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sKubeconfigGet(ctx, clusterID).Execute()
 	ret := KubernetesConfig{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return "", errConvert
@@ -446,7 +446,7 @@ func (c *Client) ListKubernetesNodePools(clusterID string) (*KubernetesNodePools
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsGet(ctx, clusterID, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsGet(ctx, clusterID).Execute()
 	ret := KubernetesNodePools{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -461,14 +461,14 @@ func (c *Client) ListKubernetesNodePools(clusterID string) (*KubernetesNodePools
 // CreateKubernetesNodePool creates a new node pool for cluster
 func (c *Client) CreateKubernetesNodePool(clusterID string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
 
-	input := ionossdk.KubernetesNodePoolProperties{}
-	if errConvert := convertToCore(nodePool.Properties, &input); errConvert != nil {
+	input := ionossdk.KubernetesNodePool{}
+	if errConvert := convertToCore(nodePool, &input); errConvert != nil {
 		return nil, errConvert
 	}
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPost(ctx, clusterID, input, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPost(ctx, clusterID).KubernetesNodePool(input).Execute()
 	ret := KubernetesNodePool{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -486,7 +486,7 @@ func (c *Client) DeleteKubernetesNodePool(clusterID, nodePoolID string) (*http.H
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsDelete(ctx, clusterID, nodePoolID,nil)
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsDelete(ctx, clusterID, nodePoolID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -501,7 +501,7 @@ func (c *Client) GetKubernetesNodePool(clusterID, nodePoolID string) (*Kubernete
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsFindById(ctx, clusterID, nodePoolID, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsFindById(ctx, clusterID, nodePoolID).Execute()
     ret := KubernetesNodePool{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -522,7 +522,7 @@ func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPut(ctx, clusterID, nodePoolID, input, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPut(ctx, clusterID, nodePoolID).KubernetesNodePoolProperties(input).Execute()
 
 	ret := KubernetesNodePool{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -540,7 +540,7 @@ func (c *Client) ListKubernetesNodes(clusterID, nodePoolID string) (*KubernetesN
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesGet(ctx, clusterID, nodePoolID, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesGet(ctx, clusterID, nodePoolID).Execute()
 	ret := KubernetesNodes{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -558,7 +558,7 @@ func (c *Client) GetKubernetesNode(clusterID, nodePoolID, nodeID string) (*Kuber
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesFindById(ctx, clusterID, nodePoolID, nodeID, nil)
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesFindById(ctx, clusterID, nodePoolID, nodeID).Execute()
 	ret := KubernetesNode{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -574,7 +574,7 @@ func (c *Client) GetKubernetesNode(clusterID, nodePoolID, nodeID string) (*Kuber
 func (c *Client) DeleteKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesDelete(ctx, clusterID, nodePoolID, nodeID, nil)
+	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesDelete(ctx, clusterID, nodePoolID, nodeID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -587,7 +587,7 @@ func (c *Client) DeleteKubernetesNode(clusterID, nodePoolID, nodeID string) (*ht
 func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
 
 	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesReplacePost(
-		context.TODO(), clusterID, nodePoolID, nodeID, nil)
+		context.TODO(), clusterID, nodePoolID, nodeID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

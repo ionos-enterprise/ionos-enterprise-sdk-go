@@ -58,7 +58,7 @@ func (c *Client) CreateS3Key(userID string) (*S3Key, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysPost(ctx, userID, nil)
+	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysPost(ctx, userID).Execute()
 	ret := S3Key{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -77,7 +77,7 @@ func (c *Client) ListS3Keys(userID string) (*S3Keys, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysGet(ctx, userID, nil)
+	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysGet(ctx, userID).Execute()
 	ret := S3Keys{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -97,7 +97,7 @@ func (c *Client) UpdateS3Key(userID string, s3KeyID string, s3Key S3Key) (*S3Key
 		return nil, errConvert
 	}
 	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysPut(
-		context.TODO(), userID, s3KeyID, input, nil)
+		context.TODO(), userID, s3KeyID).S3Key(input).Execute()
 	ret := S3Key{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -115,7 +115,7 @@ func (c *Client) DeleteS3Key(userID string, s3KeyID string) (*http.Header, error
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersS3keysDelete(ctx, userID, s3KeyID, nil)
+	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersS3keysDelete(ctx, userID, s3KeyID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -127,7 +127,7 @@ func (c *Client) DeleteS3Key(userID string, s3KeyID string) (*http.Header, error
 func (c *Client) GetS3Key(userID string, s3KeyID string) (*S3Key, error) {
 
 	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysFindByKey(
-		context.TODO(), userID, s3KeyID, nil)
+		context.TODO(), userID, s3KeyID).Execute()
 	ret := S3Key{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert

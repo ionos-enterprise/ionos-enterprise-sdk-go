@@ -67,7 +67,7 @@ type Cdroms struct {
 func (c *Client) ListImages() (*Images, error) {
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ImageApi.ImagesGet(ctx, nil)
+	rsp, apiResponse, err := c.CoreSdk.ImageApi.ImagesGet(ctx).Execute()
 	ret := Images{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -87,7 +87,7 @@ func (c *Client) GetImage(imageid string) (*Image, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ImageApi.ImagesFindById(ctx, imageid, nil)
+	rsp, apiResponse, err := c.CoreSdk.ImageApi.ImagesFindById(ctx, imageid).Execute()
 	ret := Image{}
 
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {

@@ -105,7 +105,7 @@ func (c *Client) ListPrivateCrossConnects() (*PrivateCrossConnects, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsGet(ctx, nil)
+	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsGet(ctx).Execute()
 	ret := PrivateCrossConnects{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil{
 		return nil, errConvert
@@ -123,7 +123,7 @@ func (c *Client) ListPrivateCrossConnects() (*PrivateCrossConnects, error) {
 func (c *Client) GetPrivateCrossConnect(pccID string) (*PrivateCrossConnect, error) {
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsFindById(ctx, pccID, nil)
+	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsFindById(ctx, pccID).Execute()
 	ret := PrivateCrossConnect{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil{
 		return nil, errConvert
@@ -144,7 +144,7 @@ func (c *Client) CreatePrivateCrossConnect(pcc PrivateCrossConnect) (*PrivateCro
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsPost(ctx, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsPost(ctx).Pcc(input).Execute()
 	ret := PrivateCrossConnect{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -165,7 +165,7 @@ func (c *Client) UpdatePrivateCrossConnect(pccID string, pcc PrivateCrossConnect
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsPatch(ctx, pccID, *input.Properties, nil)
+	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsPatch(ctx, pccID).Pcc(*input.Properties).Execute()
 	ret := PrivateCrossConnect{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -183,7 +183,7 @@ func (c *Client) DeletePrivateCrossConnect(pccID string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsDelete(ctx, pccID, nil)
+	_, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsDelete(ctx, pccID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

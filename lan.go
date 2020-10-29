@@ -61,7 +61,7 @@ type Lans struct {
 func (c *Client) ListLans(dcid string) (*Lans, error) {
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansGet(ctx, dcid, nil)
+	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansGet(ctx, dcid).Execute()
 	ret := Lans{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil{
 		return nil, errConvert
@@ -85,7 +85,7 @@ func (c *Client) CreateLan(dcid string, request Lan) (*Lan, error) {
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansPost(ctx, dcid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansPost(ctx, dcid).Lan(input).Execute()
 	ret := Lan{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -126,7 +126,7 @@ func (c *Client) GetLan(dcid, lanid string) (*Lan, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansFindById(ctx, dcid, lanid, nil)
+	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansFindById(ctx, dcid, lanid).Execute()
 	ret := Lan{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -151,7 +151,7 @@ func (c *Client) UpdateLan(dcid string, lanid string, obj LanProperties) (*Lan, 
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansPatch(ctx, dcid, lanid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansPatch(ctx, dcid, lanid).Lan(input).Execute()
 	ret := Lan{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -192,7 +192,7 @@ func (c *Client) DeleteLan(dcid, lanid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansDelete(ctx, dcid, lanid, nil)
+	_, apiResponse, err := c.CoreSdk.LanApi.DatacentersLansDelete(ctx, dcid, lanid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

@@ -50,7 +50,7 @@ func (c *Client) ListNics(dcid, srvid string) (*Nics, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsGet(ctx, dcid, srvid, nil)
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsGet(ctx, dcid, srvid).Execute()
 	ret := Nics{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -74,7 +74,7 @@ func (c *Client) CreateNic(dcid string, srvid string, nic Nic) (*Nic, error) {
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsPost(ctx, dcid, srvid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsPost(ctx, dcid, srvid).Nic(input).Execute()
 	ret := Nic{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -95,7 +95,7 @@ func (c *Client) GetNic(dcid, srvid, nicid string) (*Nic, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFindById(ctx, dcid, srvid, nicid, nil)
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFindById(ctx, dcid, srvid, nicid).Execute()
 	ret := Nic{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -119,7 +119,7 @@ func (c *Client) UpdateNic(dcid string, srvid string, nicid string, obj NicPrope
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsPatch(ctx, dcid, srvid, nicid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsPatch(ctx, dcid, srvid, nicid).Nic(input).Execute()
 	ret := Nic{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -139,7 +139,7 @@ func (c *Client) DeleteNic(dcid, srvid, nicid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsDelete(ctx, dcid, srvid, nicid, nil)
+	_, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsDelete(ctx, dcid, srvid, nicid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

@@ -56,7 +56,7 @@ func (c *Client) ListLoadbalancers(dcid string) (*Loadbalancers, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersGet(ctx, dcid, nil)
+	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersGet(ctx, dcid).Execute()
 	ret := Loadbalancers{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -80,7 +80,7 @@ func (c *Client) CreateLoadbalancer(dcid string, request Loadbalancer) (*Loadbal
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersPost(ctx, dcid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersPost(ctx, dcid).Loadbalancer(input).Execute()
 	ret := Loadbalancer{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -102,7 +102,7 @@ func (c *Client) GetLoadbalancer(dcid, lbalid string) (*Loadbalancer, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersFindById(ctx, dcid, lbalid, nil)
+	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersFindById(ctx, dcid, lbalid).Execute()
 	ret := Loadbalancer{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -127,7 +127,7 @@ func (c *Client) UpdateLoadbalancer(dcid string, lbalid string, obj Loadbalancer
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersPatch(ctx, dcid, lbalid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersPatch(ctx, dcid, lbalid).Loadbalancer(input).Execute()
 	ret := Loadbalancer{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -148,7 +148,7 @@ func (c *Client) DeleteLoadbalancer(dcid, lbalid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersDelete(ctx, dcid, lbalid, nil)
+	_, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersDelete(ctx, dcid, lbalid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -167,7 +167,7 @@ func (c *Client) DeleteLoadbalancer(dcid, lbalid string) (*http.Header, error) {
 func (c *Client) ListBalancedNics(dcid, lbalid string) (*Nics, error) {
 
 	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersBalancednicsGet(
-		context.TODO(), dcid, lbalid, nil)
+		context.TODO(), dcid, lbalid).Execute()
 	ret := Nics{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -191,7 +191,7 @@ func (c *Client) AssociateNic(dcid string, lbalid string, nicid string) (*Nic, e
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersBalancednicsPost(ctx, dcid, lbalid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersBalancednicsPost(ctx, dcid, lbalid).Nic(input).Execute()
 	ret := Nic{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -212,7 +212,7 @@ func (c *Client) AssociateNic(dcid string, lbalid string, nicid string) (*Nic, e
 func (c *Client) GetBalancedNic(dcid, lbalid, balnicid string) (*Nic, error) {
 
 	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersBalancednicsFindByNic(
-		context.TODO(), dcid, lbalid, balnicid, nil)
+		context.TODO(), dcid, lbalid, balnicid).Execute()
 	ret := Nic{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -231,7 +231,7 @@ func (c *Client) GetBalancedNic(dcid, lbalid, balnicid string) (*Nic, error) {
 func (c *Client) DeleteBalancedNic(dcid, lbalid, balnicid string) (*http.Header, error) {
 
 	_, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersBalancednicsDelete(
-		context.TODO(), dcid, lbalid, balnicid, nil)
+		context.TODO(), dcid, lbalid, balnicid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

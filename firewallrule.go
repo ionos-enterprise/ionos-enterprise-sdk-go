@@ -48,7 +48,7 @@ func (c *Client) ListFirewallRules(dcID string, serverID string, nicID string) (
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesGet(ctx, dcID, serverID, nicID, nil)
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesGet(ctx, dcID, serverID, nicID).Execute()
 
 	ret := FirewallRules{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -70,7 +70,7 @@ func (c *Client) GetFirewallRule(dcID string, serverID string, nicID string, fwI
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesFindById(ctx, dcID, serverID, nicID, fwID, nil)
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesFindById(ctx, dcID, serverID, nicID, fwID).Execute()
 	ret := FirewallRule{}
 
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -97,7 +97,7 @@ func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, 
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesPost(ctx, dcID, serverID, nicID, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesPost(ctx, dcID, serverID, nicID).Firewallrule(input).Execute()
 
 	ret := FirewallRule{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -123,7 +123,7 @@ func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, 
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesPatch(ctx, dcID, serverID, nicID, fwID, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesPatch(ctx, dcID, serverID, nicID, fwID).Firewallrule(input).Execute()
 
 	ret := FirewallRule{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -145,7 +145,7 @@ func (c *Client) DeleteFirewallRule(dcID string, serverID string, nicID string, 
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesDelete(ctx, dcID, serverID, nicID, fwID, nil)
+	_, apiResponse, err := c.CoreSdk.NicApi.DatacentersServersNicsFirewallrulesDelete(ctx, dcID, serverID, nicID, fwID).Execute()
 	return &apiResponse.Header, err
 
 	/*

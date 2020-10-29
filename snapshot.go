@@ -53,7 +53,7 @@ func (c *Client) ListSnapshots() (*Snapshots, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsGet(ctx, nil)
+	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsGet(ctx).Execute()
 	ret := Snapshots{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -73,7 +73,7 @@ func (c *Client) GetSnapshot(snapshotID string) (*Snapshot, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsFindById(ctx, snapshotID, nil)
+	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsFindById(ctx, snapshotID).Execute()
 	ret := Snapshot{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -92,7 +92,7 @@ func (c *Client) GetSnapshot(snapshotID string) (*Snapshot, error) {
 func (c *Client) DeleteSnapshot(snapshotID string) (*http.Header, error) {
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsDelete(ctx, snapshotID, nil)
+	_, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsDelete(ctx, snapshotID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -116,7 +116,7 @@ func (c *Client) UpdateSnapshot(snapshotID string, request SnapshotProperties) (
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsPatch(ctx, snapshotID, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.SnapshotApi.SnapshotsPatch(ctx, snapshotID).Snapshot(input).Execute()
 	ret := Snapshot{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert

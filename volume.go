@@ -2,7 +2,6 @@ package profitbricks
 
 import (
 	"context"
-	"github.com/antihax/optional"
 	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
 )
@@ -61,7 +60,7 @@ func (c *Client) ListVolumes(dcid string) (*Volumes, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesGet(ctx, dcid, nil)
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesGet(ctx, dcid).Execute()
 
 	ret := Volumes{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -80,7 +79,7 @@ func (c *Client) GetVolume(dcid string, volumeID string) (*Volume, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesFindById(ctx, dcid, volumeID, nil)
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesFindById(ctx, dcid, volumeID).Execute()
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -102,7 +101,7 @@ func (c *Client) UpdateVolume(dcid string, volid string, request VolumePropertie
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPatch(ctx, dcid, volid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPatch(ctx, dcid, volid).Volume(input).Execute()
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -124,7 +123,7 @@ func (c *Client) CreateVolume(dcid string, request Volume) (*Volume, error) {
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPost(ctx, dcid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesPost(ctx, dcid).Volume(input).Execute()
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -142,7 +141,7 @@ func (c *Client) DeleteVolume(dcid, volid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesDelete(ctx, dcid, volid, nil)
+	_, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesDelete(ctx, dcid, volid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -155,13 +154,9 @@ func (c *Client) DeleteVolume(dcid, volid string) (*http.Header, error) {
 // CreateSnapshot creates a volume snapshot
 func (c *Client) CreateSnapshot(dcid string, volid string, name string, description string) (*Snapshot, error) {
 
-	optionals := ionossdk.DatacentersVolumesCreateSnapshotPostOpts{
-		Name: optional.NewString(name),
-		Description: optional.NewString(description),
-	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesCreateSnapshotPost(ctx, dcid, volid, &optionals)
+	rsp, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesCreateSnapshotPost(ctx, dcid, volid).Name(name).Description(description).Execute()
 	ret := Snapshot{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -179,12 +174,8 @@ func (c *Client) CreateSnapshot(dcid string, volid string, name string, descript
 
 // RestoreSnapshot restores a volume with provided snapshot
 func (c *Client) RestoreSnapshot(dcid string, volid string, snapshotID string) (*http.Header, error) {
-
-	opts := ionossdk.DatacentersVolumesRestoreSnapshotPostOpts{
-		SnapshotId: optional.NewString(snapshotID),
-	}
 	_, apiResponse, err := c.CoreSdk.VolumeApi.DatacentersVolumesRestoreSnapshotPost(
-		context.TODO(), dcid, volid, &opts)
+		context.TODO(), dcid, volid).SnapshotId(snapshotID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

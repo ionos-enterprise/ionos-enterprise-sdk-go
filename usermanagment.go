@@ -173,7 +173,7 @@ func (c *Client) ListGroups() (*Groups, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsGet(ctx, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsGet(ctx).Execute()
 	ret := Groups{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -193,7 +193,7 @@ func (c *Client) GetGroup(groupid string) (*Group, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsFindById(ctx, groupid, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsFindById(ctx, groupid).Execute()
 	ret := Group{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -219,7 +219,7 @@ func (c *Client) CreateGroup(grp Group) (*Group, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsPost(ctx, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsPost(ctx).Group(input).Execute()
 	ret := Group{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -243,7 +243,7 @@ func (c *Client) UpdateGroup(groupid string, obj Group) (*Group, error) {
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsPut(ctx, groupid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsPut(ctx, groupid).Group(input).Execute()
 	ret := Group{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -263,7 +263,7 @@ func (c *Client) UpdateGroup(groupid string, obj Group) (*Group, error) {
 func (c *Client) DeleteGroup(groupid string) (*http.Header, error) {
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsDelete(ctx, groupid, nil)
+	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsDelete(ctx, groupid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -283,7 +283,7 @@ func (c *Client) ListShares(grpid string) (*Shares, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesGet(ctx, grpid, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesGet(ctx, grpid).Execute()
 	ret := Shares{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -302,7 +302,7 @@ func (c *Client) ListShares(grpid string) (*Shares, error) {
 func (c *Client) GetShare(groupid string, resourceid string) (*Share, error) {
 
 	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesFindByResource(
-		context.TODO(), groupid, resourceid, nil)
+		context.TODO(), groupid, resourceid).Execute()
 	ret := Share{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -326,7 +326,7 @@ func (c *Client) AddShare(groupid string, resourceid string, share Share) (*Shar
 	}
 
 	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesPost(
-		context.TODO(), groupid, resourceid, input, nil)
+		context.TODO(), groupid, resourceid).Resource(input).Execute()
 	ret := Share{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -351,7 +351,7 @@ func (c *Client) UpdateShare(groupid string, resourceid string, obj Share) (*Sha
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesPut(ctx, groupid, resourceid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesPut(ctx, groupid, resourceid).Resource(input).Execute()
 	ret := Share{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -371,7 +371,7 @@ func (c *Client) DeleteShare(groupid string, resourceid string) (*http.Header, e
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesDelete(ctx, groupid, resourceid, nil)
+	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesDelete(ctx, groupid, resourceid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -390,7 +390,7 @@ func (c *Client) ListGroupUsers(groupid string) (*Users, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsUsersGet(ctx, groupid, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsUsersGet(ctx, groupid).Execute()
 	ret := Users{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -414,7 +414,7 @@ func (c *Client) AddUserToGroup(groupid string, userid string) (*User, error) {
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsUsersPost(ctx, groupid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsUsersPost(ctx, groupid).User(input).Execute()
 	ret := User{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -437,7 +437,7 @@ func (c *Client) DeleteUserFromGroup(groupid string, userid string) (*http.Heade
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsUsersDelete(ctx, groupid, userid, nil)
+	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsUsersDelete(ctx, groupid, userid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -457,7 +457,7 @@ func (c *Client) ListUsers() (*Users, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersGet(ctx, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersGet(ctx).Execute()
 	ret := Users{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -478,7 +478,7 @@ func (c *Client) GetUser(usrid string) (*User, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersFindById(ctx, usrid, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersFindById(ctx, usrid).Execute()
 	ret := User{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -504,7 +504,7 @@ func (c *Client) CreateUser(usr User) (*User, error) {
 	input.Properties.SecAuthActive = nil
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersPost(ctx, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersPost(ctx).User(input).Execute()
 	ret := User{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -528,7 +528,7 @@ func (c *Client) UpdateUser(userid string, obj User) (*User, error) {
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersPut(ctx, userid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersPut(ctx, userid).User(input).Execute()
 	ret := User{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -548,7 +548,7 @@ func (c *Client) DeleteUser(userid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersDelete(ctx, userid, nil)
+	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersDelete(ctx, userid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -567,7 +567,7 @@ func (c *Client) ListResources() (*Resources, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmResourcesGet(ctx, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmResourcesGet(ctx).Execute()
 	ret := Resources{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -588,7 +588,7 @@ func (c *Client) GetResourceByType(resourcetype string, resourceid string) (*Res
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmResourcesFindByTypeAndId(ctx, resourcetype, resourceid, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmResourcesFindByTypeAndId(ctx, resourcetype, resourceid).Execute()
 	ret := Resource{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -609,7 +609,7 @@ func (c *Client) ListResourcesByType(resourcetype string) (*Resources, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmResourcesFindByType(ctx, resourcetype, nil)
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmResourcesFindByType(ctx, resourcetype).Execute()
 	ret := Resources{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert

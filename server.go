@@ -61,7 +61,7 @@ func (c *Client) ListServers(dcid string) (*Servers, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersGet(ctx, dcid, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersGet(ctx, dcid).Execute()
 	ret := Servers{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -86,7 +86,7 @@ func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPost(ctx, dcid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPost(ctx, dcid).Server(input).Execute()
 	ret := Server{}
 
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -127,7 +127,7 @@ func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersFindById(ctx, dcid, srvid, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersFindById(ctx, dcid, srvid).Execute()
 	ret := Server{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -152,7 +152,7 @@ func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties)
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPatch(ctx, dcid, srvid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPatch(ctx, dcid, srvid).Server(input).Execute()
 	ret := Server{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -195,7 +195,7 @@ func (c *Client) UpdateServerAndWait(
 func (c *Client) DeleteServer(dcid, srvid string) (*http.Header, error) {
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersDelete(ctx, dcid, srvid, nil)
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersDelete(ctx, dcid, srvid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -222,7 +222,7 @@ func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsGet(ctx, dcid, srvid, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsGet(ctx, dcid, srvid).Execute()
 	ret := Images{}
 
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -245,7 +245,7 @@ func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, er
 	image := ionossdk.Image{Id: &cdid}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsPost(ctx, dcid, srvid, image, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsPost(ctx, dcid, srvid).Cdrom(image).Execute()
 
 	ret := Image{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -272,7 +272,7 @@ func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsFindById(ctx, dcid, srvid, cdid, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsFindById(ctx, dcid, srvid, cdid).Execute()
 	ret := Image{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, err
@@ -292,7 +292,7 @@ func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsDelete(ctx, dcid, srvid, cdid, nil)
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsDelete(ctx, dcid, srvid, cdid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -311,7 +311,7 @@ func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesGet(ctx, dcid, srvid, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesGet(ctx, dcid, srvid).Execute()
 	ret := Volumes{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -332,7 +332,7 @@ func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume,
 	input := ionossdk.Volume{Id: &volid}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesPost(ctx, dcid, srvid, input, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesPost(ctx, dcid, srvid).Volume(input).Execute()
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -358,7 +358,7 @@ func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesFindById(ctx, dcid, srvid, volid, nil)
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesFindById(ctx, dcid, srvid, volid).Execute()
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -379,7 +379,7 @@ func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesDelete(ctx, dcid, srvid, volid, nil)
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesDelete(ctx, dcid, srvid, volid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -398,7 +398,7 @@ func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStartPost(ctx, dcid, srvid, nil)
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStartPost(ctx, dcid, srvid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -417,7 +417,7 @@ func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStopPost(ctx, dcid, srvid, nil)
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStopPost(ctx, dcid, srvid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {
@@ -436,7 +436,7 @@ func (c *Client) RebootServer(dcid, srvid string) (*http.Header, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersRebootPost(ctx, dcid, srvid, nil)
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersRebootPost(ctx, dcid, srvid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
 	} else {

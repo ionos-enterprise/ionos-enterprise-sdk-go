@@ -121,7 +121,7 @@ func (c *Client) GetUserAgent() string {
 
 // SetCloudApiURL sets Cloud API url
 func (c *Client) SetCloudApiURL(url string) {
-	c.CoreSdk.GetConfig().BasePath = url
+	c.CoreSdk.GetConfig().Host = url
 }
 
 // SetAuthApiUrl sets the Auth API url

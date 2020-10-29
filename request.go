@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/antihax/optional"
-	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
 	"net/http"
 	"net/url"
 	"strings"
@@ -190,7 +188,7 @@ func (c *Client) ListRequests() (*Requests, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(ctx, nil)
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(ctx).Execute()
 	ret := Requests{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -209,31 +207,32 @@ func (c *Client) ListRequests() (*Requests, error) {
 // ListRequestsWithFilter lists all requests that match the given filters
 func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, error) {
 
-	opts := ionossdk.RequestsGetOpts{}
+	ctx, cancel := c.GetContext()
+	if cancel != nil { defer cancel() }
+	sdkRequest := c.CoreSdk.RequestApi.RequestsGet(ctx)
+
 	if filter != nil {
 		for k, v := range filter.Values {
 			switch k {
 			case "filter.url":
-				opts.FilterUrl = optional.NewString(strings.Join(v, ","))
+				sdkRequest.FilterUrl(strings.Join(v, ","))
 			case "filter.createdDate":
-				opts.FilterCreatedDate = optional.NewString(strings.Join(v, ","))
+				sdkRequest.FilterCreatedDate(strings.Join(v, ","))
 			case "filter.method":
-				opts.FilterMethod = optional.NewString(strings.Join(v, ","))
+				sdkRequest.FilterMethod(strings.Join(v, ","))
 			case "filter.body":
-				opts.FilterBody = optional.NewString(strings.Join(v, ","))
+				sdkRequest.FilterBody(strings.Join(v, ","))
 			case "filter.status":
-				opts.FilterStatus = optional.NewString(strings.Join(v, ","))
+				sdkRequest.FilterStatus(strings.Join(v, ","))
 			case "filter.createdAfter":
-				opts.FilterCreatedAfter = optional.NewString(strings.Join(v, ","))
+				sdkRequest.FilterCreatedAfter(strings.Join(v, ","))
 			case "filter.createdBefore":
-				opts.FilterCreatedBefore = optional.NewString(strings.Join(v, ","))
+				sdkRequest.FilterCreatedBefore(strings.Join(v, ","))
 			}
 		}
 	}
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(ctx, &opts)
+	rsp, apiResponse, err := sdkRequest.Execute()
 	ret := Requests{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -260,7 +259,7 @@ func (c *Client) GetRequest(reqID string) (*Request, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsFindById(ctx, reqID, nil)
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsFindById(ctx, reqID).Execute()
 	ret := Request{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -279,7 +278,7 @@ func (c *Client) GetRequest(reqID string) (*Request, error) {
 func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsStatusGet(ctx, path, nil)
+	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsStatusGet(ctx, path).Execute()
 	ret := RequestStatus{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
