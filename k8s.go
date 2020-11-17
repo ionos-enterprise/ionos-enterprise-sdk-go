@@ -258,6 +258,10 @@ type KubernetesNodePoolProperties struct {
 	// The desired Maintanance Window
 	// Required: false
 	MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"`
+
+	// Public Ips
+	// Required: false
+	PublicIps	[]string	`json:"publicIps,omitempty"`
 }
 
 type KubernetesNodePools struct {
