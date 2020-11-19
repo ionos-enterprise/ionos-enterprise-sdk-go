@@ -261,7 +261,7 @@ type KubernetesNodePoolProperties struct {
 
 	// Public Ips
 	// Required: false
-	PublicIps	[]string	`json:"publicIps,omitempty"`
+	PublicIPs []string `json:"publicIps,omitempty"`
 }
 
 type KubernetesNodePools struct {
