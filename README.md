@@ -2288,7 +2288,7 @@ GetResourceByType(resourcetype, resourceId)
 | AutoScaling       |    no    | [\*AutoScaling](#AutoScaling-resource-object)                         | Whether this Node Pool should autoscale. Comprised of a minimum and a maximum number of nodes                  |
 | LANs              |  **no**  | \*\[\][KubernetesNodePoolLAN](#KubernetesNodePoolLAN-Resource-Object) | A list of Local Area Networks the nodes in the pool should be a part of                                        |
 | MaintenanceWindow |  **no**  | [MaintenanceWindow](#MaintenanceWindow-resource-object)               | An optional object with 2 keys: dayOfTheWeek and time.                                                         |
-| PublicIPs |  **no**  | []string               | An optional array of strings with public IPs associated with the node pool.                                                         |
+| PublicIPs |  **no**  | \*\[\]string               | An optional array of strings with public IPs associated with the node pool.                                                         |
 
 ### Create Cluster
 
