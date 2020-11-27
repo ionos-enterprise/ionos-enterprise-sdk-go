@@ -211,7 +211,7 @@ func (c *Client) AssociateNic(dcid string, lbalid string, nicid string) (*Nic, e
 //GetBalancedNic gets a balanced nic
 func (c *Client) GetBalancedNic(dcid, lbalid, balnicid string) (*Nic, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersBalancednicsFindByNic(
+	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersBalancednicsFindByNicId(
 		context.TODO(), dcid, lbalid, balnicid).Execute()
 	ret := Nic{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {

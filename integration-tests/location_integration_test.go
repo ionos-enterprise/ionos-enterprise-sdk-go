@@ -1,3 +1,5 @@
+// +build integration_tests integration_tests_location
+
 package integration_tests
 
 import (

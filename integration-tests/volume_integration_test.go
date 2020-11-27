@@ -1,3 +1,5 @@
+// +build integration_tests integration_tests_volume
+
 package integration_tests
 
 import (
@@ -137,5 +139,4 @@ func TestCleanup(t *testing.T) {
 	c.DeleteSnapshot(snapshot.ID)
 	c.DeleteVolume(dataCenter.ID, volume.ID)
 	c.DeleteDatacenter(dataCenter.ID)
-	c.DeleteKubernetesCluster(cluster.ID)
 }

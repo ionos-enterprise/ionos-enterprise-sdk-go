@@ -328,7 +328,7 @@ func (c *Client) GetKubernetesCluster(clusterID string) (*KubernetesCluster, err
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindByClusterid(ctx, clusterID).Execute()
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindBySClusterId(ctx, clusterID).Execute()
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -406,7 +406,7 @@ func (c *Client) UpdateKubernetesCluster(clusterID string, cluster UpdatedKubern
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sPut(ctx, clusterID).Kubernetescluster(input).Execute()
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sPut(ctx, clusterID).KubernetesCluster(input).Execute()
 
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -516,13 +516,13 @@ func (c *Client) GetKubernetesNodePool(clusterID, nodePoolID string) (*Kubernete
 // Update KubernetesNodePool updates node pool
 func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
 
-	input := ionossdk.KubernetesNodePoolPropertiesForPut{}
+	input := ionossdk.KubernetesNodePool{}
 	if errConvert := convertToCore(nodePool.Properties, &input); errConvert != nil {
 		return nil, errConvert
 	}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPut(ctx, clusterID, nodePoolID).KubernetesNodePoolProperties(input).Execute()
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPut(ctx, clusterID, nodePoolID).KubernetesNodePool(input).Execute()
 
 	ret := KubernetesNodePool{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {

@@ -54,7 +54,7 @@ func (c *Client) GetRegionalLocations(regid string) (*Locations, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegion(ctx, regid).Execute()
+	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegionId(ctx, regid).Execute()
 	ret := Locations{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
@@ -73,7 +73,7 @@ func (c *Client) GetLocation(locid string) (*Location, error) {
 
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
-	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegionAndId(ctx, parts[0], parts[1]).Execute()
+	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegionIdAndId(ctx, parts[0], parts[1]).Execute()
 	ret := Location{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert

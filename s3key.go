@@ -126,7 +126,7 @@ func (c *Client) DeleteS3Key(userID string, s3KeyID string) (*http.Header, error
 // GetS3Key retrieves an existing S3 key
 func (c *Client) GetS3Key(userID string, s3KeyID string) (*S3Key, error) {
 
-	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysFindByKey(
+	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysFindByKeyId(
 		context.TODO(), userID, s3KeyID).Execute()
 	ret := S3Key{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {

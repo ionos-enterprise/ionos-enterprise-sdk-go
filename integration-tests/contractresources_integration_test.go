@@ -1,3 +1,5 @@
+// +build integration_tests integration_tests_contractresources
+
 package integration_tests
 
 import (

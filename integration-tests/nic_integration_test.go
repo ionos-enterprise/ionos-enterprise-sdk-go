@@ -1,3 +1,5 @@
+// +build integration_tests integration_tests_nic
+
 package integration_tests
 
 import (

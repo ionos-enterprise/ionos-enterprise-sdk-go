@@ -1,3 +1,5 @@
+// +build integration_tests integration_tests_snapshot
+
 package integration_tests
 
 import (

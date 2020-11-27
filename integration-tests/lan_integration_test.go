@@ -1,3 +1,5 @@
+// +build integration_tests integration_tests_lan
+
 package integration_tests
 
 import (

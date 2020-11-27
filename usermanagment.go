@@ -301,7 +301,7 @@ func (c *Client) ListShares(grpid string) (*Shares, error) {
 // GetShare gets a share
 func (c *Client) GetShare(groupid string, resourceid string) (*Share, error) {
 
-	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesFindByResource(
+	rsp, apiResponse, err := c.CoreSdk.UserManagementApi.UmGroupsSharesFindByResourceId(
 		context.TODO(), groupid, resourceid).Execute()
 	ret := Share{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
