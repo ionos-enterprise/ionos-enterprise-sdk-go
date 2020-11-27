@@ -214,14 +214,6 @@ func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, e
 	if filter != nil {
 		for k, v := range filter.Values {
 			switch k {
-			case "filter.url":
-				sdkRequest.FilterUrl(strings.Join(v, ","))
-			case "filter.createdDate":
-				sdkRequest.FilterCreatedDate(strings.Join(v, ","))
-			case "filter.method":
-				sdkRequest.FilterMethod(strings.Join(v, ","))
-			case "filter.body":
-				sdkRequest.FilterBody(strings.Join(v, ","))
 			case "filter.status":
 				sdkRequest.FilterStatus(strings.Join(v, ","))
 			case "filter.createdAfter":
