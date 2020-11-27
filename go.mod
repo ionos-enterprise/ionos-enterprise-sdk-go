@@ -9,6 +9,5 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43 // indirect
 )
 
-replace github.com/ionos-cloud/ionos-cloud-sdk-go/v5 => /Users/florin/work/projects/sdk/code/ionos-cloud/ionos-cloud-sdk-go
 
 go 1.13
