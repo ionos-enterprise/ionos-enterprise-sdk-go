@@ -227,6 +227,10 @@ type KubernetesNodePoolProperties struct {
 	// The desired Maintanance Window
 	// Required: false
 	MaintenanceWindow *MaintenanceWindow `json:"maintenanceWindow,omitempty"`
+
+	// The PublicIps that the nodes should have
+	// Required: false
+	PublicIps *[]string `json:"publicIps,omitempty"`
 }
 
 type KubernetesNodePools struct {
@@ -308,8 +312,10 @@ type KubernetesNodeProperties struct {
 // ListKubernetesClusters gets a list of all clusters
 func (c *Client) ListKubernetesClusters() (*KubernetesClusters, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sGet(ctx).Execute()
 	ret := KubernetesClusters{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -318,16 +324,18 @@ func (c *Client) ListKubernetesClusters() (*KubernetesClusters, error) {
 	return &ret, err
 
 	/*
-	rsp := &KubernetesClusters{}
-	return rsp, c.GetOK(kubernetesClustersPath(), rsp)
-	 */
+		rsp := &KubernetesClusters{}
+		return rsp, c.GetOK(kubernetesClustersPath(), rsp)
+	*/
 }
 
 // GetKubernetesCluster gets cluster with given id
 func (c *Client) GetKubernetesCluster(clusterID string) (*KubernetesCluster, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindBySClusterId(ctx, clusterID).Execute()
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -335,9 +343,9 @@ func (c *Client) GetKubernetesCluster(clusterID string) (*KubernetesCluster, err
 	}
 	return &ret, err
 	/*
-	rsp := &KubernetesCluster{}
-	return rsp, c.GetOK(kubernetesClusterPath(clusterID), rsp)
-	 */
+		rsp := &KubernetesCluster{}
+		return rsp, c.GetOK(kubernetesClusterPath(clusterID), rsp)
+	*/
 }
 
 // CreateKubernetesCluster creates a cluster
@@ -348,8 +356,10 @@ func (c *Client) CreateKubernetesCluster(cluster KubernetesCluster) (*Kubernetes
 		return nil, errConvert
 	}
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.KubernetesApi.K8sPost(ctx).KubernetesCluster(input).Execute()
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -363,16 +373,18 @@ func (c *Client) CreateKubernetesCluster(cluster KubernetesCluster) (*Kubernetes
 	return &ret, err
 
 	/*
-	rsp := &KubernetesCluster{}
-	return rsp, c.PostAcc(kubernetesClustersPath(), cluster, rsp)
-	 */
+		rsp := &KubernetesCluster{}
+		return rsp, c.PostAcc(kubernetesClustersPath(), cluster, rsp)
+	*/
 }
 
 // DeleteKubernetesCluster deletes cluster
 func (c *Client) DeleteKubernetesCluster(clusterID string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sDelete(ctx, clusterID).Execute()
 
 	if apiResponse != nil {
@@ -381,9 +393,9 @@ func (c *Client) DeleteKubernetesCluster(clusterID string) (*http.Header, error)
 		return nil, err
 	}
 	/*
-	h := &http.Header{}
-	return h, c.Delete(kubernetesClusterPath(clusterID), h, http.StatusAccepted)
-	 */
+		h := &http.Header{}
+		return h, c.Delete(kubernetesClusterPath(clusterID), h, http.StatusAccepted)
+	*/
 }
 
 // UpdateKubernetesCluster updates cluster
@@ -404,8 +416,10 @@ func (c *Client) UpdateKubernetesCluster(clusterID string, cluster UpdatedKubern
 	input.Type = nil
 	input.Href = nil
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sPut(ctx, clusterID).KubernetesCluster(input).Execute()
 
 	ret := KubernetesCluster{}
@@ -415,16 +429,18 @@ func (c *Client) UpdateKubernetesCluster(clusterID string, cluster UpdatedKubern
 	return &ret, err
 
 	/*
-	rsp := &KubernetesCluster{}
-	return rsp, c.Put(kubernetesClusterPath(clusterID), cluster, rsp, http.StatusOK)
-	 */
+		rsp := &KubernetesCluster{}
+		return rsp, c.Put(kubernetesClusterPath(clusterID), cluster, rsp, http.StatusOK)
+	*/
 }
 
 // GetKubeconfig returns the kubeconfig of cluster
 func (c *Client) GetKubeconfig(clusterID string) (string, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sKubeconfigGet(ctx, clusterID).Execute()
 	ret := KubernetesConfig{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -433,19 +449,21 @@ func (c *Client) GetKubeconfig(clusterID string) (string, error) {
 	return ret.Properties.KubeConfig, err
 
 	/*
-	rsp := &KubernetesConfig{}
-	if err := c.GetOK(kubeConfigPath(clusterID), rsp); err != nil {
-		return "", err
-	}
-	return rsp.Properties.KubeConfig, nil
-	 */
+		rsp := &KubernetesConfig{}
+		if err := c.GetOK(kubeConfigPath(clusterID), rsp); err != nil {
+			return "", err
+		}
+		return rsp.Properties.KubeConfig, nil
+	*/
 }
 
 // ListKubernetesNodePools gets a list of all node pools of a cluster
 func (c *Client) ListKubernetesNodePools(clusterID string) (*KubernetesNodePools, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsGet(ctx, clusterID).Execute()
 	ret := KubernetesNodePools{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -453,9 +471,9 @@ func (c *Client) ListKubernetesNodePools(clusterID string) (*KubernetesNodePools
 	}
 	return &ret, err
 	/*
-	rsp := &KubernetesNodePools{}
-	return rsp, c.GetOK(kubernetesNodePoolsPath(clusterID), rsp)
-	 */
+		rsp := &KubernetesNodePools{}
+		return rsp, c.GetOK(kubernetesNodePoolsPath(clusterID), rsp)
+	*/
 }
 
 // CreateKubernetesNodePool creates a new node pool for cluster
@@ -466,8 +484,10 @@ func (c *Client) CreateKubernetesNodePool(clusterID string, nodePool KubernetesN
 		return nil, errConvert
 	}
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPost(ctx, clusterID).KubernetesNodePool(input).Execute()
 	ret := KubernetesNodePool{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -476,16 +496,18 @@ func (c *Client) CreateKubernetesNodePool(clusterID string, nodePool KubernetesN
 	return &ret, err
 
 	/*
-	rsp := &KubernetesNodePool{}
-	return rsp, c.PostAcc(kubernetesNodePoolsPath(clusterID), nodePool, rsp)
-	 */
+		rsp := &KubernetesNodePool{}
+		return rsp, c.PostAcc(kubernetesNodePoolsPath(clusterID), nodePool, rsp)
+	*/
 }
 
 // DeleteKubernetesNodePool deletes node pool from cluster
 func (c *Client) DeleteKubernetesNodePool(clusterID, nodePoolID string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsDelete(ctx, clusterID, nodePoolID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -499,18 +521,20 @@ func (c *Client) DeleteKubernetesNodePool(clusterID, nodePoolID string) (*http.H
 // GetKubernetesNodePool gets node pool of the cluster
 func (c *Client) GetKubernetesNodePool(clusterID, nodePoolID string) (*KubernetesNodePool, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsFindById(ctx, clusterID, nodePoolID).Execute()
-    ret := KubernetesNodePool{}
+	ret := KubernetesNodePool{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
 	}
 	return &ret, err
-/*
-	rsp := &KubernetesNodePool{}
-	return rsp, c.GetOK(kubernetesNodePoolPath(clusterID, nodePoolID), rsp)
- */
+	/*
+		rsp := &KubernetesNodePool{}
+		return rsp, c.GetOK(kubernetesNodePoolPath(clusterID, nodePoolID), rsp)
+	*/
 }
 
 // Update KubernetesNodePool updates node pool
@@ -520,8 +544,10 @@ func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool
 	if errConvert := convertToCore(nodePool.Properties, &input); errConvert != nil {
 		return nil, errConvert
 	}
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsPut(ctx, clusterID, nodePoolID).KubernetesNodePool(input).Execute()
 
 	ret := KubernetesNodePool{}
@@ -530,16 +556,18 @@ func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool
 	}
 	return &ret, err
 	/*
-	rsp := &KubernetesNodePool{}
-	return rsp, c.PutAcc(kubernetesNodePoolPath(clusterID, nodePoolID), nodePool, rsp)
-	 */
+		rsp := &KubernetesNodePool{}
+		return rsp, c.PutAcc(kubernetesNodePoolPath(clusterID, nodePoolID), nodePool, rsp)
+	*/
 }
 
 // ListKubernetesNodes gets a list of all nodes of a node pool
 func (c *Client) ListKubernetesNodes(clusterID, nodePoolID string) (*KubernetesNodes, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesGet(ctx, clusterID, nodePoolID).Execute()
 	ret := KubernetesNodes{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -548,16 +576,18 @@ func (c *Client) ListKubernetesNodes(clusterID, nodePoolID string) (*KubernetesN
 	return &ret, err
 
 	/*
-	rsp := &KubernetesNodes{}
-	return rsp, c.GetOK(kubernetesNodesPath(clusterID, nodePoolID), rsp)
-	 */
+		rsp := &KubernetesNodes{}
+		return rsp, c.GetOK(kubernetesNodesPath(clusterID, nodePoolID), rsp)
+	*/
 }
 
 // GetKubernetesNode gets node of a node pool
 func (c *Client) GetKubernetesNode(clusterID, nodePoolID, nodeID string) (*KubernetesNode, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesFindById(ctx, clusterID, nodePoolID, nodeID).Execute()
 	ret := KubernetesNode{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -565,15 +595,17 @@ func (c *Client) GetKubernetesNode(clusterID, nodePoolID, nodeID string) (*Kuber
 	}
 	return &ret, err
 	/*
-	rsp := &KubernetesNode{}
-	return rsp, c.GetOK(kubernetesNodePath(clusterID, nodePoolID, nodeID), rsp)
-	 */
+		rsp := &KubernetesNode{}
+		return rsp, c.GetOK(kubernetesNodePath(clusterID, nodePoolID, nodeID), rsp)
+	*/
 }
 
 // DeleteKubernetesNode deletes a node from a node pool, decreasing its size by 1.
 func (c *Client) DeleteKubernetesNode(clusterID, nodePoolID, nodeID string) (*http.Header, error) {
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.KubernetesApi.K8sNodepoolsNodesDelete(ctx, clusterID, nodePoolID, nodeID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -594,12 +626,12 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 		return nil, err
 	}
 	/*
-	url := kubernetesNodeReplacePath(clusterID, nodePoolID, nodeID)
-	rsp, err := c.R().SetError(ApiError{}).Post(url)
-	if err != nil {
-		return nil, NewClientError(HttpClientError, fmt.Sprintf("[POST] %s: Client error: %s", url, err))
-	}
-	h := rsp.Header()
-	return &h, validateResponse(rsp, http.StatusAccepted)
-	 */
+		url := kubernetesNodeReplacePath(clusterID, nodePoolID, nodeID)
+		rsp, err := c.R().SetError(ApiError{}).Post(url)
+		if err != nil {
+			return nil, NewClientError(HttpClientError, fmt.Sprintf("[POST] %s: Client error: %s", url, err))
+		}
+		h := rsp.Header()
+		return &h, validateResponse(rsp, http.StatusAccepted)
+	*/
 }
