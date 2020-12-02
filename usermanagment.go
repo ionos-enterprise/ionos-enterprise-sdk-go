@@ -80,7 +80,7 @@ type UserProperties struct {
 	Administrator     bool   `json:"administrator,omitempty"`
 	ForceSecAuth      bool   `json:"forceSecAuth,omitempty"`
 	SecAuthActive     bool   `json:"secAuthActive,omitempty"`
-	Active            bool   `json:"active,omitempty"`
+	Active            *bool  `json:"active,omitempty"`
 	S3CanonicalUserID string `json:"s3CanonicalUserId,omitempty"`
 }
 
