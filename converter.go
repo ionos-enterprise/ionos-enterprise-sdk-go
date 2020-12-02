@@ -101,6 +101,29 @@ var CustomCasters = []CustomCaster{
 		},
 	},
 	{
+		From: "string",
+		To: "*IonosTime",
+		Cast: func (value reflect.Value) reflect.Value {
+			str := value.Interface().(string)
+			if str == "" {
+				return reflect.Zero(reflect.TypeOf((*ionossdk.IonosTime)(nil)))
+			}
+			createdDate, err := time.Parse(dateLayout, str)
+			if err != nil {
+				panic("Error parsing date " + str + "; expecting format " + dateLayout)
+			}
+			return reflect.ValueOf(&ionossdk.IonosTime{Time: createdDate})
+		},
+	},
+	{
+		From: "*IonosTime",
+		To: "string",
+		Cast: func (value reflect.Value) reflect.Value {
+			t := value.Interface().(*ionossdk.IonosTime)
+			return reflect.ValueOf(t.Format(dateLayout))
+		},
+	},
+	{
 		From: "*int32",
 		To: "int",
 		Cast: func (value reflect.Value) reflect.Value {
@@ -255,6 +278,25 @@ var CustomCasters = []CustomCaster{
 			return reflect.ValueOf(&v)
 		},
 	},
+
+	{
+		From: "*IonosTime",
+		To: "Time",
+		Cast: func (value reflect.Value) reflect.Value {
+			v := value.Interface().(*ionossdk.IonosTime)
+			return reflect.ValueOf(v.Time)
+		},
+	},
+	{
+		From: "Time",
+		To: "*IonosTime",
+		Cast: func (value reflect.Value) reflect.Value {
+			v := value.Interface().(time.Time)
+			return reflect.ValueOf(&ionossdk.IonosTime{Time: v})
+		},
+	},
+
+
 	{
 		From: "Time",
 		To: "Time",
