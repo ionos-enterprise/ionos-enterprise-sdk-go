@@ -36,6 +36,7 @@ var CompatCoreFieldMap = map[string]string{
 	"FirewallRules": "Firewallrules",
 	"ReserveIP": "ReserveIp",
 	"URL": "Url",
+	"NodePools": "Nodepools",
 }
 
 /* custom caster, such as from *Type to string or *time.Time to string */
@@ -322,6 +323,17 @@ var CustomCasters = []CustomCaster{
 				}
 			}
 			return reflect.ValueOf(ret)
+		},
+	},
+	{
+		From: "*int32",
+		To: "uint32",
+		Cast: func(value reflect.Value) reflect.Value {
+			v := value.Interface().(*int32)
+			if *v == 0 {
+				return reflect.ValueOf(0)
+			}
+			return reflect.ValueOf(uint32(*v))
 		},
 	},
 }
