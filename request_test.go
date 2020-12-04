@@ -57,7 +57,6 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 		makeJsonResponse(200, loadTestData(s.T(), "request_done.json")),
 	}
 	query := url.Values{
-		"filter.url": []string{"volumes"},
 		"depth":      []string{"10"},
 	}
 	listCalled := 0
@@ -79,7 +78,7 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 
     ctx, cancel := s.client.GetContext()
     if cancel != nil { defer cancel() }
-	err := s.client.WaitTillRequestsFinished(ctx, NewRequestListFilter().WithUrl("volumes"))
+	err := s.client.WaitTillRequestsFinished(ctx, NewRequestListFilter())
 	s.NoError(err)
 	s.Equal(4, httpmock.GetTotalCallCount())
 }
