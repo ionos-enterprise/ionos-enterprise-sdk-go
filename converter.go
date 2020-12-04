@@ -37,6 +37,11 @@ var CompatCoreFieldMap = map[string]string{
 	"ReserveIP": "ReserveIp",
 	"URL": "Url",
 	"NodePools": "Nodepools",
+	"CreatedByUserID": "CreatedByUserId",
+	"LastModifiedByUserID": "LastModifiedByUserId",
+	"RAMSize": "RamSize",
+	"DatacenterID": "DatacenterId",
+	"KubeConfig": "Kubeconfig",
 }
 
 /* custom caster, such as from *Type to string or *time.Time to string */

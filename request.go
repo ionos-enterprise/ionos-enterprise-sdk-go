@@ -215,11 +215,12 @@ func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, e
 		for k, v := range filter.Values {
 			switch k {
 			case "filter.status":
-				sdkRequest.FilterStatus(strings.Join(v, ","))
+				sdkRequest = sdkRequest.FilterStatus(strings.Join(v, ","))
 			case "filter.createdAfter":
-				sdkRequest.FilterCreatedAfter(strings.Join(v, ","))
+				sdkRequest = sdkRequest.FilterCreatedAfter(strings.Join(v, ","))
 			case "filter.createdBefore":
-				sdkRequest.FilterCreatedBefore(strings.Join(v, ","))
+				sdkRequest = sdkRequest.FilterCreatedBefore(strings.Join(v, ","))
+
 			}
 		}
 	}
