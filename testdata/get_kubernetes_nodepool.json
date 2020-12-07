@@ -21,6 +21,11 @@
     "ramSize" : 2048,
     "availabilityZone" : "AUTO",
     "storageType" : "HDD",
-    "storageSize" : 10
+    "storageSize" : 10,
+    "publicIps": [
+      "81.173.1.2",
+      "82.231.2.5",
+      "92.221.2.4"
+    ]
   }
 }
