@@ -97,7 +97,10 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesNodepool() {
 	s.NotEmpty(np.Properties.StorageType)
 	s.NotEmpty(np.Properties.AutoScaling)
 	s.NotEmpty(np.Properties.MaintenanceWindow)
-	s.Len(*np.Properties.PublicIPs, 3)
+	if s.NotNil(np.Properties.PublicIPs) {
+		s.Len(*np.Properties.PublicIPs, 3)
+	}
+
 }
 
 func (s *SuiteKubernetesCluster) Test_ListKubernetesNodes() {
