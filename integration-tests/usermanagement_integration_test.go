@@ -114,7 +114,11 @@ func TestCreateUser(t *testing.T) {
 	assert.Equal(t, user.Properties.Firstname, "John")
 	assert.Equal(t, user.Properties.Lastname, "Doe")
 	assert.Equal(t, user.Properties.Email, email)
+	if assert.NotNil(t, user.Properties.Active) {
+		assert.True(t, *user.Properties.Active)
+	}
 	assert.Equal(t, user.Properties.Administrator, false)
+	assert.NotEmpty(t, user.Properties.S3CanonicalUserID)
 }
 
 func TestCreateUserFailure(t *testing.T) {
@@ -157,8 +161,12 @@ func TestGetUser(t *testing.T) {
 	assert.Equal(t, resp.Properties.Firstname, "John")
 	assert.Equal(t, resp.Properties.Lastname, "Doe")
 	assert.Equal(t, resp.Properties.Email, email)
+	if assert.NotNil(t, resp.Properties.Active) {
+		assert.True(t, *resp.Properties.Active)
+	}
 	assert.Equal(t, resp.Properties.Administrator, false)
 	assert.Equal(t, resp.PBType, "user")
+	assert.NotEmpty(t, resp.Properties.S3CanonicalUserID)
 }
 
 func TestUpdateUser(t *testing.T) {

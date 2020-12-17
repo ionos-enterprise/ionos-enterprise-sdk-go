@@ -1,8 +1,10 @@
 package profitbricks
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -94,8 +96,11 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesNodepool() {
 	s.NotEmpty(np.Properties.RAMSize)
 	s.NotEmpty(np.Properties.StorageSize)
 	s.NotEmpty(np.Properties.StorageType)
-	s.NotEmpty(np.Properties.PublicIps)
-	s.Len(*np.Properties.PublicIps, 3)
+	s.NotEmpty(np.Properties.AutoScaling)
+	s.NotEmpty(np.Properties.MaintenanceWindow)
+	if s.NotNil(np.Properties.PublicIPs) {
+		s.Len(*np.Properties.PublicIPs, 3)
+	}
 }
 
 func (s *SuiteKubernetesCluster) Test_ListKubernetesNodes() {
@@ -138,4 +143,123 @@ func (s *SuiteKubernetesCluster) Test_ReplaceKubernetesNode() {
 	rsp, err := s.c.ReplaceKubernetesNode("1", "2", "3")
 	s.NoError(err)
 	s.NotNil(rsp)
+}
+
+func (s *SuiteKubernetesCluster) Test_AutoscalingEnabled() {
+	var autoscaling *AutoScaling
+	s.False(autoscaling.Enabled())
+	autoscaling = &AutoScaling{}
+	s.False(autoscaling.Enabled())
+	autoscaling.MaxNodeCount = 5
+	s.True(autoscaling.Enabled())
+}
+
+type SuiteKubernetesWait struct {
+	ClientBaseSuite
+}
+
+func generateNodePoolRspList(t *testing.T, timesFail int) []*http.Response {
+	var notReadyRsps = []*http.Response{}
+	for i := 0; i < timesFail; i++ {
+		notReadyRsps = append(notReadyRsps, makeJsonResponse(http.StatusOK, loadTestData(t, "get_kubernetes_nodepool_DEPLOYING.json")))
+	}
+	return notReadyRsps
+}
+
+func (s *SuiteKubernetesCluster) Test_WaitForKubernetesNodePoolState_OK() {
+	timesFail := 4
+	rl := generateClusterRspList(s.T(), timesFail)
+	rl = append(rl, makeJsonResponse(http.StatusOK, loadTestData(s.T(), "get_kubernetes_nodepool.json")))
+	listCalled := 0
+	var lr httpmock.Responder = func(request *http.Request) (*http.Response, error) {
+		rs := rl[listCalled]
+		listCalled++
+		return rs, nil
+	}
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools/2`, lr.Times(5))
+	fmt.Println(httpmock.GetCallCountInfo())
+	err := s.c.WaitForKubernetesNodePoolState("1", "2", K8sStateActive, time.Millisecond*10, time.Millisecond*1)
+	fmt.Println(httpmock.GetCallCountInfo())
+	s.NoError(err)
+}
+
+func generateClusterRspList(t *testing.T, timesFail int) []*http.Response {
+	var notReadyRsps = []*http.Response{}
+	for i := 0; i < timesFail; i++ {
+		notReadyRsps = append(notReadyRsps, makeJsonResponse(http.StatusOK, loadTestData(t, "get_kubernetes_cluster_DEPLOYING.json")))
+	}
+	return notReadyRsps
+}
+
+func (s *SuiteKubernetesCluster) Test_WaitForKubernetesNodePoolState_TIMEOUT() {
+	timesFail := 14
+	rl := generateClusterRspList(s.T(), timesFail)
+	rl = append(rl, makeJsonResponse(http.StatusOK, loadTestData(s.T(), "get_kubernetes_nodepool.json")))
+	listCalled := 0
+	var lr httpmock.Responder = func(request *http.Request) (*http.Response, error) {
+		rs := rl[listCalled]
+		listCalled++
+		return rs, nil
+	}
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepools/2`, lr.Times(15))
+	err := s.c.WaitForKubernetesNodePoolState("1", "2", K8sStateActive, time.Millisecond*10, time.Millisecond*1)
+	s.Error(err)
+}
+
+func (s *SuiteKubernetesCluster) Test_WaitForKubernetesNodePoolState_FAIL() {
+	timesFail := 4
+	rl := generateClusterRspList(s.T(), timesFail)
+	rl = append(rl, makeJsonResponse(http.StatusNotFound, []byte("{}")))
+	listCalled := 0
+	var lr httpmock.Responder = func(request *http.Request) (*http.Response, error) {
+		rs := rl[listCalled]
+		listCalled++
+		return rs, nil
+	}
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1/nodepool/2`, lr.Times(5))
+	s.Error(s.c.WaitForKubernetesNodePoolState("1", "2", K8sStateActive, time.Millisecond*10, time.Millisecond*1))
+}
+
+func (s *SuiteKubernetesCluster) Test_WaitForKubernetesClusterState_OK() {
+	timesFail := 4
+	rl := generateClusterRspList(s.T(), timesFail)
+	rl = append(rl, makeJsonResponse(http.StatusOK, loadTestData(s.T(), "get_kubernetes_cluster.json")))
+	listCalled := 0
+	var lr httpmock.Responder = func(request *http.Request) (*http.Response, error) {
+		rs := rl[listCalled]
+		listCalled++
+		return rs, nil
+	}
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1`, lr.Times(5))
+	err := s.c.WaitForKubernetesClusterState("1", K8sStateActive, time.Millisecond*10, time.Millisecond*1)
+	s.NoError(err)
+}
+
+func (s *SuiteKubernetesCluster) Test_WaitForKubernetesClusterState_TIMEOUT() {
+	timesFail := 14
+	rl := generateClusterRspList(s.T(), timesFail)
+	rl = append(rl, makeJsonResponse(http.StatusOK, loadTestData(s.T(), "get_kubernetes_cluster.json")))
+	listCalled := 0
+	var lr httpmock.Responder = func(request *http.Request) (*http.Response, error) {
+		rs := rl[listCalled]
+		listCalled++
+		return rs, nil
+	}
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1`, lr.Times(15))
+	err := s.c.WaitForKubernetesClusterState("1", K8sStateActive, time.Millisecond*10, time.Millisecond*1)
+	s.Error(err)
+}
+
+func (s *SuiteKubernetesCluster) Test_WaitForKubernetesClusterState_FAIL() {
+	timesFail := 4
+	rl := generateClusterRspList(s.T(), timesFail)
+	rl = append(rl, makeJsonResponse(http.StatusNotFound, []byte("{}")))
+	listCalled := 0
+	var lr httpmock.Responder = func(request *http.Request) (*http.Response, error) {
+		rs := rl[listCalled]
+		listCalled++
+		return rs, nil
+	}
+	httpmock.RegisterResponder(http.MethodGet, `=~/k8s/1`, lr.Times(5))
+	s.Error(s.c.WaitForKubernetesClusterState("1", K8sStateActive, time.Millisecond*10, time.Millisecond*1))
 }

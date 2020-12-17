@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"context"
-	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
+	ionossdk "github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -75,13 +75,15 @@ type User struct {
 
 // UserProperties object
 type UserProperties struct {
-	Firstname     string `json:"firstname,omitempty"`
-	Lastname      string `json:"lastname,omitempty"`
-	Email         string `json:"email,omitempty"`
-	Password      string `json:"password,omitempty"`
-	Administrator bool   `json:"administrator,omitempty"`
-	ForceSecAuth  bool   `json:"forceSecAuth,omitempty"`
-	SecAuthActive bool   `json:"secAuthActive,omitempty"`
+	Firstname         string `json:"firstname,omitempty"`
+	Lastname          string `json:"lastname,omitempty"`
+	Email             string `json:"email,omitempty"`
+	Password          string `json:"password,omitempty"`
+	Administrator     bool   `json:"administrator,omitempty"`
+	ForceSecAuth      bool   `json:"forceSecAuth,omitempty"`
+	SecAuthActive     bool   `json:"secAuthActive,omitempty"`
+	Active            *bool  `json:"active,omitempty"`
+	S3CanonicalUserID string `json:"s3CanonicalUserId,omitempty"`
 }
 
 // UserEntities object
