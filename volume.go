@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"context"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -95,7 +95,7 @@ func (c *Client) GetVolume(dcid string, volumeID string) (*Volume, error) {
 // UpdateVolume updates a volume
 func (c *Client) UpdateVolume(dcid string, volid string, request VolumeProperties) (*Volume, error) {
 
-	input := ionossdk.VolumeProperties{}
+	input := ionoscloud.VolumeProperties{}
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -117,7 +117,7 @@ func (c *Client) UpdateVolume(dcid string, volid string, request VolumePropertie
 // CreateVolume creates a volume
 func (c *Client) CreateVolume(dcid string, request Volume) (*Volume, error) {
 
-	input := ionossdk.Volume{}
+	input := ionoscloud.Volume{}
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}

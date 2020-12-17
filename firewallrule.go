@@ -1,7 +1,7 @@
 package profitbricks
 
 import (
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -89,7 +89,7 @@ func (c *Client) GetFirewallRule(dcID string, serverID string, nicID string, fwI
 //CreateFirewallRule creates a firewall rule
 func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, fw FirewallRule) (*FirewallRule, error) {
 
-	input := ionossdk.FirewallRule{}
+	input := ionoscloud.FirewallRule{}
 	if errConvert := convertToCore(&fw, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -116,7 +116,7 @@ func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, 
 // You need to pass all wanted properties, not just those you want to change.
 func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, fwID string, obj FirewallruleProperties) (*FirewallRule, error) {
 
-	input := ionossdk.FirewallruleProperties{}
+	input := ionoscloud.FirewallruleProperties{}
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}

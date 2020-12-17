@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"context"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -92,7 +92,7 @@ func (c *Client) ListS3Keys(userID string) (*S3Keys, error) {
 // UpdateS3Key updates an existing S3 key
 func (c *Client) UpdateS3Key(userID string, s3KeyID string, s3Key S3Key) (*S3Key, error) {
 
-	input := ionossdk.S3Key{}
+	input := ionoscloud.S3Key{}
 	if errConvert := convertToCore(&s3Key, &input); errConvert != nil {
 		return nil, errConvert
 	}

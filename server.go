@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"context"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -79,7 +79,7 @@ func (c *Client) ListServers(dcid string) (*Servers, error) {
 // CreateServer creates a server in given datacenter
 func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
 
-	input := ionossdk.Server{}
+	input := ionoscloud.Server{}
 	if errConvert := convertToCore(&server, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -145,7 +145,7 @@ func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
 // UpdateServer updates server with given properties and returns instance
 func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties) (*Server, error) {
 
-	input := ionossdk.ServerProperties{}
+	input := ionoscloud.ServerProperties{}
 	if errConvert := convertToCore(&props, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -242,7 +242,7 @@ func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 // AttachCdrom attaches a CD rom
 func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, error) {
 
-	image := ionossdk.Image{Id: &cdid}
+	image := ionoscloud.Image{Id: &cdid}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsPost(ctx, dcid, srvid).Cdrom(image).Execute()
@@ -329,7 +329,7 @@ func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 // AttachVolume attaches a volume
 func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume, error) {
 
-	input := ionossdk.Volume{Id: &volid}
+	input := ionoscloud.Volume{Id: &volid}
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesPost(ctx, dcid, srvid).Volume(input).Execute()

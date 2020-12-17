@@ -1,7 +1,7 @@
 package profitbricks
 
 import (
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -73,7 +73,7 @@ func (c *Client) ListIPBlocks() (*IPBlocks, error) {
 //ReserveIPBlock creates an IP block
 func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
 
-	input := ionossdk.IpBlock{}
+	input := ionoscloud.IpBlock{}
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -119,7 +119,7 @@ func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
 // UpdateIPBlock partial update of ipblock properties
 func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBlock, error) {
 
-	input := ionossdk.IpBlockProperties{}
+	input := ionoscloud.IpBlockProperties{}
 	if errConvert := convertToCore(&props, &input); errConvert != nil {
 		return nil, errConvert
 	}

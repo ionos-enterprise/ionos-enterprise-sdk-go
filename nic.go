@@ -1,7 +1,7 @@
 package profitbricks
 
 import (
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -68,7 +68,7 @@ func (c *Client) ListNics(dcid, srvid string) (*Nics, error) {
 // CreateNic creates a nic on a server
 func (c *Client) CreateNic(dcid string, srvid string, nic Nic) (*Nic, error) {
 
-	input := ionossdk.Nic{}
+	input := ionoscloud.Nic{}
 	if errConvert := convertToCore(&nic, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -113,7 +113,7 @@ func (c *Client) GetNic(dcid, srvid, nicid string) (*Nic, error) {
 // UpdateNic partial update of nic properties
 func (c *Client) UpdateNic(dcid string, srvid string, nicid string, obj NicProperties) (*Nic, error) {
 
-	input := ionossdk.NicProperties{}
+	input := ionoscloud.NicProperties{}
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}

@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"context"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -74,7 +74,7 @@ func (c *Client) ListLoadbalancers(dcid string) (*Loadbalancers, error) {
 //CreateLoadbalancer creates a loadbalancer in the datacenter from a jason []byte and returns a Instance struct
 func (c *Client) CreateLoadbalancer(dcid string, request Loadbalancer) (*Loadbalancer, error) {
 
-	input := ionossdk.Loadbalancer{}
+	input := ionoscloud.Loadbalancer{}
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -121,7 +121,7 @@ func (c *Client) GetLoadbalancer(dcid, lbalid string) (*Loadbalancer, error) {
 //UpdateLoadbalancer updates a load balancer
 func (c *Client) UpdateLoadbalancer(dcid string, lbalid string, obj LoadbalancerProperties) (*Loadbalancer, error) {
 
-	input := ionossdk.LoadbalancerProperties{}
+	input := ionoscloud.LoadbalancerProperties{}
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -185,7 +185,7 @@ func (c *Client) ListBalancedNics(dcid, lbalid string) (*Nics, error) {
 //AssociateNic attach a nic to load balancer
 func (c *Client) AssociateNic(dcid string, lbalid string, nicid string) (*Nic, error) {
 
-	input := ionossdk.Nic{
+	input := ionoscloud.Nic{
 		Id: &nicid,
 	}
 

@@ -1,11 +1,11 @@
 package profitbricks
 
 import (
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"reflect"
 )
 
-func fillInResponse(obj interface{}, response *ionossdk.APIResponse) {
+func fillInResponse(obj interface{}, response *ionoscloud.APIResponse) {
 	if response == nil || response.Response == nil {
 		return
 	}

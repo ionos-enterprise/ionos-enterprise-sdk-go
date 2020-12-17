@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"context"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -214,7 +214,7 @@ func (c *Client) GetGroup(groupid string) (*Group, error) {
 //CreateGroup creates a group
 func (c *Client) CreateGroup(grp Group) (*Group, error) {
 
-	input := ionossdk.Group{}
+	input := ionoscloud.Group{}
 	if errConvert := convertToCore(&grp, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -239,7 +239,7 @@ func (c *Client) CreateGroup(grp Group) (*Group, error) {
 //UpdateGroup updates a group
 func (c *Client) UpdateGroup(groupid string, obj Group) (*Group, error) {
 
-	input := ionossdk.Group{}
+	input := ionoscloud.Group{}
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -322,7 +322,7 @@ func (c *Client) GetShare(groupid string, resourceid string) (*Share, error) {
 // AddShare adds a share
 func (c *Client) AddShare(groupid string, resourceid string, share Share) (*Share, error) {
 
-	input := ionossdk.GroupShare{}
+	input := ionoscloud.GroupShare{}
 	if errConvert := convertToCore(&share, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -347,7 +347,7 @@ func (c *Client) AddShare(groupid string, resourceid string, share Share) (*Shar
 // UpdateShare updates a share
 func (c *Client) UpdateShare(groupid string, resourceid string, obj Share) (*Share, error) {
 
-	input := ionossdk.GroupShare{}
+	input := ionoscloud.GroupShare{}
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -411,7 +411,7 @@ func (c *Client) ListGroupUsers(groupid string) (*Users, error) {
 // AddUserToGroup adds a user to a group
 func (c *Client) AddUserToGroup(groupid string, userid string) (*User, error) {
 
-	input := ionossdk.User{
+	input := ionoscloud.User{
 		Id: &userid,
 	}
     ctx, cancel := c.GetContext()
@@ -499,7 +499,7 @@ func (c *Client) GetUser(usrid string) (*User, error) {
 //CreateUser creates a user
 func (c *Client) CreateUser(usr User) (*User, error) {
 
-	input := ionossdk.User{}
+	input := ionoscloud.User{}
 	if errConvert := convertToCore(&usr, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -524,7 +524,7 @@ func (c *Client) CreateUser(usr User) (*User, error) {
 //UpdateUser updates user information
 func (c *Client) UpdateUser(userid string, obj User) (*User, error) {
 
-	input := ionossdk.User{}
+	input := ionoscloud.User{}
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}

@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"context"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -107,7 +107,7 @@ func (c *Client) CreateDatacenter(dc Datacenter) (*Datacenter, error) {
 	// url := datacentersPath()
 	// ret := &Datacenter{}
 	// err := c.Post(url, dc, ret, http.StatusAccepted)
-	input := ionossdk.Datacenter{}
+	input := ionoscloud.Datacenter{}
 	err := convertToCore(&dc, &input)
 	if err != nil {
 		return nil, err
@@ -167,7 +167,7 @@ func (c *Client) GetDatacenter(dcid string) (*Datacenter, error) {
 // UpdateDataCenter updates a data center
 func (c *Client) UpdateDataCenter(dcid string, obj DatacenterProperties) (*Datacenter, error) {
 
-	input := ionossdk.DatacenterProperties{}
+	input := ionoscloud.DatacenterProperties{}
 	err := convertToCore(&obj, &input)
 	if err != nil {
 		return nil, err

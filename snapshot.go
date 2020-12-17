@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"fmt"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -110,7 +110,7 @@ func (c *Client) DeleteSnapshot(snapshotID string) (*http.Header, error) {
 // UpdateSnapshot updates a snapshot
 func (c *Client) UpdateSnapshot(snapshotID string, request SnapshotProperties) (*Snapshot, error) {
 
-	input := ionossdk.SnapshotProperties{}
+	input := ionoscloud.SnapshotProperties{}
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}

@@ -3,7 +3,7 @@ package profitbricks
 import (
 	"context"
 	"fmt"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 	"time"
 )
@@ -384,7 +384,7 @@ func (c *Client) GetKubernetesCluster(clusterID string) (*KubernetesCluster, err
 // CreateKubernetesCluster creates a cluster
 func (c *Client) CreateKubernetesCluster(cluster KubernetesCluster) (*KubernetesCluster, error) {
 
-	input := ionossdk.KubernetesCluster{}
+	input := ionoscloud.KubernetesCluster{}
 	if errConvert := convertToCore(&cluster, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -434,7 +434,7 @@ func (c *Client) DeleteKubernetesCluster(clusterID string) (*http.Header, error)
 // UpdateKubernetesCluster updates cluster
 func (c *Client) UpdateKubernetesCluster(clusterID string, cluster UpdatedKubernetesCluster) (*KubernetesCluster, error) {
 
-	input := ionossdk.KubernetesCluster{}
+	input := ionoscloud.KubernetesCluster{}
 	if errConvert := convertToCore(&cluster, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -512,7 +512,7 @@ func (c *Client) ListKubernetesNodePools(clusterID string) (*KubernetesNodePools
 // CreateKubernetesNodePool creates a new node pool for cluster
 func (c *Client) CreateKubernetesNodePool(clusterID string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
 
-	input := ionossdk.KubernetesNodePool{}
+	input := ionoscloud.KubernetesNodePool{}
 	if errConvert := convertToCore(nodePool, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -573,7 +573,7 @@ func (c *Client) GetKubernetesNodePool(clusterID, nodePoolID string) (*Kubernete
 // Update KubernetesNodePool updates node pool
 func (c *Client) UpdateKubernetesNodePool(clusterID, nodePoolID string, nodePool KubernetesNodePool) (*KubernetesNodePool, error) {
 
-	input := ionossdk.KubernetesNodePool{}
+	input := ionoscloud.KubernetesNodePool{}
 	if errConvert := convertToCore(nodePool.Properties, &input); errConvert != nil {
 		return nil, errConvert
 	}

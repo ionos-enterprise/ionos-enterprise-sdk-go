@@ -3,7 +3,7 @@ package profitbricks
 import (
 	"errors"
 	"fmt"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"reflect"
 	"time"
 )
@@ -62,7 +62,7 @@ var CustomCasters = []CustomCaster{
 		From: "*Type",
 		To: "string",
 		Cast: func (value reflect.Value) reflect.Value{
-			v := value.Interface().(*ionossdk.Type)
+			v := value.Interface().(*ionoscloud.Type)
 			if v == nil {
 				return reflect.ValueOf("")
 			}
@@ -77,9 +77,9 @@ var CustomCasters = []CustomCaster{
 			if v == "" {
 				/* we need to avoid sending the type otherwise the api returns 422 because
 				 * type is read only */
-				return reflect.Zero(reflect.TypeOf((*ionossdk.Type)(nil)))
+				return reflect.Zero(reflect.TypeOf((*ionoscloud.Type)(nil)))
 			}
-			ret := ionossdk.Type(value.Interface().(string))
+			ret := ionoscloud.Type(value.Interface().(string))
 			return reflect.ValueOf(&ret)
 		},
 	},
@@ -112,20 +112,20 @@ var CustomCasters = []CustomCaster{
 		Cast: func (value reflect.Value) reflect.Value {
 			str := value.Interface().(string)
 			if str == "" {
-				return reflect.Zero(reflect.TypeOf((*ionossdk.IonosTime)(nil)))
+				return reflect.Zero(reflect.TypeOf((*ionoscloud.IonosTime)(nil)))
 			}
 			createdDate, err := time.Parse(dateLayout, str)
 			if err != nil {
 				panic("Error parsing date " + str + "; expecting format " + dateLayout)
 			}
-			return reflect.ValueOf(&ionossdk.IonosTime{Time: createdDate})
+			return reflect.ValueOf(&ionoscloud.IonosTime{Time: createdDate})
 		},
 	},
 	{
 		From: "*IonosTime",
 		To: "string",
 		Cast: func (value reflect.Value) reflect.Value {
-			t := value.Interface().(*ionossdk.IonosTime)
+			t := value.Interface().(*ionoscloud.IonosTime)
 			return reflect.ValueOf(t.Format(dateLayout))
 		},
 	},
@@ -289,7 +289,7 @@ var CustomCasters = []CustomCaster{
 		From: "*IonosTime",
 		To: "Time",
 		Cast: func (value reflect.Value) reflect.Value {
-			v := value.Interface().(*ionossdk.IonosTime)
+			v := value.Interface().(*ionoscloud.IonosTime)
 			return reflect.ValueOf(v.Time)
 		},
 	},
@@ -298,7 +298,7 @@ var CustomCasters = []CustomCaster{
 		To: "*IonosTime",
 		Cast: func (value reflect.Value) reflect.Value {
 			v := value.Interface().(time.Time)
-			return reflect.ValueOf(&ionossdk.IonosTime{Time: v})
+			return reflect.ValueOf(&ionoscloud.IonosTime{Time: v})
 		},
 	},
 

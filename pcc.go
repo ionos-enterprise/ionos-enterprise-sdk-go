@@ -1,7 +1,7 @@
 package profitbricks
 
 import (
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -138,7 +138,7 @@ func (c *Client) GetPrivateCrossConnect(pccID string) (*PrivateCrossConnect, err
 
 // CreatePrivateCrossConnect creates a private cross-connect
 func (c *Client) CreatePrivateCrossConnect(pcc PrivateCrossConnect) (*PrivateCrossConnect, error) {
-	input := ionossdk.PrivateCrossConnect{}
+	input := ionoscloud.PrivateCrossConnect{}
 	if errConvert := convertToCore(&pcc, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -159,7 +159,7 @@ func (c *Client) CreatePrivateCrossConnect(pcc PrivateCrossConnect) (*PrivateCro
 
 // UpdatePrivateCrossConnect updates a private cross-connect
 func (c *Client) UpdatePrivateCrossConnect(pccID string, pcc PrivateCrossConnect) (*PrivateCrossConnect, error) {
-	input := ionossdk.PrivateCrossConnect{}
+	input := ionoscloud.PrivateCrossConnect{}
 	if errConvert := convertToCore(&pcc, &input); errConvert != nil {
 		return nil, errConvert
 	}

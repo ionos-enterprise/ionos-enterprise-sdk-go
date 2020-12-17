@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"context"
-	ionossdk "github.com/ionos-cloud/sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -79,7 +79,7 @@ func (c *Client) ListLans(dcid string) (*Lans, error) {
 // CreateLan creates a lan in the datacenter
 // from a jason []byte and returns a Instance struct
 func (c *Client) CreateLan(dcid string, request Lan) (*Lan, error) {
-	input := ionossdk.LanPost{}
+	input := ionoscloud.LanPost{}
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
@@ -145,7 +145,7 @@ func (c *Client) GetLan(dcid, lanid string) (*Lan, error) {
 // UpdateLan does a partial update to a lan using json from []byte json returns a Instance struct
 func (c *Client) UpdateLan(dcid string, lanid string, obj LanProperties) (*Lan, error) {
 
-	input := ionossdk.LanProperties{}
+	input := ionoscloud.LanProperties{}
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}
