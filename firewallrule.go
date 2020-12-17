@@ -19,7 +19,7 @@ type FirewallRule struct {
 
 //FirewallruleProperties object
 type FirewallruleProperties struct {
-	Name           string  `json:"name,omitempty"`
+	Name           string  `json:"name"`
 	Protocol       string  `json:"protocol,omitempty"`
 	SourceMac      *string `json:"sourceMac,omitempty"`
 	SourceIP       *string `json:"sourceIp,omitempty"`
@@ -28,8 +28,6 @@ type FirewallruleProperties struct {
 	IcmpType       *int    `json:"icmpType,omitempty"`
 	PortRangeStart *int    `json:"portRangeStart,omitempty"`
 	PortRangeEnd   *int    `json:"portRangeEnd,omitempty"`
-	SourceIp       string `json:"sourceIp,omitempty"`
-	TargetIp       string `json:"targetIp,omitempty"`
 }
 
 //FirewallRules object
@@ -114,7 +112,8 @@ func (c *Client) CreateFirewallRule(dcID string, serverID string, nicID string, 
 	 */
 }
 
-//UpdateFirewallRule updates a firewall rule
+// UpdateFirewallRule updates a firewall rule.
+// You need to pass all wanted properties, not just those you want to change.
 func (c *Client) UpdateFirewallRule(dcID string, serverID string, nicID string, fwID string, obj FirewallruleProperties) (*FirewallRule, error) {
 
 	input := ionossdk.FirewallruleProperties{}

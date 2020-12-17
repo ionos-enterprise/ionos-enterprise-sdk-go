@@ -1,0 +1,51 @@
+{
+  "id" : "259a6266-a532-4018-a7bf-3e63cba15e9e",
+  "type" : "k8s",
+  "href" : "https://api.ionos.com/cloudapi/v5/k8s/259a6266-a532-4018-a7bf-3e63cba15e9e",
+  "metadata" : {
+    "etag" : "4ad964d222bf1bd24d823a37d19fe103",
+    "createdDate" : "2019-09-20T12:11:00Z",
+    "createdBy" : "admin@example.com",
+    "createdByUserId" : "3b7e9212-399a-4f23-ada1-b4410d345152",
+    "lastModifiedDate" : "2019-09-20T12:11:00Z",
+    "lastModifiedBy" : "admin@example.com",
+    "lastModifiedByUserId" : "3b7e9212-399a-4f23-ada1-b4410d345152",
+    "state" : "DEPLOYING"
+  },
+  "properties" : {
+    "name" : "test-33961-cluster"
+  },
+  "entities" : {
+    "nodepools" : {
+      "id" : "259a6266-a532-4018-a7bf-3e63cba15e9e/nodepools",
+      "type" : "collection",
+      "href" : "https://api.ionos.com/cloudapi/v5/k8s/259a6266-a532-4018-a7bf-3e63cba15e9e/nodepools",
+      "items" : [ {
+        "id" : "747cafd7-ac36-4055-939e-fe8808ab1592",
+        "type" : "nodepool",
+        "href" : "https://api.ionos.com/cloudapi/v5/k8s/259a6266-a532-4018-a7bf-3e63cba15e9e/nodepools/747cafd7-ac36-4055-939e-fe8808ab1592",
+        "metadata" : {
+          "etag" : "a1936a1104cffefd3e83a964f8f658d4",
+          "createdDate" : "2019-09-20T12:18:44Z",
+          "createdBy" : "admin@example.com",
+          "createdByUserId" : "3b7e9212-399a-4f23-ada1-b4410d345152",
+          "lastModifiedDate" : "2019-09-20T12:18:44Z",
+          "lastModifiedBy" : "admin@example.com",
+          "lastModifiedByUserId" : "3b7e9212-399a-4f23-ada1-b4410d345152",
+          "state" : "ACTIVE"
+        },
+        "properties" : {
+          "name" : "unit-test-node-pool",
+          "datacenterId" : "05fdf9db-46df-4339-ae35-6422db8478ce",
+          "nodeCount" : 3,
+          "cpuFamily" : "INTEL_XEON",
+          "coresCount" : 1,
+          "ramSize" : 2048,
+          "availabilityZone" : "AUTO",
+          "storageType" : "HDD",
+          "storageSize" : 10
+        }
+      } ]
+    }
+  }
+}

@@ -10,7 +10,7 @@
     "lastModifiedDate" : "2019-09-20T12:18:44Z",
     "lastModifiedBy" : "admin@example.com",
     "lastModifiedByUserId" : "3b7e9212-399a-4f23-ada1-b4410d345152",
-    "state" : "ACTIVE"
+    "state" : "DEPLOYING"
   },
   "properties" : {
     "name" : "unit-test-node-pool",
@@ -29,11 +29,6 @@
     "maintenanceWindow": {
       "dayOfTheWeek": "Monday",
       "time": "13:00:00Z"
-    },
-    "publicIps": [
-      "81.173.1.2",
-      "82.231.2.5",
-      "92.221.2.4"
-    ]
+    }
   }
 }
