@@ -3,7 +3,7 @@ package profitbricks
 import (
 	"errors"
 	"fmt"
-	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
+	ionossdk "github.com/ionos-cloud/sdk-go/v5"
 	"reflect"
 	"time"
 )

@@ -2,14 +2,14 @@ package profitbricks
 
 import (
 	"context"
-	"github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"strconv"
 	"time"
 )
 
 type Client struct {
 	// *resty.Client
-	CoreSdk *ionossdk.APIClient
+	CoreSdk *ionoscloud.APIClient
 	// AuthApiUrl will be used by methods talking to the auth api by sending absolute urls
 	AuthApiUrl  string
 	CloudApiUrl string
@@ -29,7 +29,7 @@ const (
 func RestyClient(username, password, token string) *Client {
 	c := &Client{
 		// Client:      resty.New(),
-		CoreSdk:     ionossdk.NewAPIClient(ionossdk.NewConfiguration(username, password, token)),
+		CoreSdk:     ionoscloud.NewAPIClient(ionoscloud.NewConfiguration(username, password, token)),
 		AuthApiUrl:  DefaultAuthUrl,
 		CloudApiUrl: DefaultApiUrl,
 	}

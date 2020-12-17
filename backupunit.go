@@ -1,7 +1,7 @@
 package profitbricks
 
 import (
-	"github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -70,7 +70,7 @@ type BackupUnitSSOURL struct {
 // CreateBackupUnit creates a Backup Unit
 func (c *Client) CreateBackupUnit(backupUnit BackupUnit) (*BackupUnit, error) {
 	// rsp := &BackupUnit{}
-	input := ionossdk.BackupUnit{}
+	input := ionoscloud.BackupUnit{}
 	err := convertToCore(&backupUnit, &input)
 	
 	ctx, cancel := c.GetContext()
@@ -103,7 +103,7 @@ func (c *Client) ListBackupUnits() (*BackupUnits, error) {
 // UpdateBackupUnit updates an existing backup unit
 func (c *Client) UpdateBackupUnit(backupUnitID string, backupUnit BackupUnit) (*BackupUnit, error) {
 
-	input := ionossdk.BackupUnit{}
+	input := ionoscloud.BackupUnit{}
 	if errConv := convertToCore(&backupUnit, &input); errConv != nil {
 		return nil, errConv
 	}

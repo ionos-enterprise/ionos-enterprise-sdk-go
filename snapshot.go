@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"fmt"
-	ionossdk "github.com/ionos-cloud/ionos-cloud-sdk-go/v5"
+	ionossdk "github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
