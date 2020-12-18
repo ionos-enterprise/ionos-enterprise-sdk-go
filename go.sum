@@ -3,8 +3,8 @@ github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM=
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
-github.com/ionos-cloud/sdk-go/v5 v5.0.1 h1:oM242ah4uM1tzRuwAT8UWnLjJphQEaHGntnQulIGiaI=
-github.com/ionos-cloud/sdk-go/v5 v5.0.1/go.mod h1:dU3BVZgiBDAKyo41hFk7D5KWHfqyp4YL4rePIAi2JyM=
+github.com/ionos-cloud/sdk-go/v5 v5.0.2 h1:q/aYGV8Lcued7OW9BdixSutyM2XcUZjsH37kNrHjMxg=
+github.com/ionos-cloud/sdk-go/v5 v5.0.2/go.mod h1:dU3BVZgiBDAKyo41hFk7D5KWHfqyp4YL4rePIAi2JyM=
 github.com/jarcoal/httpmock v1.0.5 h1:cHtVEcTxRSX4J0je7mWPfc9BpDpqzXSJ5HbymZmyHck=
 github.com/jarcoal/httpmock v1.0.5/go.mod h1:ATjnClrvW/3tijVmpL/va5Z3aAyGvqU3gCT8nX0Txik=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
