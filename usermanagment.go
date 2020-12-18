@@ -503,6 +503,9 @@ func (c *Client) CreateUser(usr User) (*User, error) {
 	if errConvert := convertToCore(&usr, &input); errConvert != nil {
 		return nil, errConvert
 	}
+	/* setting this to nil to avoid marshalling it, otherwise we get a
+	 * [(root).properties.secAuthActive] Attribute is not allowed in create requests
+	 */
 	input.Properties.SecAuthActive = nil
     ctx, cancel := c.GetContext()
     if cancel != nil { defer cancel() }

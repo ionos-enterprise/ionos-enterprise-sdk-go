@@ -49,6 +49,7 @@ func TestReserveIpBlockFailure(t *testing.T) {
 	if err == nil {
 		t.Errorf("reserve IP block did not fail.")
 	}
+	assert.Nil(t, err)
 	assert.True(t, strings.Contains(err.Error(), "422"))
 }
 

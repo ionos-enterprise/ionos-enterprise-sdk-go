@@ -42,6 +42,8 @@ var CompatCoreFieldMap = map[string]string{
 	"RAMSize": "RamSize",
 	"DatacenterID": "DatacenterId",
 	"KubeConfig": "Kubeconfig",
+	"PublicIPs": "PublicIps",
+	"S3CanonicalUserID": "S3CanonicalUserId",
 }
 
 /* custom caster, such as from *Type to string or *time.Time to string */
