@@ -13,7 +13,7 @@ type Client struct {
 	// AuthApiUrl will be used by methods talking to the auth api by sending absolute urls
 	AuthApiUrl  string
 	CloudApiUrl string
-	Config Configuration
+	Config      Configuration
 }
 
 type Configuration struct {
@@ -35,11 +35,11 @@ func RestyClient(username, password, token string) *Client {
 	}
 
 	/*
-	if token == "" {
-		c.SetBasicAuth(username, password)
-	} else {
-		c.SetAuthToken(token)
-	}*/
+		if token == "" {
+			c.SetBasicAuth(username, password)
+		} else {
+			c.SetAuthToken(token)
+		}*/
 	// c.SetHostURL(DefaultApiUrl)
 	c.SetDepth(10)
 	c.SetTimeout(3 * time.Minute)
@@ -49,27 +49,27 @@ func RestyClient(username, password, token string) *Client {
 	c.SetRetryMaxWaitTime(10 * time.Minute)
 	c.SetRetryWaitTime(1 * time.Second)
 	/*
-	c.SetRetryAfter(func(cl *resty.Client, r *resty.Response) (time.Duration, error) {
-		switch r.StatusCode() {
-		case http.StatusTooManyRequests:
-			if retryAfterSeconds := r.Header().Get("Retry-After"); retryAfterSeconds != "" {
-				return time.ParseDuration(retryAfterSeconds + "s")
-			}
-		}
-		return cl.RetryWaitTime, nil
-	})
-	c.AddRetryCondition(
-		func(r *resty.Response, err error) bool {
+		c.SetRetryAfter(func(cl *resty.Client, r *resty.Response) (time.Duration, error) {
 			switch r.StatusCode() {
-			case http.StatusTooManyRequests,
-				http.StatusServiceUnavailable,
-				http.StatusGatewayTimeout,
-				http.StatusBadGateway:
-				return true
+			case http.StatusTooManyRequests:
+				if retryAfterSeconds := r.Header().Get("Retry-After"); retryAfterSeconds != "" {
+					return time.ParseDuration(retryAfterSeconds + "s")
+				}
 			}
-			return false
+			return cl.RetryWaitTime, nil
 		})
-	 */
+		c.AddRetryCondition(
+			func(r *resty.Response, err error) bool {
+				switch r.StatusCode() {
+				case http.StatusTooManyRequests,
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout,
+					http.StatusBadGateway:
+					return true
+				}
+				return false
+			})
+	*/
 	return c
 }
 

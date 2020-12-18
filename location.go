@@ -37,8 +37,10 @@ type LocationProperties struct {
 
 // ListLocations returns location collection data
 func (c *Client) ListLocations() (*Locations, error) {
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsGet(ctx).Execute()
 	ret := Locations{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -51,16 +53,17 @@ func (c *Client) ListLocations() (*Locations, error) {
 // GetRegionalLocations returns a list of available locations in a specific region
 func (c *Client) GetRegionalLocations(regid string) (*Locations, error) {
 
-
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegionId(ctx, regid).Execute()
 	ret := Locations{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert
 	}
 	fillInResponse(&ret, apiResponse)
-	return &ret,err
+	return &ret, err
 }
 
 // GetLocation returns location data
@@ -71,8 +74,10 @@ func (c *Client) GetLocation(locid string) (*Location, error) {
 		return nil, NewClientError(InvalidInput, "Invalid location id")
 	}
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegionIdAndId(ctx, parts[0], parts[1]).Execute()
 	ret := Location{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {

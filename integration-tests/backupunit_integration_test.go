@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	BuName = "GO SDK Test Backup Unit"
-	BuPass = "letmein"
-	BuEmail = "gosdktest@mailinator.com"
-	BuNameUpdated = BuName + " UPDATED"
-	BuPassUpdated = BuPass + "UPDATED"
+	BuName         = "GO SDK Test Backup Unit"
+	BuPass         = "letmein"
+	BuEmail        = "gosdktest@mailinator.com"
+	BuNameUpdated  = BuName + " UPDATED"
+	BuPassUpdated  = BuPass + "UPDATED"
 	BuEmailUpdated = "updated_" + BuEmail
 )
 
@@ -21,9 +21,9 @@ func TestCreateBackupUnit(t *testing.T) {
 	c := setupTestEnv()
 	input := sdk.BackupUnit{
 		Properties: &sdk.BackupUnitProperties{
-			Name: BuName,
+			Name:     BuName,
 			Password: BuPass,
-			Email: BuEmail,
+			Email:    BuEmail,
 		},
 	}
 	var err error
@@ -70,7 +70,7 @@ func TestUpdateBackupUnit(t *testing.T) {
 	ret, err := c.UpdateBackupUnit(backupUnit.ID, sdk.BackupUnit{
 		Properties: &sdk.BackupUnitProperties{
 			/* we're not allowed to update the name, only email and password and the api returns name and email */
-			Email: BuEmailUpdated,
+			Email:    BuEmailUpdated,
 			Password: BuPassUpdated,
 		},
 	})

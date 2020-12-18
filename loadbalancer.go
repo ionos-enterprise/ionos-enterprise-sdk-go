@@ -54,8 +54,10 @@ type Loadbalancers struct {
 //ListLoadbalancers returns a Collection struct for loadbalancers in the Datacenter
 func (c *Client) ListLoadbalancers(dcid string) (*Loadbalancers, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersGet(ctx, dcid).Execute()
 	ret := Loadbalancers{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -64,11 +66,11 @@ func (c *Client) ListLoadbalancers(dcid string) (*Loadbalancers, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := loadbalancersPath(dcid)
-	ret := &Loadbalancers{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := loadbalancersPath(dcid)
+		ret := &Loadbalancers{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 //CreateLoadbalancer creates a loadbalancer in the datacenter from a jason []byte and returns a Instance struct
@@ -78,8 +80,10 @@ func (c *Client) CreateLoadbalancer(dcid string, request Loadbalancer) (*Loadbal
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersPost(ctx, dcid).Loadbalancer(input).Execute()
 	ret := Loadbalancer{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -89,19 +93,21 @@ func (c *Client) CreateLoadbalancer(dcid string, request Loadbalancer) (*Loadbal
 	return &ret, err
 
 	/*
-	url := loadbalancersPath(dcid)
-	ret := &Loadbalancer{}
-	err := c.Post(url, request, ret, http.StatusAccepted)
+		url := loadbalancersPath(dcid)
+		ret := &Loadbalancer{}
+		err := c.Post(url, request, ret, http.StatusAccepted)
 
-	return ret, err
-	 */
+		return ret, err
+	*/
 }
 
 //GetLoadbalancer pulls data for the Loadbalancer  where id = lbalid returns a Instance struct
 func (c *Client) GetLoadbalancer(dcid, lbalid string) (*Loadbalancer, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersFindById(ctx, dcid, lbalid).Execute()
 	ret := Loadbalancer{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -111,11 +117,11 @@ func (c *Client) GetLoadbalancer(dcid, lbalid string) (*Loadbalancer, error) {
 	return &ret, err
 
 	/*
-	url := loadbalancerPath(dcid, lbalid)
-	ret := &Loadbalancer{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := loadbalancerPath(dcid, lbalid)
+		ret := &Loadbalancer{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 //UpdateLoadbalancer updates a load balancer
@@ -125,8 +131,10 @@ func (c *Client) UpdateLoadbalancer(dcid string, lbalid string, obj Loadbalancer
 	if errConvert := convertToCore(&obj, &input); errConvert != nil {
 		return nil, errConvert
 	}
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersPatch(ctx, dcid, lbalid).Loadbalancer(input).Execute()
 	ret := Loadbalancer{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -136,18 +144,20 @@ func (c *Client) UpdateLoadbalancer(dcid string, lbalid string, obj Loadbalancer
 	return &ret, err
 
 	/*
-	url := loadbalancerPath(dcid, lbalid)
-	ret := &Loadbalancer{}
-	err := c.Patch(url, obj, ret, http.StatusAccepted)
-	return ret, err
-	 */
+		url := loadbalancerPath(dcid, lbalid)
+		ret := &Loadbalancer{}
+		err := c.Patch(url, obj, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 //DeleteLoadbalancer deletes a load balancer
 func (c *Client) DeleteLoadbalancer(dcid, lbalid string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersDelete(ctx, dcid, lbalid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -156,11 +166,11 @@ func (c *Client) DeleteLoadbalancer(dcid, lbalid string) (*http.Header, error) {
 	}
 
 	/*
-	url := loadbalancerPath(dcid, lbalid)
-	ret := &http.Header{}
-	err := c.Delete(url, ret, http.StatusAccepted)
-	return ret, err
-	 */
+		url := loadbalancerPath(dcid, lbalid)
+		ret := &http.Header{}
+		err := c.Delete(url, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 //ListBalancedNics lists balanced nics
@@ -175,11 +185,11 @@ func (c *Client) ListBalancedNics(dcid, lbalid string) (*Nics, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := balancedNicsPath(dcid, lbalid)
-	ret := &Nics{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := balancedNicsPath(dcid, lbalid)
+		ret := &Nics{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 //AssociateNic attach a nic to load balancer
@@ -189,8 +199,10 @@ func (c *Client) AssociateNic(dcid string, lbalid string, nicid string) (*Nic, e
 		Id: &nicid,
 	}
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.LoadBalancerApi.DatacentersLoadbalancersBalancednicsPost(ctx, dcid, lbalid).Nic(input).Execute()
 	ret := Nic{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -200,12 +212,12 @@ func (c *Client) AssociateNic(dcid string, lbalid string, nicid string) (*Nic, e
 	return &ret, err
 
 	/*
-	sm := map[string]string{"id": nicid}
-	url := balancedNicsPath(dcid, lbalid)
-	ret := &Nic{}
-	err := c.Post(url, sm, ret, http.StatusAccepted)
-	return ret, err
-	 */
+		sm := map[string]string{"id": nicid}
+		url := balancedNicsPath(dcid, lbalid)
+		ret := &Nic{}
+		err := c.Post(url, sm, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 //GetBalancedNic gets a balanced nic
@@ -220,11 +232,11 @@ func (c *Client) GetBalancedNic(dcid, lbalid, balnicid string) (*Nic, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := balancedNicPath(dcid, lbalid, balnicid)
-	ret := &Nic{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := balancedNicPath(dcid, lbalid, balnicid)
+		ret := &Nic{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 //DeleteBalancedNic removes a balanced nic
@@ -239,9 +251,9 @@ func (c *Client) DeleteBalancedNic(dcid, lbalid, balnicid string) (*http.Header,
 	}
 
 	/*
-	url := balancedNicPath(dcid, lbalid, balnicid)
-	ret := &http.Header{}
-	err := c.Delete(url, ret, http.StatusAccepted)
-	return ret, err
-	 */
+		url := balancedNicPath(dcid, lbalid, balnicid)
+		ret := &http.Header{}
+		err := c.Delete(url, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }

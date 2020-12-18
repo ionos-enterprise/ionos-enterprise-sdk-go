@@ -186,8 +186,10 @@ func (f *RequestListFilter) WithCreatedBefore(t time.Time) *RequestListFilter {
 // ListRequests lists all requests
 func (c *Client) ListRequests() (*Requests, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsGet(ctx).Execute()
 	ret := Requests{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -197,18 +199,20 @@ func (c *Client) ListRequests() (*Requests, error) {
 	return &ret, err
 
 	/*
-	url := "/requests"
-	ret := &Requests{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := "/requests"
+		ret := &Requests{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // ListRequestsWithFilter lists all requests that match the given filters
 func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, error) {
 
 	ctx, cancel := c.GetContext()
-	if cancel != nil { defer cancel() }
+	if cancel != nil {
+		defer cancel()
+	}
 	sdkRequest := c.CoreSdk.RequestApi.RequestsGet(ctx)
 
 	if filter != nil {
@@ -233,25 +237,27 @@ func (c *Client) ListRequestsWithFilter(filter *RequestListFilter) (*Requests, e
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	path := "/requests"
-	ret := &Requests{}
-	r := c.R().SetResult(ret)
-	if filter != nil {
-		for k, v := range filter.Values {
-			for _, i := range v {
-				r.SetQueryParam(k, i)
+		path := "/requests"
+		ret := &Requests{}
+		r := c.R().SetResult(ret)
+		if filter != nil {
+			for k, v := range filter.Values {
+				for _, i := range v {
+					r.SetQueryParam(k, i)
+				}
 			}
 		}
-	}
-	return ret, c.DoWithRequest(r, resty.MethodGet, path, http.StatusOK)
-	 */
+		return ret, c.DoWithRequest(r, resty.MethodGet, path, http.StatusOK)
+	*/
 }
 
 // GetRequest gets a specific request
 func (c *Client) GetRequest(reqID string) (*Request, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsFindById(ctx, reqID).Execute()
 	ret := Request{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -260,17 +266,19 @@ func (c *Client) GetRequest(reqID string) (*Request, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := "/requests/" + reqID
-	ret := &Request{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := "/requests/" + reqID
+		ret := &Request{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // GetRequestStatus returns status of the request
 func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.RequestApi.RequestsStatusGet(ctx, path).Execute()
 	ret := RequestStatus{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -280,11 +288,11 @@ func (c *Client) GetRequestStatus(path string) (*RequestStatus, error) {
 	return &ret, err
 
 	/*
-	url := path
-	ret := &RequestStatus{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := path
+		ret := &RequestStatus{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // IsRequestFinished checks the given path to a request status resource. The request is considered "done"

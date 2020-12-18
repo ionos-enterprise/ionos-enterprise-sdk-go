@@ -40,7 +40,7 @@ func TestCreatePcc(t *testing.T) {
 	c := setupTestEnv()
 	p, err := c.CreatePrivateCrossConnect(sdk.PrivateCrossConnect{
 		Properties: &sdk.PrivateCrossConnectProperties{
-			Peers: nil,
+			Peers:                  nil,
 			ConnectableDatacenters: nil,
 		},
 	})

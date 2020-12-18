@@ -29,8 +29,8 @@ var (
 	onceUmGroup sync.Once
 	onceUmIP    sync.Once
 	onceUmShare sync.Once
-	s3Key		*sdk.S3Key
-	onceUmS3Key	sync.Once
+	s3Key       *sdk.S3Key
+	onceUmS3Key sync.Once
 )
 
 const s3KeySecret = "testsecret"
@@ -526,7 +526,6 @@ func TestGetResourceFailure(t *testing.T) {
 
 	assert.NotNil(t, err)
 }
-
 
 func TestCreateS3Key(t *testing.T) {
 	onceUmS3Key.Do(createS3Key)

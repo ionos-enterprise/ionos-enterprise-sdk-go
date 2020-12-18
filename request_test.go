@@ -57,7 +57,7 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 		makeJsonResponse(200, loadTestData(s.T(), "request_done.json")),
 	}
 	query := url.Values{
-		"depth":      []string{"10"},
+		"depth": []string{"10"},
 	}
 	listCalled := 0
 	statusCalled := 0
@@ -76,8 +76,10 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*", sr.Times(2))
 
-    ctx, cancel := s.client.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := s.client.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	err := s.client.WaitTillRequestsFinished(ctx, NewRequestListFilter())
 	s.NoError(err)
 	s.Equal(4, httpmock.GetTotalCallCount())
@@ -86,8 +88,10 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 func (s *SuiteWaitTillRequests) Test_Err_ListError() {
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests",
 		httpmock.NewStringResponder(401, "{}"))
-    ctx, cancel := s.client.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := s.client.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	err := s.client.WaitTillMatchingRequestsFinished(ctx, nil, nil)
 	s.Error(err)
 	s.Equal(1, httpmock.GetTotalCallCount())
@@ -108,8 +112,10 @@ func (s *SuiteWaitTillRequests) Test_Err_GetStatusError() {
 	statusResponse := makeJsonResponse(http.StatusUnauthorized, []byte("{}"))
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
 		httpmock.ResponderFromResponse(statusResponse))
-    ctx, cancel := s.client.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := s.client.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	err := s.client.WaitTillRequestsFinished(ctx, nil)
 	s.Error(err)
 	s.Equal(2, httpmock.GetTotalCallCount())

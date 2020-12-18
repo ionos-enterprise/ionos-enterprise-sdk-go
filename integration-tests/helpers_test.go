@@ -42,9 +42,9 @@ var (
 	snapshot            *sdk.Snapshot
 	snapshotname        = "GO SDK TEST"
 	snapshotdescription = "GO SDK test snapshot"
-	backupUnit			*sdk.BackupUnit
-	cluster 			*sdk.KubernetesCluster
-	share				*sdk.Share
+	backupUnit          *sdk.BackupUnit
+	cluster             *sdk.KubernetesCluster
+	share               *sdk.Share
 )
 
 func boolAddr(v bool) *bool {

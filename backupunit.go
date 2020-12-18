@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-
 // BackupUnits type
 type BackupUnits struct {
 	// Enum: [backupunits]
@@ -72,10 +71,12 @@ func (c *Client) CreateBackupUnit(backupUnit BackupUnit) (*BackupUnit, error) {
 	// rsp := &BackupUnit{}
 	input := ionoscloud.BackupUnit{}
 	err := convertToCore(&backupUnit, &input)
-	
+
 	ctx, cancel := c.GetContext()
-	if cancel != nil { defer cancel() }
-	
+	if cancel != nil {
+		defer cancel()
+	}
+
 	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPost(ctx).BackupUnit(input).Execute()
 
 	ret := BackupUnit{}
@@ -89,9 +90,11 @@ func (c *Client) CreateBackupUnit(backupUnit BackupUnit) (*BackupUnit, error) {
 
 // ListBackupUnits lists all available backup units
 func (c *Client) ListBackupUnits() (*BackupUnits, error) {
-	
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsGet(ctx).Execute()
 	ret := BackupUnits{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -107,8 +110,10 @@ func (c *Client) UpdateBackupUnit(backupUnitID string, backupUnit BackupUnit) (*
 	if errConv := convertToCore(&backupUnit, &input); errConv != nil {
 		return nil, errConv
 	}
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPut(ctx, backupUnitID).BackupUnit(input).Execute()
 	ret := BackupUnit{}
 	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
@@ -121,8 +126,10 @@ func (c *Client) UpdateBackupUnit(backupUnitID string, backupUnit BackupUnit) (*
 
 // DeleteBackupUnit deletes an existing backup unit
 func (c *Client) DeleteBackupUnit(backupUnitID string) (*http.Header, error) {
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, httpResponse, err := c.CoreSdk.BackupUnitApi.BackupunitsDelete(ctx, backupUnitID).Execute()
 	if httpResponse == nil || err != nil {
 		return nil, err
@@ -134,8 +141,10 @@ func (c *Client) DeleteBackupUnit(backupUnitID string) (*http.Header, error) {
 // GetBackupUnit retrieves an existing backup unit
 func (c *Client) GetBackupUnit(backupUnitID string) (*BackupUnit, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsFindById(ctx, backupUnitID).Execute()
 	ret := BackupUnit{}
 	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
@@ -150,8 +159,10 @@ func (c *Client) GetBackupUnit(backupUnitID string) (*BackupUnit, error) {
 // GetBackupUnitSSOURL retrieves the SSO URL for an existing backup unit
 func (c *Client) GetBackupUnitSSOURL(backupUnitID string) (*BackupUnitSSOURL, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsSsourlGet(ctx, backupUnitID).Execute()
 
 	if err != nil {
@@ -159,7 +170,7 @@ func (c *Client) GetBackupUnitSSOURL(backupUnitID string) (*BackupUnitSSOURL, er
 	}
 
 	return &BackupUnitSSOURL{
-		Type: "backupunit",
+		Type:   "backupunit",
 		SSOUrl: *rsp.SsoUrl,
 	}, err
 	// rsp := &BackupUnitSSOURL{}

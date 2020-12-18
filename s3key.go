@@ -56,8 +56,10 @@ type S3KeyProperties struct {
 // CreateS3Key creates an S3 Key for an user
 func (c *Client) CreateS3Key(userID string) (*S3Key, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysPost(ctx, userID).Execute()
 	ret := S3Key{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -65,18 +67,20 @@ func (c *Client) CreateS3Key(userID string) (*S3Key, error) {
 	}
 	return &ret, err
 	/*
-	rsp := &S3Key{}
-	var requestBody interface{}
-	err := c.Post(s3KeysPath(userID), requestBody, rsp, http.StatusCreated)
-	return rsp, err
-	 */
+		rsp := &S3Key{}
+		var requestBody interface{}
+		err := c.Post(s3KeysPath(userID), requestBody, rsp, http.StatusCreated)
+		return rsp, err
+	*/
 }
 
 // ListS3Keys lists all available S3 keys for an user
 func (c *Client) ListS3Keys(userID string) (*S3Keys, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, _, err := c.CoreSdk.UserManagementApi.UmUsersS3keysGet(ctx, userID).Execute()
 	ret := S3Keys{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -84,9 +88,9 @@ func (c *Client) ListS3Keys(userID string) (*S3Keys, error) {
 	}
 	return &ret, err
 	/*
-	rsp := &S3Keys{}
-	return rsp, c.GetOK(s3KeysListPath(userID), rsp)
-	 */
+		rsp := &S3Keys{}
+		return rsp, c.GetOK(s3KeysListPath(userID), rsp)
+	*/
 }
 
 // UpdateS3Key updates an existing S3 key
@@ -105,16 +109,18 @@ func (c *Client) UpdateS3Key(userID string, s3KeyID string, s3Key S3Key) (*S3Key
 
 	return &ret, err
 	/*
-	rsp := &S3Key{}
-	return rsp, c.PutAcc(s3KeyPath(userID, s3KeyID), s3Key, rsp)
-	 */
+		rsp := &S3Key{}
+		return rsp, c.PutAcc(s3KeyPath(userID, s3KeyID), s3Key, rsp)
+	*/
 }
 
 // DeleteS3Key deletes an existing S3 key
 func (c *Client) DeleteS3Key(userID string, s3KeyID string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.UserManagementApi.UmUsersS3keysDelete(ctx, userID, s3KeyID).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -135,7 +141,7 @@ func (c *Client) GetS3Key(userID string, s3KeyID string) (*S3Key, error) {
 	return &ret, err
 
 	/*
-	rsp := &S3Key{}
-	return rsp, c.GetOK(s3KeyPath(userID, s3KeyID), rsp)
-	 */
+		rsp := &S3Key{}
+		return rsp, c.GetOK(s3KeyPath(userID, s3KeyID), rsp)
+	*/
 }

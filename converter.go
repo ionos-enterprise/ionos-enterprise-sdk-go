@@ -9,9 +9,10 @@ import (
 )
 
 type ConversionTarget string
+
 const (
-	ConversionTargetCore ConversionTarget = "core"
-	ConversionTargetCompat = "compat"
+	ConversionTargetCore   ConversionTarget = "core"
+	ConversionTargetCompat                  = "compat"
 )
 
 var primitiveTypes = []reflect.Kind{
@@ -22,34 +23,34 @@ var primitiveTypes = []reflect.Kind{
 
 /* compat field -> core field */
 var CompatCoreFieldMap = map[string]string{
-	"ID": "Id",
-	"PBType": "Type",
-	"RAM": "Ram",
-	"VMState": "VmState",
-	"CPUFamily": "CpuFamily",
-	"CPUHotPlug": "CpuHotPlug",
-	"CPUHotUnplug": "CpuHotUnplug",
-	"RAMHotPlug": "RamHotPlug",
-	"RAMHotUnplug": "RamHotUnplug",
-	"IPs": "Ips",
-	"IPConsumers": "IpConsumers",
-	"FirewallRules": "Firewallrules",
-	"ReserveIP": "ReserveIp",
-	"URL": "Url",
-	"NodePools": "Nodepools",
-	"CreatedByUserID": "CreatedByUserId",
+	"ID":                   "Id",
+	"PBType":               "Type",
+	"RAM":                  "Ram",
+	"VMState":              "VmState",
+	"CPUFamily":            "CpuFamily",
+	"CPUHotPlug":           "CpuHotPlug",
+	"CPUHotUnplug":         "CpuHotUnplug",
+	"RAMHotPlug":           "RamHotPlug",
+	"RAMHotUnplug":         "RamHotUnplug",
+	"IPs":                  "Ips",
+	"IPConsumers":          "IpConsumers",
+	"FirewallRules":        "Firewallrules",
+	"ReserveIP":            "ReserveIp",
+	"URL":                  "Url",
+	"NodePools":            "Nodepools",
+	"CreatedByUserID":      "CreatedByUserId",
 	"LastModifiedByUserID": "LastModifiedByUserId",
-	"RAMSize": "RamSize",
-	"DatacenterID": "DatacenterId",
-	"KubeConfig": "Kubeconfig",
-	"PublicIPs": "PublicIps",
-	"S3CanonicalUserID": "S3CanonicalUserId",
+	"RAMSize":              "RamSize",
+	"DatacenterID":         "DatacenterId",
+	"KubeConfig":           "Kubeconfig",
+	"PublicIPs":            "PublicIps",
+	"S3CanonicalUserID":    "S3CanonicalUserId",
 }
 
 /* custom caster, such as from *Type to string or *time.Time to string */
 type CustomCaster struct {
 	From string
-	To string
+	To   string
 
 	/* performs the actual cast */
 	Cast func(value reflect.Value) reflect.Value
@@ -62,8 +63,8 @@ const (
 var CustomCasters = []CustomCaster{
 	{
 		From: "*Type",
-		To: "string",
-		Cast: func (value reflect.Value) reflect.Value{
+		To:   "string",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(*ionoscloud.Type)
 			if v == nil {
 				return reflect.ValueOf("")
@@ -73,8 +74,8 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "string",
-		To: "*Type",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*Type",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(string)
 			if v == "" {
 				/* we need to avoid sending the type otherwise the api returns 422 because
@@ -87,8 +88,8 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "string",
-		To: "*Time",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*Time",
+		Cast: func(value reflect.Value) reflect.Value {
 			str := value.Interface().(string)
 			if str == "" {
 				return reflect.Zero(reflect.TypeOf((*time.Time)(nil)))
@@ -102,16 +103,16 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "*Time",
-		To: "string",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "string",
+		Cast: func(value reflect.Value) reflect.Value {
 			t := value.Interface().(*time.Time)
 			return reflect.ValueOf(t.Format(dateLayout))
 		},
 	},
 	{
 		From: "string",
-		To: "*IonosTime",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*IonosTime",
+		Cast: func(value reflect.Value) reflect.Value {
 			str := value.Interface().(string)
 			if str == "" {
 				return reflect.Zero(reflect.TypeOf((*ionoscloud.IonosTime)(nil)))
@@ -125,16 +126,16 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "*IonosTime",
-		To: "string",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "string",
+		Cast: func(value reflect.Value) reflect.Value {
 			t := value.Interface().(*ionoscloud.IonosTime)
 			return reflect.ValueOf(t.Format(dateLayout))
 		},
 	},
 	{
 		From: "*int32",
-		To: "int",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "int",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(*int32)
 			if v == nil {
 				return reflect.ValueOf(0)
@@ -144,8 +145,8 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "int",
-		To: "*int32",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*int32",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(int)
 			if v == 0 {
 				return reflect.Zero(reflect.TypeOf((*int32)(nil)))
@@ -156,8 +157,8 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "*float32",
-		To: "int",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "int",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(*float32)
 			if v == nil {
 				return reflect.ValueOf(0)
@@ -167,8 +168,8 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "int",
-		To: "*float32",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*float32",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(int)
 			if v == 0 {
 				return reflect.Zero(reflect.TypeOf((*float32)(nil)))
@@ -179,7 +180,7 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "string",
-		To: "*string",
+		To:   "*string",
 		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(string)
 			if v == "" {
@@ -191,7 +192,7 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "int32",
-		To: "*int32",
+		To:   "*int32",
 		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(int32)
 			if v == 0 {
@@ -202,7 +203,7 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "int64",
-		To: "*int64",
+		To:   "*int64",
 		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(int64)
 			if v == 0 {
@@ -213,7 +214,7 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "int",
-		To: "*int",
+		To:   "*int",
 		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(int)
 			if v == 0 {
@@ -224,8 +225,8 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "*int32",
-		To: "*int",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*int",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(*int32)
 			if v == nil {
 				return reflect.Zero(reflect.TypeOf((*int)(nil)))
@@ -236,8 +237,8 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "*int",
-		To: "*int32",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*int32",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(*int)
 			if v == nil {
 				return reflect.Zero(reflect.TypeOf((*int32)(nil)))
@@ -248,8 +249,8 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "*float32",
-		To: "float64",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "float64",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(*float32)
 			if v == nil {
 				return reflect.ValueOf(0)
@@ -260,8 +261,8 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "float64",
-		To: "*float32",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*float32",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(float64)
 			if v == 0 {
 				return reflect.Zero(reflect.TypeOf((*float32)(nil)))
@@ -272,16 +273,16 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "*Time",
-		To: "Time",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "Time",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(*time.Time)
 			return reflect.ValueOf(*v)
 		},
 	},
 	{
 		From: "Time",
-		To: "*Time",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*Time",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(time.Time)
 			return reflect.ValueOf(&v)
 		},
@@ -289,34 +290,33 @@ var CustomCasters = []CustomCaster{
 
 	{
 		From: "*IonosTime",
-		To: "Time",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "Time",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(*ionoscloud.IonosTime)
 			return reflect.ValueOf(v.Time)
 		},
 	},
 	{
 		From: "Time",
-		To: "*IonosTime",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "*IonosTime",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(time.Time)
 			return reflect.ValueOf(&ionoscloud.IonosTime{Time: v})
 		},
 	},
 
-
 	{
 		From: "Time",
-		To: "Time",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "Time",
+		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(time.Time)
 			return reflect.ValueOf(v)
 		},
 	},
 	{
 		From: "*map[string]string",
-		To: "interface {}",
-		Cast: func (value reflect.Value) reflect.Value {
+		To:   "interface {}",
+		Cast: func(value reflect.Value) reflect.Value {
 			ret := map[string]string{}
 			mapValue := value.Elem()
 			for _, k := range mapValue.MapKeys() {
@@ -334,7 +334,7 @@ var CustomCasters = []CustomCaster{
 	},
 	{
 		From: "*int32",
-		To: "uint32",
+		To:   "uint32",
 		Cast: func(value reflect.Value) reflect.Value {
 			v := value.Interface().(*int32)
 			if *v == 0 {
@@ -439,7 +439,7 @@ func convert(from reflect.Value, to reflect.Value, fieldMap map[string]string) e
 			return nil
 		}
 
-		setReflectValue(to, reflect.MakeSlice(toDeepType, fromLen, fromLen * 2))
+		setReflectValue(to, reflect.MakeSlice(toDeepType, fromLen, fromLen*2))
 
 		/* convert every element */
 		for i := 0; i < fromLen; i++ {

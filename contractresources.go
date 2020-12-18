@@ -45,8 +45,10 @@ type ResourcesLimits struct {
 // GetContractResources returns list of contract resources
 func (c *Client) GetContractResources() (*ContractResources, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ContractApi.ContractsGet(ctx).Execute()
 	ret := ContractResources{}
 	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
@@ -56,9 +58,9 @@ func (c *Client) GetContractResources() (*ContractResources, error) {
 	return &ret, err
 
 	/*
-	url := contractsPath()
-	ret := &ContractResources{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+		url := contractsPath()
+		ret := &ContractResources{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
 	*/
 }

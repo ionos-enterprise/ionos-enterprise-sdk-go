@@ -34,7 +34,7 @@ func TestGetRequestStatus(t *testing.T) {
 	}
 
 	assert.Equal(t, "request-status", resp.PBType)
-	assert.Equal(t, reqID.Href + "/status", resp.Href)
+	assert.Equal(t, reqID.Href+"/status", resp.Href)
 }
 
 func TestGetRequestFailure(t *testing.T) {
@@ -49,7 +49,7 @@ func TestWaitTillProvisionedOrCanceled(t *testing.T) {
 	t.Run("cancellation", func(t *testing.T) {
 		ctx, cancel := context.WithCancel(context.Background())
 		cancel()
-		err := c.WaitTillProvisionedOrCanceled(ctx, c.CloudApiUrl + "/a/path")
+		err := c.WaitTillProvisionedOrCanceled(ctx, c.CloudApiUrl+"/a/path")
 		if assert.Error(t, err) {
 			assert.Contains(t, err.Error(), context.Canceled.Error())
 		}

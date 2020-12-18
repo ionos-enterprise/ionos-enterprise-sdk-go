@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	ClusterName = "GO-SDK-K8S-TEST-CLUSTER"
+	ClusterName        = "GO-SDK-K8S-TEST-CLUSTER"
 	ClusterNameUpdated = ClusterName + "-UPDATED"
 )
 
@@ -40,7 +40,9 @@ func TestListKubernetesClusters(t *testing.T) {
 func TestGetKubernetesCluster(t *testing.T) {
 	c := setupTestEnv()
 	ret, err := c.GetKubernetesCluster(cluster.ID)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	assert.Equal(t, cluster.Properties.Name, ret.Properties.Name)
 }

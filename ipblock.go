@@ -50,8 +50,10 @@ type IPBlocks struct {
 //ListIPBlocks lists all IP blocks
 func (c *Client) ListIPBlocks() (*IPBlocks, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksGet(ctx).Execute()
 	ret := IPBlocks{}
 
@@ -62,12 +64,12 @@ func (c *Client) ListIPBlocks() (*IPBlocks, error) {
 	return &ret, err
 
 	/*
-	url := ipblocksPath()
-	ret := &IPBlocks{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+		url := ipblocksPath()
+		ret := &IPBlocks{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
 
-	 */
+	*/
 }
 
 //ReserveIPBlock creates an IP block
@@ -77,8 +79,10 @@ func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
 	if errConvert := convertToCore(&request, &input); errConvert != nil {
 		return nil, errConvert
 	}
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPost(ctx).Ipblock(input).Execute()
 	ret := IPBlock{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -88,18 +92,20 @@ func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
 	return &ret, err
 
 	/*
-	url := ipblocksPath()
-	ret := &IPBlock{}
-	err := c.Post(url, request, ret, http.StatusAccepted)
-	return ret, err
+		url := ipblocksPath()
+		ret := &IPBlock{}
+		err := c.Post(url, request, ret, http.StatusAccepted)
+		return ret, err
 	*/
 }
 
 //GetIPBlock gets an IP blocks
 func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksFindById(ctx, ipblockid).Execute()
 	ret := IPBlock{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -109,11 +115,11 @@ func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
 	return &ret, err
 
 	/*
-	url := ipblockPath(ipblockid)
-	ret := &IPBlock{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := ipblockPath(ipblockid)
+		ret := &IPBlock{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // UpdateIPBlock partial update of ipblock properties
@@ -124,8 +130,10 @@ func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBl
 		return nil, errConvert
 	}
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPatch(ctx, ipblockid).Ipblock(input).Execute()
 
 	ret := IPBlock{}
@@ -137,19 +145,21 @@ func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBl
 	return &ret, err
 
 	/*
-	url := ipblockPath(ipblockid)
-	ret := &IPBlock{}
-	err := c.Patch(url, props, ret, http.StatusAccepted)
-	return ret, err
+		url := ipblockPath(ipblockid)
+		ret := &IPBlock{}
+		err := c.Patch(url, props, ret, http.StatusAccepted)
+		return ret, err
 
-	 */
+	*/
 }
 
 //ReleaseIPBlock deletes an IP block
 func (c *Client) ReleaseIPBlock(ipblockid string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksDelete(ctx, ipblockid).Execute()
 
 	if apiResponse != nil {
@@ -159,9 +169,9 @@ func (c *Client) ReleaseIPBlock(ipblockid string) (*http.Header, error) {
 	}
 
 	/*
-	url := ipblockPath(ipblockid)
-	ret := &http.Header{}
-	err := c.Delete(url, ret, http.StatusAccepted)
-	return ret, err
-	 */
+		url := ipblockPath(ipblockid)
+		ret := &http.Header{}
+		err := c.Delete(url, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }

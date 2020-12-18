@@ -59,8 +59,10 @@ type ResourceReference struct {
 // ListServers returns a server struct collection
 func (c *Client) ListServers(dcid string) (*Servers, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersGet(ctx, dcid).Execute()
 	ret := Servers{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -69,11 +71,11 @@ func (c *Client) ListServers(dcid string) (*Servers, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := serversPath(dcid)
-	ret := &Servers{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := serversPath(dcid)
+		ret := &Servers{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // CreateServer creates a server in given datacenter
@@ -84,8 +86,10 @@ func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
 		return nil, errConvert
 	}
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPost(ctx, dcid).Server(input).Execute()
 	ret := Server{}
 
@@ -95,11 +99,11 @@ func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := serversPath(dcid)
-	ret := &Server{}
-	err := c.Post(url, server, ret, http.StatusAccepted)
-	return ret, err
-	 */
+		url := serversPath(dcid)
+		ret := &Server{}
+		err := c.Post(url, server, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // CreateServerAndWait creates a server, waits for the request to finish and returns a refreshed resource
@@ -125,8 +129,10 @@ func (c *Client) CreateServerAndWait(ctx context.Context, dcid string, srvid Ser
 // GetServer pulls data for the server where id = srvid returns a Instance struct
 func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersFindById(ctx, dcid, srvid).Execute()
 	ret := Server{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -135,11 +141,11 @@ func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := serverPath(dcid, srvid)
-	ret := &Server{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := serverPath(dcid, srvid)
+		ret := &Server{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // UpdateServer updates server with given properties and returns instance
@@ -150,8 +156,10 @@ func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties)
 		return nil, errConvert
 	}
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPatch(ctx, dcid, srvid).Server(input).Execute()
 	ret := Server{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -160,12 +168,12 @@ func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties)
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := serverPath(dcid, srvid)
-	ret := &Server{}
-	err := c.Patch(url, props, ret, http.StatusAccepted)
-	return ret, err
+		url := serverPath(dcid, srvid)
+		ret := &Server{}
+		err := c.Patch(url, props, ret, http.StatusAccepted)
+		return ret, err
 
-	 */
+	*/
 }
 
 // UpdateServerAndWait updates a server, waits for the request to finish and
@@ -193,8 +201,10 @@ func (c *Client) UpdateServerAndWait(
 
 // DeleteServer deletes the server where id=srvid and returns Resp struct
 func (c *Client) DeleteServer(dcid, srvid string) (*http.Header, error) {
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersDelete(ctx, dcid, srvid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -202,10 +212,10 @@ func (c *Client) DeleteServer(dcid, srvid string) (*http.Header, error) {
 		return nil, err
 	}
 	/*
-	ret := &http.Header{}
-	err := c.Delete(serverPath(dcid, srvid), ret, http.StatusAccepted)
-	return ret, err
-	 */
+		ret := &http.Header{}
+		err := c.Delete(serverPath(dcid, srvid), ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // DeleteServerAndWait deletes a server and waits for the request to finish
@@ -220,8 +230,10 @@ func (c *Client) DeleteServerAndWait(ctx context.Context, dcid, srvid string) er
 // ListAttachedCdroms returns list of attached cd roms
 func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsGet(ctx, dcid, srvid).Execute()
 	ret := Images{}
 
@@ -232,19 +244,21 @@ func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
 	return &ret, err
 
 	/*
-	url := cdromsPath(dcid, srvid)
-	ret := &Images{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := cdromsPath(dcid, srvid)
+		ret := &Images{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // AttachCdrom attaches a CD rom
 func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, error) {
 
 	image := ionoscloud.Image{Id: &cdid}
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsPost(ctx, dcid, srvid).Cdrom(image).Execute()
 
 	ret := Image{}
@@ -255,23 +269,25 @@ func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, er
 	return &ret, err
 
 	/*
-	data := struct {
-		ID string `json:"id,omitempty"`
-	}{
-		cdid,
-	}
-	url := cdromsPath(dcid, srvid)
-	ret := &Image{}
-	err := c.Post(url, data, ret, http.StatusAccepted)
-	return ret, err
-	 */
+		data := struct {
+			ID string `json:"id,omitempty"`
+		}{
+			cdid,
+		}
+		url := cdromsPath(dcid, srvid)
+		ret := &Image{}
+		err := c.Post(url, data, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // GetAttachedCdrom gets attached cd roms
 func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsFindById(ctx, dcid, srvid, cdid).Execute()
 	ret := Image{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -280,18 +296,20 @@ func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := cdromPath(dcid, srvid, cdid)
-	ret := &Image{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := cdromPath(dcid, srvid, cdid)
+		ret := &Image{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // DetachCdrom detaches a CD rom
 func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsDelete(ctx, dcid, srvid, cdid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -299,18 +317,20 @@ func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
 		return nil, err
 	}
 	/*
-	url := cdromPath(dcid, srvid, cdid)
-	ret := &http.Header{}
-	err := c.Delete(url, ret, http.StatusAccepted)
-	return ret, err
-	 */
+		url := cdromPath(dcid, srvid, cdid)
+		ret := &http.Header{}
+		err := c.Delete(url, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // ListAttachedVolumes lists attached volumes
 func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesGet(ctx, dcid, srvid).Execute()
 	ret := Volumes{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -319,19 +339,21 @@ func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := attachedVolumesPath(dcid, srvid)
-	ret := &Volumes{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
-	 */
+		url := attachedVolumesPath(dcid, srvid)
+		ret := &Volumes{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // AttachVolume attaches a volume
 func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume, error) {
 
 	input := ionoscloud.Volume{Id: &volid}
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesPost(ctx, dcid, srvid).Volume(input).Execute()
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -340,24 +362,26 @@ func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume,
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	data := struct {
-		ID string `json:"id,omitempty"`
-	}{
-		volid,
-	}
-	url := attachedVolumesPath(dcid, srvid)
-	ret := &Volume{}
-	err := c.Post(url, data, ret, http.StatusAccepted)
+		data := struct {
+			ID string `json:"id,omitempty"`
+		}{
+			volid,
+		}
+		url := attachedVolumesPath(dcid, srvid)
+		ret := &Volume{}
+		err := c.Post(url, data, ret, http.StatusAccepted)
 
-	return ret, err
-	 */
+		return ret, err
+	*/
 }
 
 // GetAttachedVolume gets an attached volume
 func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesFindById(ctx, dcid, srvid, volid).Execute()
 	ret := Volume{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
@@ -366,19 +390,21 @@ func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
 	fillInResponse(&ret, apiResponse)
 	return &ret, err
 	/*
-	url := attachedVolumePath(dcid, srvid, volid)
-	ret := &Volume{}
-	err := c.Get(url, ret, http.StatusOK)
+		url := attachedVolumePath(dcid, srvid, volid)
+		ret := &Volume{}
+		err := c.Get(url, ret, http.StatusOK)
 
-	return ret, err
-	 */
+		return ret, err
+	*/
 }
 
 // DetachVolume detaches a volume
 func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesDelete(ctx, dcid, srvid, volid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -386,18 +412,20 @@ func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
 		return nil, err
 	}
 	/*
-	url := attachedVolumePath(dcid, srvid, volid)
-	ret := &http.Header{}
-	err := c.Delete(url, ret, http.StatusAccepted)
-	return ret, err
-	 */
+		url := attachedVolumePath(dcid, srvid, volid)
+		ret := &http.Header{}
+		err := c.Delete(url, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // StartServer starts a server
 func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStartPost(ctx, dcid, srvid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -405,18 +433,20 @@ func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
 		return nil, err
 	}
 	/*
-	url := serverStartPath(dcid, srvid)
-	ret := &Header{}
-	err := c.Post(url, nil, ret, http.StatusAccepted)
-	return ret.GetHeader(), err
-	 */
+		url := serverStartPath(dcid, srvid)
+		ret := &Header{}
+		err := c.Post(url, nil, ret, http.StatusAccepted)
+		return ret.GetHeader(), err
+	*/
 }
 
 // StopServer stops a server
 func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStopPost(ctx, dcid, srvid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -424,18 +454,20 @@ func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
 		return nil, err
 	}
 	/*
-	url := serverStopPath(dcid, srvid)
-	ret := &Header{}
-	err := c.Post(url, nil, ret, http.StatusAccepted)
-	return ret.GetHeader(), err
-	 */
+		url := serverStopPath(dcid, srvid)
+		ret := &Header{}
+		err := c.Post(url, nil, ret, http.StatusAccepted)
+		return ret.GetHeader(), err
+	*/
 }
 
 // RebootServer reboots a server
 func (c *Client) RebootServer(dcid, srvid string) (*http.Header, error) {
 
-    ctx, cancel := c.GetContext()
-    if cancel != nil { defer cancel() }
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
 	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersRebootPost(ctx, dcid, srvid).Execute()
 	if apiResponse != nil {
 		return &apiResponse.Header, err
@@ -443,9 +475,9 @@ func (c *Client) RebootServer(dcid, srvid string) (*http.Header, error) {
 		return nil, err
 	}
 	/*
-	url := serverRebootPath(dcid, srvid)
-	ret := &Header{}
-	err := c.Post(url, nil, ret, http.StatusAccepted)
-	return ret.GetHeader(), err
-	 */
+		url := serverRebootPath(dcid, srvid)
+		ret := &Header{}
+		err := c.Post(url, nil, ret, http.StatusAccepted)
+		return ret.GetHeader(), err
+	*/
 }
