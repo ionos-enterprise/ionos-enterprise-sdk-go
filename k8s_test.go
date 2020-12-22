@@ -43,6 +43,7 @@ func (s *SuiteKubernetesCluster) Test_ListKubernetesClusters() {
 	s.NoError(err)
 	s.Len(cl.Items, 2)
 }
+
 func (s *SuiteKubernetesCluster) Test_GetKubernetesCluster() {
 	rsp := loadTestData(s.T(), "get_kubernetes_cluster.json")
 	mResp := makeJsonResponse(http.StatusOK, rsp)
@@ -100,7 +101,6 @@ func (s *SuiteKubernetesCluster) Test_GetKubernetesNodepool() {
 	if s.NotNil(np.Properties.PublicIPs) {
 		s.Len(*np.Properties.PublicIPs, 3)
 	}
-
 }
 
 func (s *SuiteKubernetesCluster) Test_ListKubernetesNodes() {

@@ -2,7 +2,7 @@ package profitbricks
 
 import (
 	"bytes"
-	"context"
+
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -26,7 +26,7 @@ type SuiteRequest struct {
 func (s *SuiteRequest) SetupTest() {
 	s.client = NewClient("", "")
 	s.apiUrl = s.client.CloudApiUrl
-	httpmock.ActivateNonDefault(s.client.Client.GetClient())
+	httpmock.ActivateNonDefault(s.client.CoreSdk.GetConfig().HTTPClient)
 }
 
 func (s *SuiteRequest) TearDownTest() {
@@ -57,8 +57,7 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 		makeJsonResponse(200, loadTestData(s.T(), "request_done.json")),
 	}
 	query := url.Values{
-		"filter.url": []string{"volumes"},
-		"depth":      []string{"10"},
+		"depth": []string{"10"},
 	}
 	listCalled := 0
 	statusCalled := 0
@@ -77,7 +76,11 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*", sr.Times(2))
 
-	err := s.client.WaitTillRequestsFinished(context.Background(), NewRequestListFilter().WithUrl("volumes"))
+	ctx, cancel := s.client.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	err := s.client.WaitTillRequestsFinished(ctx, NewRequestListFilter())
 	s.NoError(err)
 	s.Equal(4, httpmock.GetTotalCallCount())
 }
@@ -85,7 +88,11 @@ func (s *SuiteWaitTillRequests) Test_OK_NoSelector() {
 func (s *SuiteWaitTillRequests) Test_Err_ListError() {
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests",
 		httpmock.NewStringResponder(401, "{}"))
-	err := s.client.WaitTillMatchingRequestsFinished(context.Background(), nil, nil)
+	ctx, cancel := s.client.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	err := s.client.WaitTillMatchingRequestsFinished(ctx, nil, nil)
 	s.Error(err)
 	s.Equal(1, httpmock.GetTotalCallCount())
 }
@@ -105,7 +112,11 @@ func (s *SuiteWaitTillRequests) Test_Err_GetStatusError() {
 	statusResponse := makeJsonResponse(http.StatusUnauthorized, []byte("{}"))
 	httpmock.RegisterResponder(http.MethodGet, "=~/requests/.*/status.*",
 		httpmock.ResponderFromResponse(statusResponse))
-	err := s.client.WaitTillRequestsFinished(context.Background(), nil)
+	ctx, cancel := s.client.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	err := s.client.WaitTillRequestsFinished(ctx, nil)
 	s.Error(err)
 	s.Equal(2, httpmock.GetTotalCallCount())
 }

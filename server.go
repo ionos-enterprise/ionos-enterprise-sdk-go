@@ -2,6 +2,7 @@ package profitbricks
 
 import (
 	"context"
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -57,18 +58,52 @@ type ResourceReference struct {
 
 // ListServers returns a server struct collection
 func (c *Client) ListServers(dcid string) (*Servers, error) {
-	url := serversPath(dcid)
-	ret := &Servers{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersGet(ctx, dcid).Execute()
+	ret := Servers{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		url := serversPath(dcid)
+		ret := &Servers{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // CreateServer creates a server in given datacenter
 func (c *Client) CreateServer(dcid string, server Server) (*Server, error) {
-	url := serversPath(dcid)
-	ret := &Server{}
-	err := c.Post(url, server, ret, http.StatusAccepted)
-	return ret, err
+
+	input := ionoscloud.Server{}
+	if errConvert := convertToCore(&server, &input); errConvert != nil {
+		return nil, errConvert
+	}
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPost(ctx, dcid).Server(input).Execute()
+	ret := Server{}
+
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		url := serversPath(dcid)
+		ret := &Server{}
+		err := c.Post(url, server, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // CreateServerAndWait creates a server, waits for the request to finish and returns a refreshed resource
@@ -93,18 +128,52 @@ func (c *Client) CreateServerAndWait(ctx context.Context, dcid string, srvid Ser
 
 // GetServer pulls data for the server where id = srvid returns a Instance struct
 func (c *Client) GetServer(dcid, srvid string) (*Server, error) {
-	url := serverPath(dcid, srvid)
-	ret := &Server{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersFindById(ctx, dcid, srvid).Execute()
+	ret := Server{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		url := serverPath(dcid, srvid)
+		ret := &Server{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // UpdateServer updates server with given properties and returns instance
 func (c *Client) UpdateServer(dcid string, srvid string, props ServerProperties) (*Server, error) {
-	url := serverPath(dcid, srvid)
-	ret := &Server{}
-	err := c.Patch(url, props, ret, http.StatusAccepted)
-	return ret, err
+
+	input := ionoscloud.ServerProperties{}
+	if errConvert := convertToCore(&props, &input); errConvert != nil {
+		return nil, errConvert
+	}
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersPatch(ctx, dcid, srvid).Server(input).Execute()
+	ret := Server{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		url := serverPath(dcid, srvid)
+		ret := &Server{}
+		err := c.Patch(url, props, ret, http.StatusAccepted)
+		return ret, err
+
+	*/
 }
 
 // UpdateServerAndWait updates a server, waits for the request to finish and
@@ -132,9 +201,21 @@ func (c *Client) UpdateServerAndWait(
 
 // DeleteServer deletes the server where id=srvid and returns Resp struct
 func (c *Client) DeleteServer(dcid, srvid string) (*http.Header, error) {
-	ret := &http.Header{}
-	err := c.Delete(serverPath(dcid, srvid), ret, http.StatusAccepted)
-	return ret, err
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersDelete(ctx, dcid, srvid).Execute()
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	/*
+		ret := &http.Header{}
+		err := c.Delete(serverPath(dcid, srvid), ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // DeleteServerAndWait deletes a server and waits for the request to finish
@@ -148,100 +229,255 @@ func (c *Client) DeleteServerAndWait(ctx context.Context, dcid, srvid string) er
 
 // ListAttachedCdroms returns list of attached cd roms
 func (c *Client) ListAttachedCdroms(dcid, srvid string) (*Images, error) {
-	url := cdromsPath(dcid, srvid)
-	ret := &Images{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsGet(ctx, dcid, srvid).Execute()
+	ret := Images{}
+
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+	/*
+		url := cdromsPath(dcid, srvid)
+		ret := &Images{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // AttachCdrom attaches a CD rom
 func (c *Client) AttachCdrom(dcid string, srvid string, cdid string) (*Image, error) {
-	data := struct {
-		ID string `json:"id,omitempty"`
-	}{
-		cdid,
+
+	image := ionoscloud.Image{Id: &cdid}
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
 	}
-	url := cdromsPath(dcid, srvid)
-	ret := &Image{}
-	err := c.Post(url, data, ret, http.StatusAccepted)
-	return ret, err
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsPost(ctx, dcid, srvid).Cdrom(image).Execute()
+
+	ret := Image{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+	/*
+		data := struct {
+			ID string `json:"id,omitempty"`
+		}{
+			cdid,
+		}
+		url := cdromsPath(dcid, srvid)
+		ret := &Image{}
+		err := c.Post(url, data, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // GetAttachedCdrom gets attached cd roms
 func (c *Client) GetAttachedCdrom(dcid, srvid, cdid string) (*Image, error) {
-	url := cdromPath(dcid, srvid, cdid)
-	ret := &Image{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsFindById(ctx, dcid, srvid, cdid).Execute()
+	ret := Image{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, err
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		url := cdromPath(dcid, srvid, cdid)
+		ret := &Image{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // DetachCdrom detaches a CD rom
 func (c *Client) DetachCdrom(dcid, srvid, cdid string) (*http.Header, error) {
-	url := cdromPath(dcid, srvid, cdid)
-	ret := &http.Header{}
-	err := c.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersCdromsDelete(ctx, dcid, srvid, cdid).Execute()
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	/*
+		url := cdromPath(dcid, srvid, cdid)
+		ret := &http.Header{}
+		err := c.Delete(url, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // ListAttachedVolumes lists attached volumes
 func (c *Client) ListAttachedVolumes(dcid, srvid string) (*Volumes, error) {
-	url := attachedVolumesPath(dcid, srvid)
-	ret := &Volumes{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesGet(ctx, dcid, srvid).Execute()
+	ret := Volumes{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		url := attachedVolumesPath(dcid, srvid)
+		ret := &Volumes{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // AttachVolume attaches a volume
 func (c *Client) AttachVolume(dcid string, srvid string, volid string) (*Volume, error) {
-	data := struct {
-		ID string `json:"id,omitempty"`
-	}{
-		volid,
-	}
-	url := attachedVolumesPath(dcid, srvid)
-	ret := &Volume{}
-	err := c.Post(url, data, ret, http.StatusAccepted)
 
-	return ret, err
+	input := ionoscloud.Volume{Id: &volid}
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesPost(ctx, dcid, srvid).Volume(input).Execute()
+	ret := Volume{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		data := struct {
+			ID string `json:"id,omitempty"`
+		}{
+			volid,
+		}
+		url := attachedVolumesPath(dcid, srvid)
+		ret := &Volume{}
+		err := c.Post(url, data, ret, http.StatusAccepted)
+
+		return ret, err
+	*/
 }
 
 // GetAttachedVolume gets an attached volume
 func (c *Client) GetAttachedVolume(dcid, srvid, volid string) (*Volume, error) {
-	url := attachedVolumePath(dcid, srvid, volid)
-	ret := &Volume{}
-	err := c.Get(url, ret, http.StatusOK)
 
-	return ret, err
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesFindById(ctx, dcid, srvid, volid).Execute()
+	ret := Volume{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		url := attachedVolumePath(dcid, srvid, volid)
+		ret := &Volume{}
+		err := c.Get(url, ret, http.StatusOK)
+
+		return ret, err
+	*/
 }
 
 // DetachVolume detaches a volume
 func (c *Client) DetachVolume(dcid, srvid, volid string) (*http.Header, error) {
-	url := attachedVolumePath(dcid, srvid, volid)
-	ret := &http.Header{}
-	err := c.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersVolumesDelete(ctx, dcid, srvid, volid).Execute()
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	/*
+		url := attachedVolumePath(dcid, srvid, volid)
+		ret := &http.Header{}
+		err := c.Delete(url, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 // StartServer starts a server
 func (c *Client) StartServer(dcid, srvid string) (*http.Header, error) {
-	url := serverStartPath(dcid, srvid)
-	ret := &Header{}
-	err := c.Post(url, nil, ret, http.StatusAccepted)
-	return ret.GetHeader(), err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStartPost(ctx, dcid, srvid).Execute()
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	/*
+		url := serverStartPath(dcid, srvid)
+		ret := &Header{}
+		err := c.Post(url, nil, ret, http.StatusAccepted)
+		return ret.GetHeader(), err
+	*/
 }
 
 // StopServer stops a server
 func (c *Client) StopServer(dcid, srvid string) (*http.Header, error) {
-	url := serverStopPath(dcid, srvid)
-	ret := &Header{}
-	err := c.Post(url, nil, ret, http.StatusAccepted)
-	return ret.GetHeader(), err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersStopPost(ctx, dcid, srvid).Execute()
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	/*
+		url := serverStopPath(dcid, srvid)
+		ret := &Header{}
+		err := c.Post(url, nil, ret, http.StatusAccepted)
+		return ret.GetHeader(), err
+	*/
 }
 
 // RebootServer reboots a server
 func (c *Client) RebootServer(dcid, srvid string) (*http.Header, error) {
-	url := serverRebootPath(dcid, srvid)
-	ret := &Header{}
-	err := c.Post(url, nil, ret, http.StatusAccepted)
-	return ret.GetHeader(), err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	_, apiResponse, err := c.CoreSdk.ServerApi.DatacentersServersRebootPost(ctx, dcid, srvid).Execute()
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+	/*
+		url := serverRebootPath(dcid, srvid)
+		ret := &Header{}
+		err := c.Post(url, nil, ret, http.StatusAccepted)
+		return ret.GetHeader(), err
+	*/
 }

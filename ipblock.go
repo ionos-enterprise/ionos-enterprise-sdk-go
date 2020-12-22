@@ -1,6 +1,7 @@
 package profitbricks
 
 import (
+	"github.com/ionos-cloud/sdk-go/v5"
 	"net/http"
 )
 
@@ -48,40 +49,129 @@ type IPBlocks struct {
 
 //ListIPBlocks lists all IP blocks
 func (c *Client) ListIPBlocks() (*IPBlocks, error) {
-	url := ipblocksPath()
-	ret := &IPBlocks{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksGet(ctx).Execute()
+	ret := IPBlocks{}
+
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+	/*
+		url := ipblocksPath()
+		ret := &IPBlocks{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+
+	*/
 }
 
 //ReserveIPBlock creates an IP block
 func (c *Client) ReserveIPBlock(request IPBlock) (*IPBlock, error) {
-	url := ipblocksPath()
-	ret := &IPBlock{}
-	err := c.Post(url, request, ret, http.StatusAccepted)
-	return ret, err
+
+	input := ionoscloud.IpBlock{}
+	if errConvert := convertToCore(&request, &input); errConvert != nil {
+		return nil, errConvert
+	}
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPost(ctx).Ipblock(input).Execute()
+	ret := IPBlock{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+	/*
+		url := ipblocksPath()
+		ret := &IPBlock{}
+		err := c.Post(url, request, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }
 
 //GetIPBlock gets an IP blocks
 func (c *Client) GetIPBlock(ipblockid string) (*IPBlock, error) {
-	url := ipblockPath(ipblockid)
-	ret := &IPBlock{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksFindById(ctx, ipblockid).Execute()
+	ret := IPBlock{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+	/*
+		url := ipblockPath(ipblockid)
+		ret := &IPBlock{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+	*/
 }
 
 // UpdateIPBlock partial update of ipblock properties
 func (c *Client) UpdateIPBlock(ipblockid string, props IPBlockProperties) (*IPBlock, error) {
-	url := ipblockPath(ipblockid)
-	ret := &IPBlock{}
-	err := c.Patch(url, props, ret, http.StatusAccepted)
-	return ret, err
+
+	input := ionoscloud.IpBlockProperties{}
+	if errConvert := convertToCore(&props, &input); errConvert != nil {
+		return nil, errConvert
+	}
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksPatch(ctx, ipblockid).Ipblock(input).Execute()
+
+	ret := IPBlock{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+
+	/*
+		url := ipblockPath(ipblockid)
+		ret := &IPBlock{}
+		err := c.Patch(url, props, ret, http.StatusAccepted)
+		return ret, err
+
+	*/
 }
 
 //ReleaseIPBlock deletes an IP block
 func (c *Client) ReleaseIPBlock(ipblockid string) (*http.Header, error) {
-	url := ipblockPath(ipblockid)
-	ret := &http.Header{}
-	err := c.Delete(url, ret, http.StatusAccepted)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	_, apiResponse, err := c.CoreSdk.IPBlocksApi.IpblocksDelete(ctx, ipblockid).Execute()
+
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+
+	/*
+		url := ipblockPath(ipblockid)
+		ret := &http.Header{}
+		err := c.Delete(url, ret, http.StatusAccepted)
+		return ret, err
+	*/
 }

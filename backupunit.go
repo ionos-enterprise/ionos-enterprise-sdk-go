@@ -1,6 +1,9 @@
 package profitbricks
 
-import "net/http"
+import (
+	"github.com/ionos-cloud/sdk-go/v5"
+	"net/http"
+)
 
 // BackupUnits type
 type BackupUnits struct {
@@ -65,35 +68,111 @@ type BackupUnitSSOURL struct {
 
 // CreateBackupUnit creates a Backup Unit
 func (c *Client) CreateBackupUnit(backupUnit BackupUnit) (*BackupUnit, error) {
-	rsp := &BackupUnit{}
-	return rsp, c.PostAcc(backupUnitsPath(), backupUnit, rsp)
+	// rsp := &BackupUnit{}
+	input := ionoscloud.BackupUnit{}
+	err := convertToCore(&backupUnit, &input)
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPost(ctx).BackupUnit(input).Execute()
+
+	ret := BackupUnit{}
+	errConvert := convertToCompat(&rsp, &ret)
+	if errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
+	// return rsp, c.PostAcc(backupUnitsPath(), backupUnit, rsp)
 }
 
 // ListBackupUnits lists all available backup units
 func (c *Client) ListBackupUnits() (*BackupUnits, error) {
-	rsp := &BackupUnits{}
-	return rsp, c.GetOK(backupUnitsPath(), rsp)
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsGet(ctx).Execute()
+	ret := BackupUnits{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	return &ret, err
 }
 
 // UpdateBackupUnit updates an existing backup unit
 func (c *Client) UpdateBackupUnit(backupUnitID string, backupUnit BackupUnit) (*BackupUnit, error) {
-	rsp := &BackupUnit{}
-	return rsp, c.PutAcc(backupUnitPath(backupUnitID), backupUnit, rsp)
+
+	input := ionoscloud.BackupUnit{}
+	if errConv := convertToCore(&backupUnit, &input); errConv != nil {
+		return nil, errConv
+	}
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsPut(ctx, backupUnitID).BackupUnit(input).Execute()
+	ret := BackupUnit{}
+	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
+		return nil, errConv
+	}
+	return &ret, err
+	// rsp := &BackupUnit{}
+	// return rsp, c.PutAcc(backupUnitPath(backupUnitID), backupUnit, rsp)
 }
 
 // DeleteBackupUnit deletes an existing backup unit
 func (c *Client) DeleteBackupUnit(backupUnitID string) (*http.Header, error) {
-	return c.DeleteAcc(backupUnitPath(backupUnitID))
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	_, httpResponse, err := c.CoreSdk.BackupUnitApi.BackupunitsDelete(ctx, backupUnitID).Execute()
+	if httpResponse == nil || err != nil {
+		return nil, err
+	}
+	return &httpResponse.Header, err
+	// return c.DeleteAcc(backupUnitPath(backupUnitID))
 }
 
 // GetBackupUnit retrieves an existing backup unit
 func (c *Client) GetBackupUnit(backupUnitID string) (*BackupUnit, error) {
-	rsp := &BackupUnit{}
-	return rsp, c.GetOK(backupUnitPath(backupUnitID), rsp)
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsFindById(ctx, backupUnitID).Execute()
+	ret := BackupUnit{}
+	if errConv := convertToCompat(&rsp, &ret); errConv != nil {
+		return nil, errConv
+	}
+	return &ret, err
+
+	// rsp := &BackupUnit{}
+	// return rsp, c.GetOK(backupUnitPath(backupUnitID), rsp)
 }
 
 // GetBackupUnitSSOURL retrieves the SSO URL for an existing backup unit
 func (c *Client) GetBackupUnitSSOURL(backupUnitID string) (*BackupUnitSSOURL, error) {
-	rsp := &BackupUnitSSOURL{}
-	return rsp, c.GetOK(backupUnitSSOURLPath(backupUnitID), rsp)
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, _, err := c.CoreSdk.BackupUnitApi.BackupunitsSsourlGet(ctx, backupUnitID).Execute()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &BackupUnitSSOURL{
+		Type:   "backupunit",
+		SSOUrl: *rsp.SsoUrl,
+	}, err
+	// rsp := &BackupUnitSSOURL{}
+	// return rsp, c.GetOK(backupUnitSSOURLPath(backupUnitID), rsp)
 }

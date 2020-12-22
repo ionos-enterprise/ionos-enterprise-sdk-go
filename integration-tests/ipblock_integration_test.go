@@ -1,3 +1,5 @@
+// +build integration_tests integration_tests_ipblock
+
 package integration_tests
 
 import (
@@ -5,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-cloud/ionos-enterprise-sdk-go/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -47,6 +49,7 @@ func TestReserveIpBlockFailure(t *testing.T) {
 	if err == nil {
 		t.Errorf("reserve IP block did not fail.")
 	}
+	assert.Nil(t, err)
 	assert.True(t, strings.Contains(err.Error(), "422"))
 }
 

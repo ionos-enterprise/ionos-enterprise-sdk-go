@@ -16,7 +16,7 @@ func TestNewClientParams(t *testing.T) {
 	pbc.SetDepth(5)
 	pbc.SetUserAgent("blah")
 	assert.Equal(t, "blah", pbc.GetUserAgent())
-	assert.Equal(t, "5", pbc.QueryParam.Get("depth"))
+	assert.Equal(t, "5", pbc.CoreSdk.GetConfig().DefaultQueryParams.Get("depth"))
 }
 
 type ClientBaseSuite struct {
@@ -26,7 +26,7 @@ type ClientBaseSuite struct {
 
 func (s *ClientBaseSuite) SetupTest() {
 	s.c = NewClient("", "")
-	httpmock.ActivateNonDefault(s.c.Client.GetClient())
+	httpmock.ActivateNonDefault(s.c.CoreSdk.GetConfig().HTTPClient)
 }
 
 func (s *ClientBaseSuite) TearDownTest() {

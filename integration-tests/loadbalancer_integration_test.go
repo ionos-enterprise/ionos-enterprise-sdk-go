@@ -1,10 +1,12 @@
+// +build integration_tests integration_tests_loadbalancer
+
 package integration_tests
 
 import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-cloud/ionos-enterprise-sdk-go/v5"
 	"github.com/stretchr/testify/assert"
 )
 

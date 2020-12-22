@@ -37,23 +37,52 @@ type LocationProperties struct {
 
 // ListLocations returns location collection data
 func (c *Client) ListLocations() (*Locations, error) {
-	ret := &Locations{}
-	return ret, c.GetOK(locationsPath(), ret)
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsGet(ctx).Execute()
+	ret := Locations{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
 }
 
 // GetRegionalLocations returns a list of available locations in a specific region
 func (c *Client) GetRegionalLocations(regid string) (*Locations, error) {
-	ret := &Locations{}
-	return ret, c.GetOK(locationRegionPath(regid), ret)
 
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegionId(ctx, regid).Execute()
+	ret := Locations{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
 }
 
 // GetLocation returns location data
 func (c *Client) GetLocation(locid string) (*Location, error) {
-	ret := &Location{}
+
 	parts := strings.SplitN(locid, "/", 2)
 	if len(parts) != 2 {
 		return nil, NewClientError(InvalidInput, "Invalid location id")
 	}
-	return ret, c.GetOK(locationPath(parts[0], parts[1]), ret)
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.LocationApi.LocationsFindByRegionIdAndId(ctx, parts[0], parts[1]).Execute()
+	ret := Location{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
 }

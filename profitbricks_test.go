@@ -1,12 +1,8 @@
 package profitbricks
 
 import (
-	"net/http"
-	"testing"
-	"time"
-
-	"github.com/jarcoal/httpmock"
 	"github.com/stretchr/testify/suite"
+	"testing"
 )
 
 type SuiteClient struct {
@@ -16,6 +12,8 @@ type SuiteClient struct {
 func Test_Client(t *testing.T) {
 	suite.Run(t, new(SuiteClient))
 }
+
+/*
 func (s *SuiteClient) Test_Retry() {
 	called := 0
 	httpmock.RegisterResponder(http.MethodGet, `=~/?depth=10`,
@@ -49,3 +47,4 @@ func (s *SuiteClient) Test_Retry() {
 	s.Error(err)
 	s.Equal(4, called)
 }
+*/

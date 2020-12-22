@@ -1,6 +1,9 @@
 package profitbricks
 
-import "net/http"
+import (
+	"github.com/ionos-cloud/sdk-go/v5"
+	"net/http"
+)
 
 // PrivateCrossConnect type
 type PrivateCrossConnect struct {
@@ -99,30 +102,106 @@ type PCCConnectableDataCenter struct {
 
 // ListPrivateCrossConnects gets a list of all private cross-connects
 func (c *Client) ListPrivateCrossConnects() (*PrivateCrossConnects, error) {
-	rsp := &PrivateCrossConnects{}
-	return rsp, c.GetOK(PrivateCrossConnectsPath(), rsp)
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsGet(ctx).Execute()
+	ret := PrivateCrossConnects{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		rsp := &PrivateCrossConnects{}
+
+		return rsp, c.GetOK(PrivateCrossConnectsPath(), rsp)
+	*/
 }
 
 // GetPrivateCrossConnect gets a private cross-connect with given id
 func (c *Client) GetPrivateCrossConnect(pccID string) (*PrivateCrossConnect, error) {
-	rsp := &PrivateCrossConnect{}
-	return rsp, c.GetOK(PrivateCrossConnectPath(pccID), rsp)
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsFindById(ctx, pccID).Execute()
+	ret := PrivateCrossConnect{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		rsp := &PrivateCrossConnect{}
+		return rsp, c.GetOK(PrivateCrossConnectPath(pccID), rsp)
+	*/
 }
 
 // CreatePrivateCrossConnect creates a private cross-connect
 func (c *Client) CreatePrivateCrossConnect(pcc PrivateCrossConnect) (*PrivateCrossConnect, error) {
-	rsp := &PrivateCrossConnect{}
-	return rsp, c.PostAcc(PrivateCrossConnectsPath(), pcc, rsp)
+	input := ionoscloud.PrivateCrossConnect{}
+	if errConvert := convertToCore(&pcc, &input); errConvert != nil {
+		return nil, errConvert
+	}
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsPost(ctx).Pcc(input).Execute()
+	ret := PrivateCrossConnect{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		rsp := &PrivateCrossConnect{}
+		return rsp, c.PostAcc(PrivateCrossConnectsPath(), pcc, rsp)
+	*/
 }
 
 // UpdatePrivateCrossConnect updates a private cross-connect
 func (c *Client) UpdatePrivateCrossConnect(pccID string, pcc PrivateCrossConnect) (*PrivateCrossConnect, error) {
-	rsp := &PrivateCrossConnect{}
-	return rsp, c.PatchAcc(PrivateCrossConnectPath(pccID), pcc.Properties, rsp)
+	input := ionoscloud.PrivateCrossConnect{}
+	if errConvert := convertToCore(&pcc, &input); errConvert != nil {
+		return nil, errConvert
+	}
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsPatch(ctx, pccID).Pcc(*input.Properties).Execute()
+	ret := PrivateCrossConnect{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		rsp := &PrivateCrossConnect{}
+		return rsp, c.PatchAcc(PrivateCrossConnectPath(pccID), pcc.Properties, rsp)
+	*/
 }
 
 // DeletePrivateCrossConnect deletes a private cross-connect by its id
 func (c *Client) DeletePrivateCrossConnect(pccID string) (*http.Header, error) {
-	h := &http.Header{}
-	return h, c.Delete(PrivateCrossConnectPath(pccID), h, http.StatusAccepted)
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	_, apiResponse, err := c.CoreSdk.PrivateCrossConnectApi.PccsDelete(ctx, pccID).Execute()
+	if apiResponse != nil {
+		return &apiResponse.Header, err
+	} else {
+		return nil, err
+	}
+
+	/*
+		h := &http.Header{}
+		return h, c.Delete(PrivateCrossConnectPath(pccID), h, http.StatusAccepted)
+	*/
 }

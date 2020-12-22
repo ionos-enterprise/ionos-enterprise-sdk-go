@@ -1,10 +1,12 @@
+// +build integration_tests integration_tests_firewallrule
+
 package integration_tests
 
 import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-cloud/ionos-enterprise-sdk-go/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -130,13 +132,16 @@ func TestDeleteFirewallRule(t *testing.T) {
 
 	resp, err := c.DeleteFirewallRule(dataCenter.ID, server.ID, nic.ID, fw.ID)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	err = c.WaitTillProvisioned(resp.Get("Location"))
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
-	c.DeleteDatacenter(dataCenter.ID)
+	_, err = c.DeleteDatacenter(dataCenter.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
 }

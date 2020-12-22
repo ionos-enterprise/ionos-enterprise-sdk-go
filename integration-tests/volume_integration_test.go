@@ -1,3 +1,5 @@
+// +build integration_tests integration_tests_volume
+
 package integration_tests
 
 import (
@@ -5,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-cloud/ionos-enterprise-sdk-go/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -123,12 +125,12 @@ func TestRestoreSnapshot(t *testing.T) {
 
 	resp, err := c.RestoreSnapshot(dataCenter.ID, volume.ID, snapshot.ID)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	err = c.WaitTillProvisioned(resp.Get("Location"))
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 }
 

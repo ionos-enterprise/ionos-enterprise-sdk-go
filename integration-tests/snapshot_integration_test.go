@@ -1,3 +1,5 @@
+// +build integration_tests integration_tests_snapshot
+
 package integration_tests
 
 import (
@@ -5,7 +7,7 @@ import (
 	"sync"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-cloud/ionos-enterprise-sdk-go/v5"
 	"github.com/stretchr/testify/assert"
 )
 

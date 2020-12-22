@@ -65,16 +65,46 @@ type Cdroms struct {
 
 // ListImages returns an Collection struct
 func (c *Client) ListImages() (*Images, error) {
-	url := imagesPath()
-	ret := &Images{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ImageApi.ImagesGet(ctx).Execute()
+	ret := Images{}
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		url := imagesPath()
+		ret := &Images{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err*/
 }
 
 // GetImage returns an Instance struct where id ==imageid
 func (c *Client) GetImage(imageid string) (*Image, error) {
-	url := imagePath(imageid)
-	ret := &Image{}
-	err := c.Get(url, ret, http.StatusOK)
-	return ret, err
+
+	ctx, cancel := c.GetContext()
+	if cancel != nil {
+		defer cancel()
+	}
+	rsp, apiResponse, err := c.CoreSdk.ImageApi.ImagesFindById(ctx, imageid).Execute()
+	ret := Image{}
+
+	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
+		return nil, errConvert
+	}
+
+	fillInResponse(&ret, apiResponse)
+	return &ret, err
+	/*
+		url := imagePath(imageid)
+		ret := &Image{}
+		err := c.Get(url, ret, http.StatusOK)
+		return ret, err
+
+	*/
 }

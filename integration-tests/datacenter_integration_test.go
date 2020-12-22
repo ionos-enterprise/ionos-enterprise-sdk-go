@@ -1,10 +1,12 @@
+// +build integration_tests integration_tests_datacenter
+
 package integration_tests
 
 import (
 	"fmt"
 	"testing"
 
-	sdk "github.com/profitbricks/profitbricks-sdk-go/v5"
+	sdk "github.com/ionos-cloud/ionos-enterprise-sdk-go/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -24,8 +26,7 @@ func TestListDatacenters(t *testing.T) {
 	resp, err := c.ListDatacenters()
 
 	if err != nil {
-		t.Error(err)
-		t.Fail()
+		t.Fatal(err)
 	}
 	assert.True(t, len(resp.Items) > 0)
 }
@@ -34,8 +35,7 @@ func TestGetDatacenterFail(t *testing.T) {
 	c := setupTestEnv()
 	_, err := c.GetDatacenter("231")
 	if err == nil {
-		t.Error(err)
-		t.Fail()
+		t.Fatal(err)
 	}
 }
 
@@ -49,8 +49,7 @@ func TestCreateFailure(t *testing.T) {
 	}
 	_, err := c.CreateDatacenter(obj)
 	if err == nil {
-		t.Error(err)
-		t.Fail()
+		t.Fatal(err)
 	}
 
 }
