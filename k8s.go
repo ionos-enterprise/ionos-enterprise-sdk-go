@@ -369,7 +369,7 @@ func (c *Client) GetKubernetesCluster(clusterID string) (*KubernetesCluster, err
 	if cancel != nil {
 		defer cancel()
 	}
-	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindBySClusterId(ctx, clusterID).Execute()
+	rsp, _, err := c.CoreSdk.KubernetesApi.K8sFindByClusterId(ctx, clusterID).Execute()
 	ret := KubernetesCluster{}
 	if errConvert := convertToCompat(&rsp, &ret); errConvert != nil {
 		return nil, errConvert

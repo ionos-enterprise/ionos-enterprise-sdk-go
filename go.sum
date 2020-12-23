@@ -5,6 +5,8 @@ github.com/golang/protobuf v1.2.0 h1:P3YflyNX/ehuJFLhxviNdFxQPkGK5cDcApsge1SqnvM
 github.com/golang/protobuf v1.2.0/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/ionos-cloud/sdk-go/v5 v5.0.2 h1:q/aYGV8Lcued7OW9BdixSutyM2XcUZjsH37kNrHjMxg=
 github.com/ionos-cloud/sdk-go/v5 v5.0.2/go.mod h1:dU3BVZgiBDAKyo41hFk7D5KWHfqyp4YL4rePIAi2JyM=
+github.com/ionos-cloud/sdk-go/v5 v5.0.3 h1:FD8fb8u4/BjNcxDTqa7Mv79q5p8WNPgSw6im1c5sZg4=
+github.com/ionos-cloud/sdk-go/v5 v5.0.3/go.mod h1:dU3BVZgiBDAKyo41hFk7D5KWHfqyp4YL4rePIAi2JyM=
 github.com/jarcoal/httpmock v1.0.5 h1:cHtVEcTxRSX4J0je7mWPfc9BpDpqzXSJ5HbymZmyHck=
 github.com/jarcoal/httpmock v1.0.5/go.mod h1:ATjnClrvW/3tijVmpL/va5Z3aAyGvqU3gCT8nX0Txik=
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
