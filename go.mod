@@ -1,4 +1,4 @@
-module github.com/ionos-cloud/ionos-enterprise-sdk-go/v5
+module github.com/profitbricks/profitbricks-sdk-go/v5
 
 require (
 	github.com/ionos-cloud/sdk-go/v5 v5.0.3
