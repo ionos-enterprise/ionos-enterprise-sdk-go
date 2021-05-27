@@ -50,6 +50,12 @@ func RestyClient(username, password, token string) *Client {
 	})
 	c.AddRetryCondition(
 		func(r *resty.Response, err error) bool {
+			// Only retry on read-only requests
+			if r.Request.Method != http.MethodGet &&
+				r.Request.Method != http.MethodHead &&
+				r.Request.Method != http.MethodOptions {
+				return false
+			}
 			switch r.StatusCode() {
 			case http.StatusTooManyRequests,
 				http.StatusServiceUnavailable,
