@@ -53,6 +53,7 @@ func RestyClient(username, password, token string) *Client {
 			// Only retry on read-only requests
 			if r.Request.Method != http.MethodGet &&
 				r.Request.Method != http.MethodHead &&
+				r.Request.Method != http.MethodTrace &&
 				r.Request.Method != http.MethodOptions {
 				return false
 			}
