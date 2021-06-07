@@ -16,6 +16,7 @@ type SuiteClient struct {
 func Test_Client(t *testing.T) {
 	suite.Run(t, new(SuiteClient))
 }
+
 func (s *SuiteClient) Test_Retry() {
 	called := 0
 	httpmock.RegisterResponder(http.MethodGet, `=~/?depth=10`,
@@ -49,3 +50,32 @@ func (s *SuiteClient) Test_Retry() {
 	s.Error(err)
 	s.Equal(4, called)
 }
+
+func (s *SuiteClient) Test_NoRetryOnWrite() {
+	called := 0
+	httpmock.RegisterResponder(http.MethodPost, `=~/?depth=10`,
+		func(*http.Request) (*http.Response, error) {
+			called++
+			switch called {
+			case 1:
+				rsp := httpmock.NewBytesResponse(http.StatusTooManyRequests, []byte{})
+				rsp.Header.Set("Retry-After", "1") // Overruled by RetryMaxWaitTime of 2 ns
+				return rsp, nil
+			case 2:
+				return httpmock.NewBytesResponse(http.StatusBadGateway, []byte{}), nil
+			}
+			// More response code
+			return httpmock.NewBytesResponse(http.StatusOK, []byte{}), nil
+		},
+	)
+	s.c.SetRetryCount(3)
+	// slower that 2 nano seconds will result in a wait time of max int nano seconds (caused by internal normalization
+	// in go resty
+	s.c.SetRetryWaitTime(2 * time.Nanosecond)
+	s.c.SetRetryMaxWaitTime(2 * time.Nanosecond)
+
+	err := s.c.Post("/", nil, nil, http.StatusBadGateway)
+	s.NoError(err) // Error is expected by Post Call
+	s.Equal(2, called)
+}
+
