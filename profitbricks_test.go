@@ -41,7 +41,7 @@ func (s *SuiteClient) Test_Retry() {
 		},
 	)
 	s.c.SetRetryCount(3)
-	// slower that 2 nano seconds will result in a wait time of max int nano seconds (caused by internal normalization
+	// slower than 2 nano seconds will result in a wait time of max int nanoseconds (caused by internal normalization)
 	// in go resty
 	s.c.SetRetryWaitTime(2 * time.Nanosecond)
 	s.c.SetRetryMaxWaitTime(2 * time.Nanosecond)
@@ -69,7 +69,7 @@ func (s *SuiteClient) Test_NoRetryOnWrite() {
 		},
 	)
 	s.c.SetRetryCount(3)
-	// slower that 2 nano seconds will result in a wait time of max int nano seconds (caused by internal normalization
+	// slower than 2 nano seconds will result in a wait time of max int nanoseconds (caused by internal normalization)
 	// in go resty
 	s.c.SetRetryWaitTime(2 * time.Nanosecond)
 	s.c.SetRetryMaxWaitTime(2 * time.Nanosecond)
@@ -78,4 +78,3 @@ func (s *SuiteClient) Test_NoRetryOnWrite() {
 	s.NoError(err) // Error is expected by Post Call
 	s.Equal(2, called)
 }
-
