@@ -21,6 +21,13 @@ const (
 	Version        = "5.0.3"
 )
 
+func isReadOnlyRequest(req *http.Request) bool {
+	return req.Method == http.MethodGet ||
+		req.Method == http.MethodHead ||
+		req.Method == http.MethodTrace ||
+		req.Method == http.MethodOptions
+}
+
 func RestyClient(username, password, token string) *Client {
 	c := &Client{
 		Client:      resty.New(),
@@ -51,11 +58,13 @@ func RestyClient(username, password, token string) *Client {
 	c.AddRetryCondition(
 		func(r *resty.Response, err error) bool {
 			switch r.StatusCode() {
-			case http.StatusTooManyRequests,
+			case http.StatusTooManyRequests:
+				return true
+			case
 				http.StatusServiceUnavailable,
 				http.StatusGatewayTimeout,
 				http.StatusBadGateway:
-				return true
+				return isReadOnlyRequest(r.Request.RawRequest)
 			}
 			return false
 		})
