@@ -430,7 +430,7 @@ func (c *Client) ReplaceKubernetesNode(clusterID, nodePoolID, nodeID string) (*h
 	url := kubernetesNodeReplacePath(clusterID, nodePoolID, nodeID)
 	rsp, err := c.R().SetError(ApiError{}).Post(url)
 	if err != nil {
-		return nil, NewClientError(HttpClientError, fmt.Sprintf("[POST] %s: Client error: %s", url, err))
+		return nil, NewWrappedClientError(HttpClientError, fmt.Errorf("[POST] %s: Client error: %w", url, err))
 	}
 	h := rsp.Header()
 	return &h, validateResponse(rsp, http.StatusAccepted)

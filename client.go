@@ -22,7 +22,7 @@ func (c *Client) Do(url, method string, body, result interface{}, expectedStatus
 func (c *Client) DoWithRequest(request *resty.Request, method, url string, expectedStatus int) error {
 	rsp, err := request.SetError(ApiError{}).Execute(method, url)
 	if err != nil {
-		return NewClientError(HttpClientError, fmt.Sprintf("[%s] %s: Client error %s", method, url, err))
+		return NewWrappedClientError(HttpClientError, fmt.Errorf("[%s] %s: Client error %w", method, url, err))
 	}
 	if result := rsp.Result(); result != nil {
 		if val := reflect.ValueOf(result).Elem().FieldByName("Headers"); val.IsValid() {
@@ -74,7 +74,7 @@ func (c *Client) DeleteAcc(url string) (*http.Header, error) {
 func (c *Client) Delete(url string, responseHeader *http.Header, expectedStatus int) error {
 	rsp, err := c.R().SetError(ApiError{}).Delete(url)
 	if err != nil {
-		return NewClientError(HttpClientError, fmt.Sprintf("[DELETE] %s: Client error: %s", url, err))
+		return NewWrappedClientError(HttpClientError, fmt.Errorf("[DELETE] %s: Client error: %w", url, err))
 	}
 	if responseHeader != nil {
 		*responseHeader = rsp.Header()
@@ -98,6 +98,6 @@ func validateResponse(rsp *resty.Response, expectedStatus ...int) error {
 		return *e
 
 	}
-	return NewClientError(UnexpectedResponse, fmt.Sprintf("[%s] %s: Unexpected status %s",
+	return NewWrappedClientError(UnexpectedResponse, fmt.Errorf("[%s] %s: Unexpected status %s",
 		rsp.Request.Method, rsp.Request.URL, rsp.Status()))
 }

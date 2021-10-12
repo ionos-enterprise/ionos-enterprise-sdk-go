@@ -2,7 +2,9 @@ package profitbricks
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"testing"
@@ -120,4 +122,8 @@ func TestIsHttpStatusWrapped(t *testing.T) {
 
 func TestIsClientErrorTypeWrapped(t *testing.T) {
 	assert.True(t, IsClientErrorType(fmt.Errorf("wrapped: %w", NewClientError(InvalidInput, "")), InvalidInput))
+}
+
+func TestUnwrapClientError(t *testing.T) {
+	assert.True(t, errors.Is(NewWrappedClientError(RequestFailed, fmt.Errorf("wrapped: %w", io.EOF)), io.EOF))
 }

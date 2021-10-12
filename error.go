@@ -24,18 +24,33 @@ const (
 )
 
 type ClientError struct {
-	errType ClientErrorType
-	msg     string
+	errType   ClientErrorType
+	msg       string
+	origError error
 }
 
 func (c ClientError) Error() string {
+	if c.origError != nil {
+		return c.origError.Error()
+	}
 	return c.msg
+}
+
+func (c ClientError) Unwrap() error {
+	return c.origError
 }
 
 func NewClientError(errType ClientErrorType, msg string) ClientError {
 	return ClientError{
 		errType: errType,
 		msg:     msg,
+	}
+}
+
+func NewWrappedClientError(errType ClientErrorType, err error) ClientError {
+	return ClientError{
+		errType:   errType,
+		origError: err,
 	}
 }
 
