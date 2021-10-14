@@ -1,6 +1,8 @@
 package profitbricks
 
 import (
+	"errors"
+	"io"
 	"net/http"
 	"strconv"
 	"time"
@@ -69,6 +71,13 @@ func RestyClient(username, password, token string) *Client {
 			return false
 		})
 	return c
+}
+
+// AddRetryOnEOF adds a retry condition that retries requests on EOF, e.g. when the server closed the connection.
+func (c *Client) AddRetryOnEOF() {
+	c.AddRetryCondition(func(_ *resty.Response, err error) bool {
+		return errors.Is(err, io.EOF)
+	})
 }
 
 // SetDebug activates/deactivates resty's debug mode. For better readability
