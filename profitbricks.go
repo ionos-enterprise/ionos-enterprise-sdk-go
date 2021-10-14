@@ -20,7 +20,7 @@ type Client struct {
 const (
 	DefaultApiUrl  = "https://api.ionos.com/cloudapi/v5"
 	DefaultAuthUrl = "https://api.ionos.com/auth/v1"
-	Version        = "5.0.3"
+	Version        = "5.0.33"
 )
 
 func isReadOnlyRequest(req *http.Request) bool {
