@@ -46,15 +46,6 @@ func RestyClient(username, password, token string) *Client {
 	c.SetRetryCount(3)
 	c.SetRetryMaxWaitTime(10 * time.Minute)
 	c.SetRetryWaitTime(1 * time.Second)
-	c.SetRetryAfter(func(cl *resty.Client, r *resty.Response) (time.Duration, error) {
-		switch r.StatusCode() {
-		case http.StatusTooManyRequests:
-			if retryAfterSeconds := r.Header().Get("Retry-After"); retryAfterSeconds != "" {
-				return time.ParseDuration(retryAfterSeconds + "s")
-			}
-		}
-		return cl.RetryWaitTime, nil
-	})
 	c.AddRetryCondition(
 		func(r *resty.Response, err error) bool {
 			switch r.StatusCode() {
