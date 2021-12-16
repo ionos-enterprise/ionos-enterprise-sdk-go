@@ -1,3 +1,8 @@
+[![No Maintenance Intended](http://unmaintained.tech/badge.svg)](http://unmaintained.tech/)
+# DEPRECATED
+
+This is no longer supported, please consider using [IONOS Cloud SDK Go](https://github.com/ionos-cloud/sdk-go) instead.
+
 # Go SDK
 
 Version: profitbricks-sdk-go **5.0**
